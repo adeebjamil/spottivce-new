@@ -1,16 +1,12 @@
 import { useEffect, useState } from 'react';
 import { 
   MdSearch, 
-  MdFilterList, 
   MdSort, 
   MdClose,
-  MdShoppingCart,
   MdStar,
   MdStarBorder,
   MdGridView,
   MdViewList,
-  MdTrendingUp,
-  MdSecurity,
   MdVideocam
 } from 'react-icons/md';
 import { toast } from 'react-toastify';
@@ -185,8 +181,8 @@ const ProductsPage = () => {
       <div className="min-h-screen flex items-center justify-center bg-white">
         <div className="text-center">
           <div className="relative">
-            <div className="animate-spin rounded-full h-16 w-16 border-4 border-gray-200 border-t-blue-600 mx-auto"></div>
-            <div className="absolute inset-0 rounded-full h-16 w-16 border-4 border-yellow-200 border-t-yellow-500 mx-auto animate-ping"></div>
+            <div className="animate-spin rounded-full h-16 w-16 border-4 border-gray-200 border-t-gray-800 mx-auto"></div>
+            <div className="absolute inset-0 rounded-full h-16 w-16 border-4 border-gray-100 border-t-gray-600 mx-auto animate-ping"></div>
           </div>
           <p className="mt-6 text-lg text-gray-900 font-medium">Loading CCTV products...</p>
         </div>
@@ -195,61 +191,123 @@ const ProductsPage = () => {
   }
 
   return (
-    <div className="min-h-screen bg-white">
-      {/* Clean White Hero Section with Yellow Accents */}
-      <div className="relative overflow-hidden bg-white border-b border-gray-200">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
-          <div className="text-center">
-            <div className="flex justify-center items-center gap-3 mb-6">
-              <MdSecurity className="text-gray-900" size={48} />
-              <MdVideocam className="text-yellow-500" size={48} />
+    <div className="min-h-screen bg-gray-50">
+      {/* Beautiful Hero Section */}
+      <div className="relative overflow-hidden bg-gradient-to-br from-gray-900 via-gray-800 to-black pt-20">
+        {/* Background Pattern */}
+        <div className="absolute inset-0 bg-black opacity-40"></div>
+        <div className="absolute inset-0" style={{
+          backgroundImage: `url("data:image/svg+xml,%3Csvg width='100' height='100' viewBox='0 0 100 100' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.03'%3E%3Cpath d='M11 18c3.866 0 7-3.134 7-7s-3.134-7-7-7-7 3.134-7 7 3.134 7 7 7zm48 25c3.866 0 7-3.134 7-7s-3.134-7-7-7-7 3.134-7 7 3.134 7 7 7zm-43-7c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zm63 31c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zM34 90c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zm56-76c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zM12 86c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm28-65c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm23-11c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm-6 60c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm29 22c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zM32 63c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm57-13c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm-9-21c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM60 91c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM35 41c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM12 60c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2z' /%3E%3C/g%3E%3C/g%3E%3C/svg%3E")`,
+        }}></div>
+        
+        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20 lg:py-32">
+          <div className="text-center text-white">
+            {/* Hero Badge */}
+            <div className="inline-flex items-center px-6 py-3 bg-white/10 backdrop-blur-sm rounded-full text-sm font-semibold mb-8 border border-white/20">
+              <span className="w-2 h-2 bg-yellow-400 rounded-full mr-3 animate-pulse"></span>
+              Premium Security Solutions
             </div>
-            <h1 className="text-4xl md:text-6xl font-black text-gray-900 mb-4 leading-tight">
-              Premium CCTV Solutions
-              <span className="block text-yellow-500">
-                Dubai's Trusted Seller
+
+            {/* Main Heading */}
+            <h1 className="text-5xl lg:text-7xl font-black mb-6 leading-tight">
+              Professional
+              <span className="block bg-gradient-to-r from-yellow-400 via-yellow-500 to-orange-500 bg-clip-text text-transparent">
+                CCTV Solutions
+              </span>
+              <span className="block text-3xl lg:text-4xl font-bold text-white/90 mt-4">
+                For Dubai & UAE
               </span>
             </h1>
-            <p className="text-lg md:text-xl text-gray-700 max-w-3xl mx-auto leading-relaxed">
-              Secure your property with our comprehensive range of professional CCTV cameras, surveillance systems, and security solutions across Dubai & UAE
+
+            {/* Subtitle */}
+            <p className="text-xl lg:text-2xl text-white/80 max-w-4xl mx-auto leading-relaxed mb-12">
+              Discover our comprehensive range of cutting-edge surveillance systems, IP cameras, and security solutions. 
+              <span className="block mt-2 text-white/70">
+                Trusted by businesses and homeowners across the UAE for over a decade.
+              </span>
             </p>
-            
-            {/* Stats */}
-            <div className="mt-12 grid grid-cols-2 md:grid-cols-4 gap-6 max-w-2xl mx-auto">
-              <div className="text-center bg-gray-50 rounded-lg p-4 border border-gray-200">
-                <div className="text-2xl font-bold text-gray-900">{products.length}+</div>
-                <div className="text-gray-600 text-sm">CCTV Products</div>
+
+            {/* Hero Stats */}
+            <div className="grid grid-cols-2 lg:grid-cols-4 gap-6 lg:gap-8 max-w-4xl mx-auto mb-12">
+              <div className="bg-white/10 backdrop-blur-sm rounded-2xl p-6 border border-white/20">
+                <div className="text-3xl lg:text-4xl font-bold text-yellow-400 mb-2">{products.length}+</div>
+                <div className="text-white/80 text-sm lg:text-base font-medium">Security Products</div>
               </div>
-              <div className="text-center bg-yellow-50 rounded-lg p-4 border border-yellow-200">
-                <div className="text-2xl font-bold text-yellow-600">{categories.length}+</div>
-                <div className="text-gray-600 text-sm">Categories</div>
+              <div className="bg-white/10 backdrop-blur-sm rounded-2xl p-6 border border-white/20">
+                <div className="text-3xl lg:text-4xl font-bold text-yellow-400 mb-2">{categories.length}+</div>
+                <div className="text-white/80 text-sm lg:text-base font-medium">Product Categories</div>
               </div>
-              <div className="text-center bg-gray-50 rounded-lg p-4 border border-gray-200">
-                <div className="text-2xl font-bold text-gray-900">500+</div>
-                <div className="text-gray-600 text-sm">Installations</div>
+              <div className="bg-white/10 backdrop-blur-sm rounded-2xl p-6 border border-white/20">
+                <div className="text-3xl lg:text-4xl font-bold text-yellow-400 mb-2">1000+</div>
+                <div className="text-white/80 text-sm lg:text-base font-medium">Happy Customers</div>
               </div>
-              <div className="text-center bg-yellow-50 rounded-lg p-4 border border-yellow-200">
-                <div className="text-2xl font-bold text-yellow-600">24/7</div>
-                <div className="text-gray-600 text-sm">Support</div>
+              <div className="bg-white/10 backdrop-blur-sm rounded-2xl p-6 border border-white/20">
+                <div className="text-3xl lg:text-4xl font-bold text-yellow-400 mb-2">24/7</div>
+                <div className="text-white/80 text-sm lg:text-base font-medium">Expert Support</div>
+              </div>
+            </div>
+
+            {/* CTA Buttons */}
+            <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
+              <button 
+                onClick={() => {
+                  const productsSection = document.getElementById('products-section');
+                  if (productsSection) {
+                    productsSection.scrollIntoView({ behavior: 'smooth' });
+                  }
+                }}
+                className="px-8 py-4 bg-gradient-to-r from-yellow-500 to-orange-500 text-black rounded-xl font-bold hover:from-yellow-400 hover:to-orange-400 transition-all duration-300 transform hover:scale-105 shadow-2xl text-lg"
+              >
+                Explore Our Products
+              </button>
+              <button 
+                onClick={() => router.push('/contact')}
+                className="px-8 py-4 bg-white/10 backdrop-blur-sm text-white border border-white/30 rounded-xl font-bold hover:bg-white/20 transition-all duration-300 text-lg"
+              >
+                Get Free Consultation
+              </button>
+            </div>
+
+            {/* Trust Indicators */}
+            <div className="mt-16 pt-8 border-t border-white/20">
+              <p className="text-white/60 text-sm mb-6">Trusted by leading businesses across UAE</p>
+              <div className="flex flex-wrap justify-center items-center gap-8 opacity-60">
+                <div className="px-6 py-3 bg-white/5 rounded-lg border border-white/10">
+                  <span className="text-white/80 font-semibold">Enterprise Security</span>
+                </div>
+                <div className="px-6 py-3 bg-white/5 rounded-lg border border-white/10">
+                  <span className="text-white/80 font-semibold">Residential Solutions</span>
+                </div>
+                <div className="px-6 py-3 bg-white/5 rounded-lg border border-white/10">
+                  <span className="text-white/80 font-semibold">Smart Surveillance</span>
+                </div>
               </div>
             </div>
           </div>
         </div>
+
+        {/* Wave Bottom */}
+        <div className="absolute bottom-0 left-0 right-0">
+          <svg viewBox="0 0 1440 120" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M0 120L60 105C120 90 240 60 360 45C480 30 600 30 720 37.5C840 45 960 60 1080 67.5C1200 75 1320 75 1380 75L1440 75V120H1380C1320 120 1200 120 1080 120C960 120 840 120 720 120C600 120 480 120 360 120C240 120 120 120 60 120H0Z" fill="#f9fafb"/>
+          </svg>
+        </div>
       </div>
 
-      {/* Search and Filter Bar */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <div className="bg-white border border-gray-200 rounded-2xl shadow-lg p-8 mb-8">
+      {/* Products Section */}
+      <div id="products-section" className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
+        {/* Search and Filter Bar */}
+        <div className="bg-white rounded-3xl shadow-xl p-8 mb-12 border border-gray-200">
           <div className="flex flex-col lg:flex-row gap-6 items-center">
             {/* Search Bar */}
             <div className="flex-1 relative group">
-              <MdSearch className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400 group-focus-within:text-yellow-500 transition-colors" size={24} />
+              <MdSearch className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400 group-focus-within:text-gray-700 transition-colors" size={24} />
               <input
                 type="text"
                 placeholder="Search CCTV cameras, surveillance systems..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                className="w-full pl-12 pr-4 py-4 border-2 border-gray-200 rounded-xl focus:outline-none focus:ring-4 focus:ring-yellow-500/20 focus:border-yellow-500 transition-all text-lg"
+                className="w-full pl-12 pr-4 py-4 border-2 border-gray-200 rounded-xl focus:outline-none focus:ring-4 focus:ring-gray-800/20 focus:border-gray-800 transition-all text-lg"
               />
             </div>
 
@@ -259,7 +317,7 @@ const ProductsPage = () => {
               <select
                 value={selectedCategory}
                 onChange={(e) => handleCategoryChange(e.target.value)}
-                className="px-6 py-4 border-2 border-gray-200 rounded-xl focus:outline-none focus:ring-4 focus:ring-yellow-500/20 focus:border-yellow-500 min-w-[160px] bg-white"
+                className="px-6 py-4 border-2 border-gray-200 rounded-xl focus:outline-none focus:ring-4 focus:ring-gray-800/20 focus:border-gray-800 min-w-[160px] bg-white"
               >
                 <option value="">All Categories</option>
                 {categories.map(category => (
@@ -271,7 +329,7 @@ const ProductsPage = () => {
               <select
                 value={selectedSubCategory}
                 onChange={(e) => setSelectedSubCategory(e.target.value)}
-                className="px-6 py-4 border-2 border-gray-200 rounded-xl focus:outline-none focus:ring-4 focus:ring-yellow-500/20 focus:border-yellow-500 min-w-[160px] bg-white"
+                className="px-6 py-4 border-2 border-gray-200 rounded-xl focus:outline-none focus:ring-4 focus:ring-gray-800/20 focus:border-gray-800 min-w-[160px] bg-white"
                 disabled={!selectedCategory && subCategories.length === 0}
               >
                 <option value="">All Subcategories</option>
@@ -302,7 +360,7 @@ const ProductsPage = () => {
                   onClick={() => setViewMode('grid')}
                   className={`p-3 rounded-lg transition-all ${
                     viewMode === 'grid' 
-                      ? 'bg-white text-yellow-600 shadow-md' 
+                      ? 'bg-white text-gray-800 shadow-md' 
                       : 'text-gray-500 hover:text-gray-700'
                   }`}
                 >
@@ -312,7 +370,7 @@ const ProductsPage = () => {
                   onClick={() => setViewMode('list')}
                   className={`p-3 rounded-lg transition-all ${
                     viewMode === 'list' 
-                      ? 'bg-white text-yellow-600 shadow-md' 
+                      ? 'bg-white text-gray-800 shadow-md' 
                       : 'text-gray-500 hover:text-gray-700'
                   }`}
                 >
@@ -338,12 +396,12 @@ const ProductsPage = () => {
         <div className="mb-8 flex justify-between items-center">
           <div className="flex items-center gap-4">
             <p className="text-lg text-gray-700">
-              Showing <span className="font-bold text-yellow-600">{filteredProducts.length}</span> of{' '}
+              Showing <span className="font-bold text-gray-900">{filteredProducts.length}</span> of{' '}
               <span className="font-bold text-gray-900">{products.length}</span> CCTV products
             </p>
             {filteredProducts.length > 0 && (
-              <div className="flex items-center gap-2 text-yellow-600 bg-yellow-50 px-4 py-2 rounded-full border border-yellow-200">
-                <MdSecurity size={16} />
+              <div className="flex items-center gap-2 text-gray-700 bg-gray-100 px-4 py-2 rounded-full border border-gray-200">
+                <span className="w-2 h-2 bg-gray-600 rounded-full"></span>
                 <span className="text-sm font-medium">Professional Grade</span>
               </div>
             )}
@@ -360,7 +418,7 @@ const ProductsPage = () => {
             <p className="text-gray-500 mb-8 text-lg">Try adjusting your search criteria or explore different categories</p>
             <button
               onClick={clearFilters}
-              className="inline-flex items-center px-8 py-4 bg-yellow-500 text-white rounded-xl hover:bg-yellow-600 transition-all transform hover:scale-105 font-medium text-lg"
+              className="inline-flex items-center px-8 py-4 bg-gradient-to-r from-gray-800 to-gray-900 text-white rounded-xl hover:from-gray-900 hover:to-black transition-all transform hover:scale-105 font-medium text-lg shadow-lg"
             >
               <MdClose size={20} className="mr-2" />
               Clear all filters
@@ -402,7 +460,7 @@ const ProductsPage = () => {
                         {product.category}
                       </span>
                       {isNewProduct && (
-                        <span className="px-3 py-1 bg-yellow-500 text-white text-xs font-bold rounded-full shadow-lg">
+                        <span className="px-3 py-1 bg-gradient-to-r from-yellow-500 to-orange-500 text-white text-xs font-bold rounded-full shadow-lg">
                           NEW
                         </span>
                       )}
@@ -419,7 +477,7 @@ const ProductsPage = () => {
 
                   {/* Product Info */}
                   <div className="p-6">
-                    <h3 className="text-xl font-bold text-gray-900 mb-3 group-hover:text-yellow-600 transition-colors line-clamp-2">
+                    <h3 className="text-xl font-bold text-gray-900 mb-3 group-hover:text-gray-700 transition-colors line-clamp-2">
                       {product.name}
                     </h3>
                     <p className="text-gray-600 text-sm mb-4 line-clamp-2 leading-relaxed">
@@ -443,10 +501,10 @@ const ProductsPage = () => {
                       </div>
                     </div>
 
-                    {/* Action Button */}
+                    {/* Action Button - Updated to match dark theme */}
                     <button 
                       onClick={() => router.push(`/product/${product._id}`)}
-                      className="w-full bg-yellow-500 text-white py-4 rounded-xl font-bold hover:bg-yellow-600 transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-xl"
+                      className="w-full bg-gradient-to-r from-gray-800 to-gray-900 text-white py-4 rounded-xl font-bold hover:from-gray-900 hover:to-black transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-xl"
                     >
                       View Details
                     </button>
@@ -485,10 +543,10 @@ const ProductsPage = () => {
                     <div className="flex-1 flex flex-col justify-between">
                       <div>
                         <div className="flex items-start justify-between mb-2">
-                          <h3 className="text-2xl font-bold text-gray-900 group-hover:text-yellow-600 transition-colors">
+                          <h3 className="text-2xl font-bold text-gray-900 group-hover:text-gray-700 transition-colors">
                             {product.name}
                           </h3>
-                          <div className="flex items-center gap-1 bg-yellow-50 px-3 py-1 rounded-full border border-yellow-200">
+                          <div className="flex items-center gap-1 bg-gray-50 px-3 py-1 rounded-full border border-gray-200">
                             <MdStar className="text-yellow-400" size={18} />
                             <span className="text-sm font-bold text-gray-900">{rating}</span>
                           </div>
@@ -515,7 +573,7 @@ const ProductsPage = () => {
                       <div className="flex items-center justify-end">
                         <button 
                           onClick={() => router.push(`/product/${product._id}`)}
-                          className="px-8 py-3 bg-yellow-500 text-white rounded-xl font-bold hover:bg-yellow-600 transition-all duration-300 transform hover:scale-105"
+                          className="px-8 py-3 bg-gradient-to-r from-gray-800 to-gray-900 text-white rounded-xl font-bold hover:from-gray-900 hover:to-black transition-all duration-300 transform hover:scale-105 shadow-lg"
                         >
                           View Details
                         </button>

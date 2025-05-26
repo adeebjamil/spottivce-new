@@ -1,4 +1,5 @@
-import { GetServerSideProps } from 'next';
+// filepath: [[id].tsx](http://_vscodecontentref_/1)
+import { GetStaticProps, GetStaticPaths } from 'next';
 import { useState } from 'react';
 import { 
   MdStar, 
@@ -122,6 +123,17 @@ const ProductDetailPage = ({ product, productDetail }: Props) => {
       setSubmitting(false);
     }
   };
+
+  if (router.isFallback) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
+          <p className="text-gray-600">Loading product...</p>
+        </div>
+      </div>
+    );
+  }
 
   if (!product) {
     return (
@@ -632,7 +644,35 @@ const ProductDetailPage = ({ product, productDetail }: Props) => {
   );
 };
 
-export const getServerSideProps: GetServerSideProps = async ({ params }) => {
+// Tell Next.js which product IDs exist (for Static Site Generation)
+export const getStaticPaths: GetStaticPaths = async () => {
+  try {
+    const client = await clientPromise;
+    const db = client.db('spottive');
+    
+    // Fetch all product IDs from database
+    const products = await db.collection('products').find({}, { projection: { _id: 1 } }).toArray();
+
+    // Generate paths for each product
+    const paths = products.map((product) => ({
+      params: { id: product._id.toString() }
+    }));
+
+    return {
+      paths,
+      fallback: 'blocking' // Generate pages on-demand for new products
+    };
+  } catch (error) {
+    console.error('Error in getStaticPaths:', error);
+    return {
+      paths: [],
+      fallback: 'blocking'
+    };
+  }
+};
+
+// Fetch data for each product at build time (for Static Site Generation)
+export const getStaticProps: GetStaticProps = async ({ params }) => {
   try {
     const client = await clientPromise;
     const db = client.db('spottive');
@@ -640,7 +680,9 @@ export const getServerSideProps: GetServerSideProps = async ({ params }) => {
     const productId = params?.id as string;
     
     if (!ObjectId.isValid(productId)) {
-      return { props: { product: null, productDetail: null } };
+      return { 
+        notFound: true 
+      };
     }
 
     // Fetch product
@@ -649,15 +691,24 @@ export const getServerSideProps: GetServerSideProps = async ({ params }) => {
     // Fetch product detail
     const productDetail = await db.collection('productDetails').findOne({ productId });
 
+    if (!product) {
+      return {
+        notFound: true
+      };
+    }
+
     return {
       props: {
-        product: product ? JSON.parse(JSON.stringify(product)) : null,
+        product: JSON.parse(JSON.stringify(product)),
         productDetail: productDetail ? JSON.parse(JSON.stringify(productDetail)) : null,
       },
+      revalidate: 3600, // Revalidate every hour (ISR)
     };
   } catch (error) {
-    console.error('Error fetching product:', error);
-    return { props: { product: null, productDetail: null } };
+    console.error('Error in getStaticProps:', error);
+    return { 
+      notFound: true 
+    };
   }
 };
 
