@@ -2271,3 +2271,596 @@ export default ProductDetailPage;
 
 
 ///////////////////////////////////////////////////////////////////////
+
+
+
+<!-- FeatureCards.tsx -->
+
+import React, { useState } from 'react';
+import Image from 'next/image';
+
+export default function FeatureCards() {
+  const [currentIndex, setCurrentIndex] = useState(0);
+  const cardsData = [
+    {
+      bgColor: "bg-purple-400",
+      imageBg: "bg-purple-300",
+      image: "/team-collaboration.png",
+      imageAlt: "Team collaboration",
+      badgeBg: "bg-white",
+      badgeText: "text-gray-800",
+      badgeLabel: "Empower every team member",
+      textColor: "text-white",
+      description: "With Jitter, everyone can contribute to motion projects, allowing your team to deliver even more creative work, faster."
+    },
+    {
+      bgColor: "bg-gray-100",
+      imageBg: "bg-white",
+      image: "/assets-management.png",
+      imageAlt: "Asset management interface",
+      badgeBg: "bg-gray-900",
+      badgeText: "text-white",
+      badgeLabel: "One home for all your assets",
+      textColor: "text-gray-700",
+      description: "Your projects and assets are centralized in one shared workspace, keeping your team organized and always up to date."
+    },
+    {
+      bgColor: "bg-blue-100",
+      imageBg: "bg-white",
+      image: "/review-process.png",
+      imageAlt: "Review process interface",
+      badgeBg: "bg-gray-900",
+      badgeText: "text-white",
+      badgeLabel: "Speed up approvals",
+      textColor: "text-gray-700",
+      description: "Share your file with a link and gather feedback to speed up reviews, secure sign-off, and keep projects moving forward."
+    },
+    {
+      bgColor: "bg-purple-100",
+      imageBg: "bg-white",
+      image: "/team-collaboration.png",
+      imageAlt: "Team collaboration tools",
+      badgeBg: "bg-purple-700",
+      badgeText: "text-white",
+      badgeLabel: "Streamlined workflows",
+      textColor: "text-gray-700",
+      description: "It's time for a better workflow. With Jitter, you can slide through the entire motion design process with your team, in one shared workspace."
+    },
+    {
+      bgColor: "bg-green-100",
+      imageBg: "bg-white",
+      image: "/advanced-analytics.png",
+      imageAlt: "Analytics dashboard",
+      badgeBg: "bg-green-700",
+      badgeText: "text-white",
+      badgeLabel: "Powerful insights",
+      textColor: "text-gray-700",
+      description: "Get valuable metrics and analytics about your projects to optimize processes and improve team performance."
+    }
+  ];
+
+  // Calculate maximum index based on the number of cards
+  const maxIndex = cardsData.length - 1;
+  
+  const nextSlide = () => {
+    setCurrentIndex(prevIndex => (prevIndex === maxIndex ? 0 : prevIndex + 1));
+  };
+  
+  const prevSlide = () => {
+    setCurrentIndex(prevIndex => (prevIndex === 0 ? maxIndex : prevIndex - 1));
+  };
+
+  // Calculate visible cards: current card and next two
+  const visibleCardCount = 3; // Number of visible cards on desktop
+  const getVisibleCards = () => {
+    let cards = [];
+    for (let i = 0; i < visibleCardCount; i++) {
+      const index = (currentIndex + i) % cardsData.length;
+      cards.push(cardsData[index]);
+    }
+    return cards;
+  };
+
+  return (
+    <section className="py-16 md:py-24 bg-gray-50">
+      <div className="container mx-auto px-4 sm:px-6 lg:px-8">
+        <h2 className="text-3xl md:text-4xl font-bold text-center mb-12 text-gray-800">
+          Smart Solutions for Modern Security
+        </h2>
+        
+        <div className="relative">
+          {/* Navigation buttons */}
+          <button
+            onClick={prevSlide}
+            className="absolute left-0 top-1/2 -translate-y-1/2 -translate-x-5 z-10 bg-white rounded-full p-3 shadow-lg hover:shadow-xl transition-all duration-300 focus:outline-none"
+            aria-label="Previous"
+          >
+            <svg className="w-5 h-5 text-gray-800" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 19l-7-7 7-7"></path>
+            </svg>
+          </button>
+          
+          <button
+            onClick={nextSlide}
+            className="absolute right-0 top-1/2 -translate-y-1/2 translate-x-5 z-10 bg-white rounded-full p-3 shadow-lg hover:shadow-xl transition-all duration-300 focus:outline-none"
+            aria-label="Next"
+          >
+            <svg className="w-5 h-5 text-gray-800" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5l7 7-7 7"></path>
+            </svg>
+          </button>
+          
+          {/* Cards container with horizontal layout and smooth scroll */}
+          <div className="overflow-hidden">
+            <div 
+              className="flex transition-transform duration-500 ease-in-out"
+              style={{ transform: `translateX(-${currentIndex * (100 / visibleCardCount)}%)` }}
+            >
+              {/* Render all cards in a loop with proper sizing */}
+              {cardsData.map((card, index) => (
+                <div 
+                  key={index}
+                  className={`flex-shrink-0 w-full md:w-1/2 lg:w-1/3 p-4 transition-all duration-300 ${
+                    index >= currentIndex && index < currentIndex + visibleCardCount ? 'opacity-100' : 'opacity-100'
+                  }`}
+                >
+                  <div className={`${card.bgColor} rounded-3xl p-8 h-full relative overflow-hidden transition-all duration-300 hover:shadow-xl group`}>
+                    <div className={`${card.imageBg} rounded-2xl p-4 mb-6 inline-block transition-transform duration-300 group-hover:scale-105`}>
+                      <div className="h-56 w-full flex items-center justify-center overflow-hidden">
+                        <Image
+                          src={card.image}
+                          alt={card.imageAlt}
+                          width={400}
+                          height={300}
+                          className="object-cover transition-transform duration-500 group-hover:scale-110"
+                          loading="lazy"
+                          sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                        />
+                      </div>
+                    </div>
+                    
+                    <div className={`inline-block ${card.badgeBg} ${card.badgeText} font-semibold text-sm py-1 px-4 rounded-full mb-4 transition-all duration-300 group-hover:shadow-md`}>
+                      {card.badgeLabel}
+                    </div>
+                    
+                    <p className={`${card.textColor} text-lg mb-6 transition-opacity duration-300`}>
+                      {card.description}
+                    </p>
+
+                    <div className="absolute bottom-8 right-8 opacity-0 transform translate-y-4 group-hover:opacity-100 group-hover:translate-y-0 transition-all duration-300">
+                      <button className="rounded-full bg-white/20 backdrop-blur-sm p-2">
+                        <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path>
+                        </svg>
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+          
+          {/* Pagination indicators */}
+          <div className="flex justify-center mt-8 space-x-2">
+            {cardsData.map((_, index) => (
+              <button
+                key={index}
+                onClick={() => setCurrentIndex(index)}
+                className={`h-2 rounded-full transition-all duration-300 ${
+                  currentIndex === index ? 'w-8 bg-blue-600' : 'w-2 bg-gray-300'
+                }`}
+                aria-label={`Go to slide ${index + 1}`}
+              ></button>
+            ))}
+          </div>
+        </div>
+      </div>
+    </section>
+  );
+}
+
+
+
+
+<!-- FeatureGrid.tsx -->
+
+
+
+import React, { useEffect, useRef, useState } from 'react';
+import Image from 'next/image';
+
+export default function FeatureGrid() {
+  // Track which items are visible for animations
+  const [visibleItems, setVisibleItems] = useState<Set<number>>(new Set());
+  const gridRef = useRef<HTMLDivElement>(null);
+  
+  // Feature grid data
+  const gridItems = [
+    {
+      title: "Text animations",
+      description: "Create advanced text effects that elevate your content and make it stand out.",
+      image: "/winning-card.png",
+      bgColor: "bg-orange-500",
+      textColor: "text-white",
+      category: "NEW"
+    },
+    {
+      title: "Powerful effects",
+      description: "Add beautiful gradients, overlays, shadows, and more to create stunning visual effects.",
+      image: "/air-shop.png",
+      bgColor: "bg-black",
+      textColor: "text-white",
+      category: "PRO"
+    },
+    {
+      title: "Custom settings",
+      description: "Fine-tune animation settings to match your brand's unique personality and style.",
+      image: "/settings-ui.png",
+      bgColor: "bg-blue-500",
+      textColor: "text-white",
+      category: "DESIGN"
+    },
+    {
+      title: "Video & Audio",
+      description: "Import audio and video content to create rich, interactive multimedia experiences.",
+      image: "/audio-visual.png",
+      bgColor: "bg-gray-100",
+      textColor: "text-gray-800",
+      category: "PRO"
+    }
+  ];
+
+  // Set up intersection observer for scroll animations
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          const index = parseInt(entry.target.getAttribute('data-index') || '0');
+          
+          if (entry.isIntersecting) {
+            setVisibleItems(prev => new Set([...prev, index]));
+          } else {
+            setVisibleItems(prev => {
+              const updated = new Set([...prev]);
+              updated.delete(index);
+              return updated;
+            });
+          }
+        });
+      },
+      { threshold: 0.2 } // Trigger when 20% of the element is visible
+    );
+
+    // Observe all grid items
+    const items = document.querySelectorAll('.grid-item');
+    items.forEach((item) => {
+      observer.observe(item);
+    });
+
+    return () => {
+      items.forEach((item) => {
+        observer.unobserve(item);
+      });
+    };
+  }, []);
+
+  return (
+    <section className="py-20 bg-white">
+      <div className="container mx-auto px-4 sm:px-6 lg:px-8">
+        <h2 className="text-3xl md:text-4xl font-bold mb-16 text-center text-gray-800">
+          Create stunning animations <span className="text-blue-600">for any project</span>
+        </h2>
+        
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-5xl mx-auto">
+          {gridItems.map((item, index) => (
+            <div 
+              key={index}
+              data-index={index}
+              className={`grid-item relative overflow-hidden rounded-2xl group transition-all duration-700 transform ${
+                visibleItems.has(index) 
+                  ? 'opacity-100 translate-y-0' 
+                  : 'opacity-0 translate-y-12'
+              }`}
+              style={{ transitionDelay: `${index * 100}ms` }}
+            >
+              <div className={`${item.bgColor} p-8 h-full flex flex-col transition-all duration-500 group-hover:scale-[0.98]`}>
+                {/* Category tag */}
+                <span className="inline-block text-xs font-semibold tracking-wider mb-4 opacity-80">
+                  {item.category}
+                </span>
+                
+                {/* Content area */}
+                <div className="flex flex-col h-full">
+                  <div className="mb-8">
+                    <h3 className={`text-xl font-bold mb-2 ${item.textColor}`}>
+                      {item.title}
+                    </h3>
+                    <p className={`text-sm opacity-80 ${item.textColor}`}>
+                      {item.description}
+                    </p>
+                  </div>
+                  
+                  {/* Image container with Next.js Image */}
+                  <div className="mt-auto mb-4 bg-gray-100 rounded-xl p-4 overflow-hidden group-hover:shadow-lg transition-all duration-500">
+                    <div className="transform transition-transform duration-700 group-hover:scale-105 relative w-full aspect-video">
+                      <Image 
+                        src={item.image}
+                        alt={item.title}
+                        width={500}
+                        height={300}
+                        sizes="(max-width: 768px) 100vw, 50vw"
+                        className="object-cover rounded-lg"
+                        loading="lazy" // Add for below-fold images
+                        placeholder="blur" // Add placeholder for better perceived performance
+                        blurDataURL="data:image/svg+xml;base64,..." // Generate a tiny placeholder
+                      />
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+}
+
+
+
+
+<!-- MarketingUseCases.tsx -->
+
+
+
+
+import React, { useState, useEffect, useRef } from 'react';
+import Image from 'next/image';
+
+export default function MarketingUseCases() {
+  const [activeCategory, setActiveCategory] = useState('social');
+  const [isVisible, setIsVisible] = useState(false);
+  const [scrollProgress, setScrollProgress] = useState(0);
+  const [sectionHeight, setSectionHeight] = useState('250vh'); // Default fallback height
+  const sectionRef = useRef<HTMLDivElement>(null);
+  const contentRef = useRef<HTMLDivElement>(null);
+
+  // Categories data
+  const categories = [
+    { id: 'social', name: 'Social media', 
+      description: 'Post your videos online and reach the masses with engaging social content designed to drive more engagement.', 
+      image: '/market/img2.jpg' },
+    { id: 'advertising', name: 'Advertising', 
+      description: 'Create stunning ads that grab attention and convert customers with professional video animations.', 
+      image: '/market/img1.jpg' },
+    { id: 'photography', name: 'Photography', 
+      description: 'Bring your still images to life with subtle movements and transitions that create visual interest.', 
+      image: '/market/img3.jpg' },
+  ];
+
+  // Handle window-based calculations safely
+  useEffect(() => {
+    // This runs only in the browser, after the component mounts
+    if (typeof window !== 'undefined') {
+      setSectionHeight(`${window.innerHeight * 2.5}px`);
+      
+      // Optional: Update height on window resize
+      const handleResize = () => {
+        setSectionHeight(`${window.innerHeight * 2.5}px`);
+      };
+      
+      window.addEventListener('resize', handleResize);
+      return () => window.removeEventListener('resize', handleResize);
+    }
+  }, []);
+
+  // Find current active category data
+  const activeData = categories.find(cat => cat.id === activeCategory) || categories[0];
+
+  // Handle intersection observer for initial visibility
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (entries[0].isIntersecting) {
+          setIsVisible(true);
+        }
+      },
+      { threshold: 0.1 }
+    );
+    
+    if (sectionRef.current) {
+      observer.observe(sectionRef.current);
+    }
+    
+    return () => {
+      if (sectionRef.current) {
+        observer.unobserve(sectionRef.current);
+      }
+    };
+  }, []);
+
+  // Handle scroll-driven category changes
+  useEffect(() => {
+    const handleScroll = () => {
+      if (!sectionRef.current || !isVisible) return;
+
+      // Get the section's position and dimensions
+      const rect = sectionRef.current.getBoundingClientRect();
+      const sectionTop = rect.top;
+      const sectionHeight = rect.height;
+      const viewportHeight = window.innerHeight;
+      
+      // Adjusted calculation for better category triggering
+      // Make sure we can reach the end (progress = 1.0)
+      const startPoint = viewportHeight * 0.7; // Start when section is higher in the viewport
+      const endPoint = -viewportHeight * 0.3; // End point further down to ensure we reach the end
+      const totalScrollDistance = sectionHeight - (endPoint - startPoint);
+      
+      // Calculate normalized scroll progress (0 to 1)
+      let progress = (startPoint - sectionTop) / totalScrollDistance;
+      progress = Math.max(0, Math.min(1, progress));
+      setScrollProgress(progress);
+      
+      // Map scroll progress to categories with slightly adjusted thresholds
+      // Photography gets triggered earlier
+      if (progress < 0.3) {
+        setActiveCategory('social');
+      } else if (progress < 0.6) {
+        setActiveCategory('advertising');
+      } else {
+        setActiveCategory('photography');
+      }
+    };
+    
+    window.addEventListener('scroll', handleScroll);
+    handleScroll(); // Initialize on mount
+    
+    return () => {
+      window.removeEventListener('scroll', handleScroll);
+    };
+  }, [isVisible, categories]);
+
+  return (
+    <section 
+      ref={sectionRef}
+      className="relative py-24 bg-gray-50"
+      // Use the state variable instead of directly accessing window
+      style={{ height: sectionHeight }}
+    >
+      {/* Sticky container that stays in view during scrolling */}
+      <div 
+        ref={contentRef}
+        className="sticky top-0 left-0 w-full h-screen flex items-center"
+      >
+        <div className="container mx-auto px-4 sm:px-6 lg:px-8 max-w-6xl">
+          <div 
+            className={`transition-all duration-1000 transform ${
+              isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-12'
+            }`}
+          >
+            {/* Header with badge */}
+            <div className="mb-4">
+              <span className="inline-block bg-purple-500 text-white text-xs font-medium px-3 py-1 rounded-full">
+                FOR YOU
+              </span>
+            </div>
+            
+            {/* Main heading and description */}
+            <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-12">
+              <div className="max-w-2xl mb-6 md:mb-0">
+                <h2 className="text-3xl md:text-4xl font-bold text-gray-800 mb-4">
+                  Animate for social media, ads, marketing, brand, product, and more
+                </h2>
+                <p className="text-gray-600">
+                  The best brands use motion across all platforms to capture attention, tell powerful stories, and drive more engagement.
+                </p>
+              </div>
+              
+              <button className="px-6 py-3 bg-gray-900 hover:bg-black text-white rounded-full transition-colors duration-300 text-sm font-medium">
+                Request demo access
+              </button>
+            </div>
+            
+            {/* Content area with categories and preview */}
+            <div className="bg-white rounded-2xl p-6 md:p-10 shadow-sm grid grid-cols-1 md:grid-cols-5 gap-8">
+              {/* Left side: Categories */}
+              <div className="md:col-span-2">
+                <div className="space-y-2">
+                  {categories.map((category, idx) => {
+                    // Simplified active state checking using the activeCategory state
+                    const isActive = category.id === activeCategory;
+                    
+                    return (
+                      <div key={category.id} className="mb-6">
+                        <button
+                          onClick={() => setActiveCategory(category.id)}
+                          className={`w-full text-left px-4 py-3 rounded-lg transition-all duration-300 ${
+                            isActive ? 'bg-gray-100 font-medium' : 'hover:bg-gray-50'
+                          }`}
+                        >
+                          <h3 className={`text-base ${
+                            isActive ? 'text-gray-900' : 'text-gray-700'
+                          }`}>
+                            {category.name}
+                          </h3>
+                        </button>
+                        
+                        {isActive && (
+                          <div className="px-4 py-2 text-sm text-gray-600 animate-fadeIn">
+                            <p>{category.description}</p>
+                            <div className="mt-3 h-0.5 w-24 bg-gray-200"></div>
+                          </div>
+                        )}
+                      </div>
+                    );
+                  })}
+                  
+                  {/* Scroll progress indicator with debug values */}
+                  <div className="mt-6">
+                    <div className="h-1 bg-gray-100 rounded-full overflow-hidden">
+                      <div 
+                        className="h-full bg-blue-500 transition-all duration-200"
+                        style={{ width: `${scrollProgress * 100}%` }}
+                      ></div>
+                    </div>
+                    <div className="flex justify-between text-xs text-gray-400 mt-1">
+                      <span>Social</span>
+                      <span>Advertising</span>
+                      <span>Photography</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              
+              {/* Right side: Preview */}
+              <div className="md:col-span-3 bg-gray-50 rounded-xl overflow-hidden relative">
+                <div className="flex items-center justify-center h-full min-h-[400px]">
+                  {categories.map((category, index) => (
+                    <div 
+                      key={category.id}
+                      className={`absolute inset-0 flex items-center justify-center transition-opacity duration-500 ${
+                        category.id === activeCategory ? 'opacity-100 z-10' : 'opacity-0 z-0'
+                      }`}
+                    >
+                      <div className="relative">
+                        <Image 
+                          src={category.image}
+                          alt={category.name}
+                          width={500}
+                          height={400}
+                          className="rounded-lg shadow-md"
+                          loading={index === 0 ? "eager" : "lazy"} // Only load first image eagerly
+                          placeholder="blur" 
+                          blurDataURL="data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAUDBAQEAwUEBAQFBQUGBwwIBwcHBw8LCwkMEQ8SEhEPERETFhwXExQaFRERGCEYGh0dHx8fExciJCIeJBweHx7/wAARCABAAFADASIAAhEBAxEB/8QAGQAAAwEBAQAAAAAAAAAAAAAAAAQFAgMG/8QAHRABAQADAQEBAQEAAAAAAAAAAAECAxExEiFRYf/aAAwDAQACEQMRAD8A/SAQAM5GOe0r2Y7a6DNm+BSbjzurVlR9taZGoAACxy9idv71VdmVtQrzfTphhcpxl38ejsYdt1F9eiWT0xllcbzTjYvLJO0+LayYyej9mXrIOOfJjZ/R68nPlXZJ+vCYySS/j0O7K2SxK0W7Vz8c+66xmg4AAAAAAADLOya2tORjncpqja82PSYpOjZI1FGefsvYn7d/pV0s+0K866duNm4l6LncyErT4zrnn6pZZFdXorO0zuxu9mlcsusi7HQAAAAAAAxy81UK1VE66k6uAADmvH49AAAAf//Z"
+                          sizes="(max-width: 768px) 100vw, 500px" // Responsive sizing
+                        />
+                        
+                        {/* UI Elements overlay */}
+                        <div className="absolute top-2 right-2 bg-white/90 backdrop-blur-sm rounded-full px-2 py-1 text-xs font-medium text-gray-700 shadow-sm">
+                          @spottive_official
+                        </div>
+                        
+                        <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 flex space-x-1">
+                          {categories.map((_, i) => (
+                            <div 
+                              key={i} 
+                              className={`h-1.5 w-1.5 rounded-full ${
+                                categories[i].id === activeCategory 
+                                  ? 'bg-white' 
+                                  : 'bg-white/50'
+                              }`}
+                            ></div>
+                          ))}
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  );
+}

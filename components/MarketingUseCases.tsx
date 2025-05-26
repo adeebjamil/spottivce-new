@@ -1,250 +1,386 @@
+'use client';
 import React, { useState, useEffect, useRef } from 'react';
 import Image from 'next/image';
+import { 
+  MdSecurity, 
+  MdHome, 
+  MdBusiness,
+  MdPlayArrow,
+  MdCheckCircle,
+  MdArrowForward,
+  MdShield,
+  MdVisibility,
+  MdNotifications,
+  MdCloud,
+  MdSmartphone,
+  MdVideoCall
+} from 'react-icons/md';
 
 export default function MarketingUseCases() {
-  const [activeCategory, setActiveCategory] = useState('social');
-  const [isVisible, setIsVisible] = useState(false);
-  const [scrollProgress, setScrollProgress] = useState(0);
-  const [sectionHeight, setSectionHeight] = useState('250vh'); // Default fallback height
-  const sectionRef = useRef<HTMLDivElement>(null);
-  const contentRef = useRef<HTMLDivElement>(null);
+  const [activeCategory, setActiveCategory] = useState(0);
+  const [isAutoPlaying, setIsAutoPlaying] = useState(true);
+  const [touchStart, setTouchStart] = useState(0);
+  const [touchEnd, setTouchEnd] = useState(0);
+  const intervalRef = useRef<NodeJS.Timeout | null>(null);
 
-  // Categories data
   const categories = [
-    { id: 'social', name: 'Social media', 
-      description: 'Post your videos online and reach the masses with engaging social content designed to drive more engagement.', 
-      image: '/market/img2.jpg' },
-    { id: 'advertising', name: 'Advertising', 
-      description: 'Create stunning ads that grab attention and convert customers with professional video animations.', 
-      image: '/market/img1.jpg' },
-    { id: 'photography', name: 'Photography', 
-      description: 'Bring your still images to life with subtle movements and transitions that create visual interest.', 
-      image: '/market/img3.jpg' },
+    {
+      id: 'commercial',
+      title: 'Commercial Security',
+      subtitle: 'Enterprise Solutions',
+      description: 'Advanced AI-powered CCTV systems designed for businesses, retail stores, offices, and industrial facilities with 24/7 monitoring.',
+      image: '/features-card/img0.webp',
+      icon: MdBusiness,
+      color: 'from-blue-500 via-blue-600 to-purple-600',
+      accent: 'bg-blue-500',
+      features: [
+        { icon: MdShield, text: 'AI Detection' },
+        { icon: MdVisibility, text: '4K Ultra HD' },
+        { icon: MdNotifications, text: '24/7 Monitoring' },
+        { icon: MdCloud, text: 'Cloud Storage' }
+      ],
+      stats: { clients: '500+', uptime: '99.9%', coverage: '24/7' }
+    },
+    {
+      id: 'residential',
+      title: 'Home Security',
+      subtitle: 'Smart Protection',
+      description: 'Intelligent home security systems with mobile app control, instant alerts, and smart home integration for complete family protection.',
+      image: '/features-card/img1.webp',
+      icon: MdHome,
+      color: 'from-emerald-500 via-green-600 to-teal-600',
+      accent: 'bg-emerald-500',
+      features: [
+        { icon: MdSmartphone, text: 'Mobile App' },
+        { icon: MdNotifications, text: 'Smart Alerts' },
+        { icon: MdVisibility, text: 'Night Vision' },
+        { icon: MdCheckCircle, text: 'Easy Setup' }
+      ],
+      stats: { clients: '1000+', uptime: '99.8%', coverage: '24/7' }
+    },
+    {
+      id: 'specialized',
+      title: 'Specialized Systems',
+      subtitle: 'Advanced Tech',
+      description: 'Cutting-edge solutions for traffic monitoring, facial recognition, license plate detection, and perimeter security applications.',
+      image: '/features-card/img2.webp',
+      icon: MdSecurity,
+      color: 'from-orange-500 via-red-500 to-pink-600',
+      accent: 'bg-orange-500',
+      features: [
+        { icon: MdVideoCall, text: 'Face Recognition' },
+        { icon: MdShield, text: 'License Plate' },
+        { icon: MdVisibility, text: 'Traffic Monitor' },
+        { icon: MdSecurity, text: 'Perimeter Security' }
+      ],
+      stats: { clients: '200+', uptime: '99.7%', coverage: '24/7' }
+    }
   ];
 
-  // Handle window-based calculations safely
+  // Auto-play functionality
   useEffect(() => {
-    // This runs only in the browser, after the component mounts
-    if (typeof window !== 'undefined') {
-      setSectionHeight(`${window.innerHeight * 2.5}px`);
-      
-      // Optional: Update height on window resize
-      const handleResize = () => {
-        setSectionHeight(`${window.innerHeight * 2.5}px`);
-      };
-      
-      window.addEventListener('resize', handleResize);
-      return () => window.removeEventListener('resize', handleResize);
-    }
-  }, []);
-
-  // Find current active category data
-  const activeData = categories.find(cat => cat.id === activeCategory) || categories[0];
-
-  // Handle intersection observer for initial visibility
-  useEffect(() => {
-    const observer = new IntersectionObserver(
-      (entries) => {
-        if (entries[0].isIntersecting) {
-          setIsVisible(true);
-        }
-      },
-      { threshold: 0.1 }
-    );
-    
-    if (sectionRef.current) {
-      observer.observe(sectionRef.current);
+    if (isAutoPlaying) {
+      intervalRef.current = setInterval(() => {
+        setActiveCategory((prev) => (prev + 1) % categories.length);
+      }, 4000);
     }
     
     return () => {
-      if (sectionRef.current) {
-        observer.unobserve(sectionRef.current);
-      }
+      if (intervalRef.current) clearInterval(intervalRef.current);
     };
-  }, []);
+  }, [isAutoPlaying, categories.length]);
 
-  // Handle scroll-driven category changes
-  useEffect(() => {
-    const handleScroll = () => {
-      if (!sectionRef.current || !isVisible) return;
+  // Touch handlers for mobile swipe
+  const handleTouchStart = (e: React.TouchEvent) => {
+    setTouchStart(e.targetTouches[0].clientX);
+    setIsAutoPlaying(false);
+  };
 
-      // Get the section's position and dimensions
-      const rect = sectionRef.current.getBoundingClientRect();
-      const sectionTop = rect.top;
-      const sectionHeight = rect.height;
-      const viewportHeight = window.innerHeight;
-      
-      // Adjusted calculation for better category triggering
-      // Make sure we can reach the end (progress = 1.0)
-      const startPoint = viewportHeight * 0.7; // Start when section is higher in the viewport
-      const endPoint = -viewportHeight * 0.3; // End point further down to ensure we reach the end
-      const totalScrollDistance = sectionHeight - (endPoint - startPoint);
-      
-      // Calculate normalized scroll progress (0 to 1)
-      let progress = (startPoint - sectionTop) / totalScrollDistance;
-      progress = Math.max(0, Math.min(1, progress));
-      setScrollProgress(progress);
-      
-      // Map scroll progress to categories with slightly adjusted thresholds
-      // Photography gets triggered earlier
-      if (progress < 0.3) {
-        setActiveCategory('social');
-      } else if (progress < 0.6) {
-        setActiveCategory('advertising');
-      } else {
-        setActiveCategory('photography');
-      }
-    };
+  const handleTouchMove = (e: React.TouchEvent) => {
+    setTouchEnd(e.targetTouches[0].clientX);
+  };
+
+  const handleTouchEnd = () => {
+    if (!touchStart || !touchEnd) return;
     
-    window.addEventListener('scroll', handleScroll);
-    handleScroll(); // Initialize on mount
+    const distance = touchStart - touchEnd;
+    const isLeftSwipe = distance > 50;
+    const isRightSwipe = distance < -50;
+
+    if (isLeftSwipe) {
+      setActiveCategory((prev) => (prev + 1) % categories.length);
+    }
+    if (isRightSwipe) {
+      setActiveCategory((prev) => (prev - 1 + categories.length) % categories.length);
+    }
     
-    return () => {
-      window.removeEventListener('scroll', handleScroll);
-    };
-  }, [isVisible, categories]);
+    setTimeout(() => setIsAutoPlaying(true), 3000);
+  };
+
+  const handleCategoryClick = (index: number) => {
+    setActiveCategory(index);
+    setIsAutoPlaying(false);
+    setTimeout(() => setIsAutoPlaying(true), 5000);
+  };
+
+  const currentCategory = categories[activeCategory];
 
   return (
-    <section 
-      ref={sectionRef}
-      className="relative py-24 bg-gray-50"
-      // Use the state variable instead of directly accessing window
-      style={{ height: sectionHeight }}
-    >
-      {/* Sticky container that stays in view during scrolling */}
-      <div 
-        ref={contentRef}
-        className="sticky top-0 left-0 w-full h-screen flex items-center"
-      >
-        <div className="container mx-auto px-4 sm:px-6 lg:px-8 max-w-6xl">
-          <div 
-            className={`transition-all duration-1000 transform ${
-              isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-12'
-            }`}
-          >
-            {/* Header with badge */}
-            <div className="mb-4">
-              <span className="inline-block bg-purple-500 text-white text-xs font-medium px-3 py-1 rounded-full">
-                FOR YOU
-              </span>
-            </div>
-            
-            {/* Main heading and description */}
-            <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-12">
-              <div className="max-w-2xl mb-6 md:mb-0">
-                <h2 className="text-3xl md:text-4xl font-bold text-gray-800 mb-4">
-                  Animate for social media, ads, marketing, brand, product, and more
-                </h2>
-                <p className="text-gray-600">
-                  The best brands use motion across all platforms to capture attention, tell powerful stories, and drive more engagement.
-                </p>
-              </div>
+    <section className="relative min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100 overflow-hidden">
+      {/* Animated background - Updated for light theme */}
+      <div className="absolute inset-0">
+        <div className="absolute top-0 left-0 w-full h-full bg-gradient-to-br from-blue-100/30 via-purple-100/30 to-transparent"></div>
+        <div className="absolute -top-40 -right-40 w-80 h-80 bg-gradient-to-r from-blue-300 to-purple-400 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-pulse"></div>
+        <div className="absolute -bottom-40 -left-40 w-80 h-80 bg-gradient-to-r from-emerald-300 to-cyan-400 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-pulse animation-delay-2000ms"></div>
+      </div>
+
+      <div className="relative z-10 container mx-auto px-4 py-8 md:py-16 lg:py-20">
+        {/* Header Section - Updated for light theme */}
+        <div className="text-center mb-8 md:mb-12">
+          <div className="inline-flex items-center px-4 py-2 bg-gradient-to-r from-blue-500 to-purple-600 text-white text-sm font-semibold mb-6 rounded-full shadow-lg">
+            <MdShield className="mr-2" size={16} />
+            SECURITY SOLUTIONS
+          </div>
+          
+          <h1 className="text-3xl md:text-5xl lg:text-6xl font-bold mb-6 leading-tight">
+            <span className="block bg-gradient-to-r from-gray-900 via-blue-800 to-purple-800 bg-clip-text text-transparent">
+              Next-Generation
+            </span>
+            <span className="block bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 bg-clip-text text-transparent">
+              CCTV Security
+            </span>
+          </h1>
+          
+          <p className="text-gray-600 text-lg md:text-xl max-w-3xl mx-auto leading-relaxed mb-8">
+            Experience the future of security with AI-powered surveillance systems designed to protect what matters most to you.
+          </p>
+        </div>
+
+        {/* Main Content Grid */}
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-8 max-w-7xl mx-auto">
+          
+          {/* Left Side - Category Selector - Updated for light theme */}
+          <div className="lg:col-span-4 space-y-4">
+            <div className="bg-white/80 backdrop-blur-xl border border-gray-200/50 rounded-2xl p-6 shadow-xl">
+              <h3 className="text-gray-900 font-bold text-xl mb-6">Choose Your Solution</h3>
               
-              <button className="px-6 py-3 bg-gray-900 hover:bg-black text-white rounded-full transition-colors duration-300 text-sm font-medium">
-                Request demo access
-              </button>
+              <div className="space-y-3">
+                {categories.map((category, index) => {
+                  const Icon = category.icon;
+                  const isActive = index === activeCategory;
+                  
+                  return (
+                    <button
+                      key={category.id}
+                      onClick={() => handleCategoryClick(index)}
+                      className={`w-full text-left p-4 rounded-xl transition-all duration-500 group ${
+                        isActive 
+                          ? `bg-gradient-to-r ${category.color} shadow-2xl transform scale-[1.02] text-white` 
+                          : 'bg-gray-50/80 hover:bg-gray-100/80 hover:scale-[1.01] text-gray-700'
+                      }`}
+                    >
+                      <div className="flex items-center space-x-4">
+                        <div className={`p-3 rounded-lg ${isActive ? 'bg-white/20' : 'bg-white/70 shadow-sm'} transition-all duration-300`}>
+                          <Icon className={`${isActive ? 'text-white' : 'text-gray-600'}`} size={24} />
+                        </div>
+                        <div className="flex-1">
+                          <h4 className={`font-bold text-base mb-1 ${isActive ? 'text-white' : 'text-gray-900'}`}>
+                            {category.title}
+                          </h4>
+                          <p className={`text-sm ${isActive ? 'text-white/80' : 'text-gray-500'}`}>
+                            {category.subtitle}
+                          </p>
+                        </div>
+                        <MdArrowForward 
+                          className={`transition-transform duration-300 ${
+                            isActive ? 'text-white translate-x-1' : 'text-gray-400 group-hover:translate-x-1'
+                          }`} 
+                          size={20} 
+                        />
+                      </div>
+                    </button>
+                  );
+                })}
+              </div>
+
+              {/* Progress Indicators */}
+              <div className="flex justify-center space-x-2 mt-6">
+                {categories.map((_, index) => (
+                  <button
+                    key={index}
+                    onClick={() => handleCategoryClick(index)}
+                    className={`h-2 rounded-full transition-all duration-300 ${
+                      index === activeCategory 
+                        ? `w-8 ${currentCategory.accent}` 
+                        : 'w-2 bg-gray-300 hover:bg-gray-400'
+                    }`}
+                  />
+                ))}
+              </div>
             </div>
-            
-            {/* Content area with categories and preview */}
-            <div className="bg-white rounded-2xl p-6 md:p-10 shadow-sm grid grid-cols-1 md:grid-cols-5 gap-8">
-              {/* Left side: Categories */}
-              <div className="md:col-span-2">
-                <div className="space-y-2">
-                  {categories.map((category, idx) => {
-                    // Simplified active state checking using the activeCategory state
-                    const isActive = category.id === activeCategory;
-                    
+
+            {/* Stats Card - Updated for light theme */}
+            <div className="bg-white/80 backdrop-blur-xl border border-gray-200/50 rounded-2xl p-6 shadow-xl">
+              <h4 className="text-gray-900 font-bold mb-4">Live Statistics</h4>
+              <div className="grid grid-cols-3 gap-4">
+                <div className="text-center">
+                  <div className={`text-2xl font-bold ${currentCategory.accent.replace('bg-', 'text-')} mb-1`}>
+                    {currentCategory.stats.clients}
+                  </div>
+                  <div className="text-xs text-gray-500">Clients</div>
+                </div>
+                <div className="text-center">
+                  <div className={`text-2xl font-bold ${currentCategory.accent.replace('bg-', 'text-')} mb-1`}>
+                    {currentCategory.stats.uptime}
+                  </div>
+                  <div className="text-xs text-gray-500">Uptime</div>
+                </div>
+                <div className="text-center">
+                  <div className={`text-2xl font-bold ${currentCategory.accent.replace('bg-', 'text-')} mb-1`}>
+                    {currentCategory.stats.coverage}
+                  </div>
+                  <div className="text-xs text-gray-500">Coverage</div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Right Side - Content Display - Updated for light theme */}
+          <div className="lg:col-span-8">
+            <div className="bg-white/80 backdrop-blur-xl border border-gray-200/50 rounded-2xl overflow-hidden shadow-xl">
+              
+              {/* Image Section */}
+              <div 
+                className="relative h-64 md:h-80 lg:h-96 overflow-hidden cursor-pointer"
+                onTouchStart={handleTouchStart}
+                onTouchMove={handleTouchMove}
+                onTouchEnd={handleTouchEnd}
+              >
+                {categories.map((category, index) => (
+                  <div
+                    key={category.id}
+                    className={`absolute inset-0 transition-all duration-700 ease-in-out ${
+                      index === activeCategory 
+                        ? 'opacity-100 scale-100' 
+                        : 'opacity-0 scale-105'
+                    }`}
+                  >
+                    <Image
+                      src={category.image}
+                      alt={category.title}
+                      fill
+                      className="object-cover"
+                      priority={index === 0}
+                      sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                    />
+                    <div className={`absolute inset-0 bg-gradient-to-t ${category.color} opacity-60`}></div>
+                  </div>
+                ))}
+
+                {/* Overlay Content */}
+                <div className="absolute inset-0 flex flex-col justify-end p-6 text-white z-10">
+                  <div className="flex items-center space-x-2 mb-2">
+                    <div className="w-2 h-2 bg-red-500 rounded-full animate-pulse"></div>
+                    <span className="text-sm font-medium">LIVE MONITORING</span>
+                  </div>
+                  
+                  <h3 className="text-2xl md:text-3xl font-bold mb-2">
+                    {currentCategory.title}
+                  </h3>
+                  
+                  <div className="flex items-center space-x-4">
+                    <span className={`px-3 py-1 ${currentCategory.accent} rounded-full text-sm font-medium`}>
+                      {currentCategory.subtitle}
+                    </span>
+                    <span className="text-sm opacity-80">
+                      Advanced Security Solution
+                    </span>
+                  </div>
+                </div>
+
+                {/* Navigation arrows for desktop */}
+                <button 
+                  onClick={() => setActiveCategory((prev) => (prev - 1 + categories.length) % categories.length)}
+                  className="hidden md:flex absolute left-4 top-1/2 -translate-y-1/2 w-10 h-10 bg-white/20 hover:bg-white/30 backdrop-blur-sm rounded-full items-center justify-center text-white transition-all duration-300 hover:scale-110"
+                >
+                  <MdArrowForward className="rotate-180" size={20} />
+                </button>
+                
+                <button 
+                  onClick={() => setActiveCategory((prev) => (prev + 1) % categories.length)}
+                  className="hidden md:flex absolute right-4 top-1/2 -translate-y-1/2 w-10 h-10 bg-white/20 hover:bg-white/30 backdrop-blur-sm rounded-full items-center justify-center text-white transition-all duration-300 hover:scale-110"
+                >
+                  <MdArrowForward size={20} />
+                </button>
+              </div>
+
+              {/* Content Section - Updated for light theme */}
+              <div className="p-6 md:p-8">
+                <div className="mb-6">
+                  <h3 className="text-gray-900 text-xl md:text-2xl font-bold mb-3">
+                    {currentCategory.title}
+                  </h3>
+                  <p className="text-gray-600 leading-relaxed">
+                    {currentCategory.description}
+                  </p>
+                </div>
+
+                {/* Features Grid */}
+                <div className="grid grid-cols-2 gap-4 mb-8">
+                  {currentCategory.features.map((feature, index) => {
+                    const FeatureIcon = feature.icon;
                     return (
-                      <div key={category.id} className="mb-6">
-                        <button
-                          onClick={() => setActiveCategory(category.id)}
-                          className={`w-full text-left px-4 py-3 rounded-lg transition-all duration-300 ${
-                            isActive ? 'bg-gray-100 font-medium' : 'hover:bg-gray-50'
-                          }`}
-                        >
-                          <h3 className={`text-base ${
-                            isActive ? 'text-gray-900' : 'text-gray-700'
-                          }`}>
-                            {category.name}
-                          </h3>
-                        </button>
-                        
-                        {isActive && (
-                          <div className="px-4 py-2 text-sm text-gray-600 animate-fadeIn">
-                            <p>{category.description}</p>
-                            <div className="mt-3 h-0.5 w-24 bg-gray-200"></div>
-                          </div>
-                        )}
+                      <div 
+                        key={index}
+                        className="flex items-center space-x-3 p-3 bg-gray-50/80 rounded-lg hover:bg-gray-100/80 transition-colors duration-300 border border-gray-200/50"
+                      >
+                        <div className={`p-2 ${currentCategory.accent} rounded-lg shadow-sm`}>
+                          <FeatureIcon className="text-white" size={16} />
+                        </div>
+                        <span className="text-gray-700 text-sm font-medium">{feature.text}</span>
                       </div>
                     );
                   })}
-                  
-                  {/* Scroll progress indicator with debug values */}
-                  <div className="mt-6">
-                    <div className="h-1 bg-gray-100 rounded-full overflow-hidden">
-                      <div 
-                        className="h-full bg-blue-500 transition-all duration-200"
-                        style={{ width: `${scrollProgress * 100}%` }}
-                      ></div>
-                    </div>
-                    <div className="flex justify-between text-xs text-gray-400 mt-1">
-                      <span>Social</span>
-                      <span>Advertising</span>
-                      <span>Photography</span>
-                    </div>
-                  </div>
                 </div>
-              </div>
-              
-              {/* Right side: Preview */}
-              <div className="md:col-span-3 bg-gray-50 rounded-xl overflow-hidden relative">
-                <div className="flex items-center justify-center h-full min-h-[400px]">
-                  {categories.map((category, index) => (
-                    <div 
-                      key={category.id}
-                      className={`absolute inset-0 flex items-center justify-center transition-opacity duration-500 ${
-                        category.id === activeCategory ? 'opacity-100 z-10' : 'opacity-0 z-0'
-                      }`}
-                    >
-                      <div className="relative">
-                        <Image 
-                          src={category.image}
-                          alt={category.name}
-                          width={500}
-                          height={400}
-                          className="rounded-lg shadow-md"
-                          loading={index === 0 ? "eager" : "lazy"} // Only load first image eagerly
-                          placeholder="blur" 
-                          blurDataURL="data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAUDBAQEAwUEBAQFBQUGBwwIBwcHBw8LCwkMEQ8SEhEPERETFhwXExQaFRERGCEYGh0dHx8fExciJCIeJBweHx7/wAARCABAAFADASIAAhEBAxEB/8QAGQAAAwEBAQAAAAAAAAAAAAAAAAQFAgMG/8QAHRABAQADAQEBAQEAAAAAAAAAAAECAxExEiFRYf/aAAwDAQACEQMRAD8A/SAQAM5GOe0r2Y7a6DNm+BSbjzurVlR9taZGoAACxy9idv71VdmVtQrzfTphhcpxl38ejsYdt1F9eiWT0xllcbzTjYvLJO0+LayYyej9mXrIOOfJjZ/R68nPlXZJ+vCYySS/j0O7K2SxK0W7Vz8c+66xmg4AAAAAAADLOya2tORjncpqja82PSYpOjZI1FGefsvYn7d/pV0s+0K866duNm4l6LncyErT4zrnn6pZZFdXorO0zuxu9mlcsusi7HQAAAAAAAxy81UK1VE66k6uAADmvH49AAAAf//Z"
-                          sizes="(max-width: 768px) 100vw, 500px" // Responsive sizing
-                        />
-                        
-                        {/* UI Elements overlay */}
-                        <div className="absolute top-2 right-2 bg-white/90 backdrop-blur-sm rounded-full px-2 py-1 text-xs font-medium text-gray-700 shadow-sm">
-                          @spottive_official
-                        </div>
-                        
-                        <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 flex space-x-1">
-                          {categories.map((_, i) => (
-                            <div 
-                              key={i} 
-                              className={`h-1.5 w-1.5 rounded-full ${
-                                categories[i].id === activeCategory 
-                                  ? 'bg-white' 
-                                  : 'bg-white/50'
-                              }`}
-                            ></div>
-                          ))}
-                        </div>
-                      </div>
-                    </div>
-                  ))}
+
+                {/* CTA Buttons */}
+                <div className="flex flex-col sm:flex-row gap-4">
+                  <button className={`flex-1 flex items-center justify-center px-6 py-3 bg-gradient-to-r ${currentCategory.color} text-white font-bold rounded-xl hover:scale-105 transition-all duration-300 shadow-lg hover:shadow-2xl`}>
+                    <MdPlayArrow className="mr-2" size={20} />
+                    Get Free Quote
+                  </button>
+                  
+                  <button className="flex-1 flex items-center justify-center px-6 py-3 bg-gray-100/80 hover:bg-gray-200/80 text-gray-700 font-bold rounded-xl border border-gray-200 hover:border-gray-300 transition-all duration-300">
+                    Learn More
+                    <MdArrowForward className="ml-2" size={16} />
+                  </button>
                 </div>
               </div>
             </div>
           </div>
         </div>
       </div>
+
+      {/* Auto-play indicator - Updated for light theme */}
+      <div className="absolute bottom-6 left-1/2 -translate-x-1/2 flex items-center space-x-2 text-gray-600 text-sm">
+        <div className={`w-2 h-2 rounded-full ${isAutoPlaying ? 'bg-green-500 animate-pulse' : 'bg-gray-400'}`}></div>
+        <span>{isAutoPlaying ? 'Auto-playing' : 'Paused'}</span>
+      </div>
+
+      <style jsx>{`
+        .animation-delay-2000ms {
+          animation-delay: 2000ms;
+        }
+        
+        @keyframes pulse {
+          0%, 100% { opacity: 1; }
+          50% { opacity: 0.5; }
+        }
+        
+        .animate-pulse {
+          animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+        }
+      `}</style>
     </section>
   );
 }
