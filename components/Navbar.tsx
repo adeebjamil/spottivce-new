@@ -221,7 +221,7 @@ export default function Navbar() {
                       >
                         <div className="flex-grow flex items-center justify-center mb-4">
                           <Image 
-                            src="/brand/uniview.png" 
+                            src="/brand/Uniview.png" 
                             alt="Uniview Logo" 
                             width={120} 
                             height={60} 
@@ -380,7 +380,7 @@ export default function Navbar() {
                         className="group bg-green-50 border border-green-200 p-5 rounded-xl flex flex-col items-center hover:bg-green-100 transition-all duration-300 hover:shadow-md hover:-translate-y-1"
                       >
                         <Image 
-                          src="/brand/uniview.png" 
+                          src="/brand/Uniview.png" 
                           alt="Uniview Logo" 
                           width={80} 
                           height={40} 

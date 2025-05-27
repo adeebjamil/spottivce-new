@@ -12,10 +12,16 @@ import {
 } from 'react-icons/md';
 
 export default function FeatureGrid() {
-  // Track which items are visible for animations
+  // Add a mounted state to prevent hydration mismatch
+  const [isMounted, setIsMounted] = useState(false);
   const [visibleItems, setVisibleItems] = useState<Set<number>>(new Set());
   const gridRef = useRef<HTMLDivElement>(null);
   
+  // Ensure component is mounted before running client-side code
+  useEffect(() => {
+    setIsMounted(true);
+  }, []);
+
   // High-tech CCTV Distribution Portfolio
   const gridItems = [
     {
@@ -60,8 +66,10 @@ export default function FeatureGrid() {
     }
   ];
 
-  // Set up intersection observer for scroll animations
+  // Set up intersection observer only after component is mounted
   useEffect(() => {
+    if (!isMounted) return;
+
     const observer = new IntersectionObserver(
       (entries) => {
         entries.forEach((entry) => {
@@ -92,7 +100,47 @@ export default function FeatureGrid() {
         observer.unobserve(item);
       });
     };
-  }, []);
+  }, [isMounted]);
+
+  // Show loading state during SSR and before mount
+  if (!isMounted) {
+    return (
+      <section className="py-20 md:py-32 relative overflow-hidden">
+        <div className="absolute inset-0 bg-gradient-to-br from-gray-50 via-blue-50 to-slate-100">
+          <div className="absolute top-1/4 left-1/4 w-72 h-72 bg-gradient-to-r from-blue-300 to-purple-400 rounded-full mix-blend-multiply filter blur-xl opacity-20 animate-pulse"></div>
+          <div className="absolute bottom-1/4 right-1/4 w-72 h-72 bg-gradient-to-r from-green-300 to-blue-400 rounded-full mix-blend-multiply filter blur-xl opacity-20 animate-pulse animation-delay-1000"></div>
+        </div>
+        
+        <div className="container mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+          <div className="text-center mb-20">
+            <div className="inline-flex items-center px-4 py-2 bg-gradient-to-r from-blue-100 to-purple-100 text-blue-800 rounded-full text-sm font-medium mb-6 shadow-lg">
+              <MdShield className="mr-2" size={16} />
+              Premium CCTV Distribution
+            </div>
+            <h2 className="text-4xl md:text-5xl lg:text-6xl font-bold mb-6">
+              <span className="bg-gradient-to-r from-gray-900 via-blue-800 to-purple-800 bg-clip-text text-transparent">
+                High-Tech CCTV Solutions
+              </span>
+              <br />
+              <span className="bg-gradient-to-r from-blue-600 via-purple-600 to-indigo-600 bg-clip-text text-transparent">
+                For Every Purpose
+              </span>
+            </h2>
+            <p className="text-xl text-gray-600 max-w-3xl mx-auto leading-relaxed">
+              Your trusted distributor of advanced CCTV and surveillance technologies. We supply cutting-edge security solutions from world-renowned manufacturers for residential, commercial, and specialized applications.
+            </p>
+          </div>
+          
+          {/* Loading skeleton */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-6xl mx-auto">
+            {[1, 2, 3, 4].map((item) => (
+              <div key={item} className="bg-gray-200 animate-pulse rounded-3xl h-96"></div>
+            ))}
+          </div>
+        </div>
+      </section>
+    );
+  }
 
   return (
     <section className="py-20 md:py-32 relative overflow-hidden">
@@ -103,7 +151,7 @@ export default function FeatureGrid() {
       </div>
       
       <div className="container mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
-        {/* Enhanced Header */}
+        {/* Header */}
         <div className="text-center mb-20">
           <div className="inline-flex items-center px-4 py-2 bg-gradient-to-r from-blue-100 to-purple-100 text-blue-800 rounded-full text-sm font-medium mb-6 shadow-lg">
             <MdShield className="mr-2" size={16} />
