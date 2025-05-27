@@ -137,7 +137,7 @@ export default function BrandsPage() {
     {
       id: 'uniview',
       name: 'Uniview',
-      logo: '/brand/id_BRVGCZ-_1748322463519.png',
+      logo: '/brand/newunv.png',
       productLink: '/brand/uniview',
       description: 'Pioneer in IP video surveillance with smart and reliable solutions, exclusively supplied by Spottive Technologies',
       established: '2005',

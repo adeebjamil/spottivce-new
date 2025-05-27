@@ -11,7 +11,8 @@ import {
   MdInfo,
   MdMenu,
   MdClose,
-  MdKeyboardArrowDown
+  MdKeyboardArrowDown,
+  MdArticle
 } from 'react-icons/md';
 
 export default function Navbar() {
@@ -292,6 +293,13 @@ export default function Navbar() {
               >
                 <MdInfo size={18} />
                 <span>Who We Are</span>
+              </Link>
+               <Link
+                href="/blog"
+                className="flex items-center space-x-1 text-gray-700 hover:text-blue-600 px-3 py-2 text-sm font-medium transition-colors duration-200"
+              >
+                <MdArticle size={18} />
+                <span>Blog</span>
               </Link>
 
               {/* Our Brands with hover dropdown */}
@@ -575,6 +583,14 @@ export default function Navbar() {
           >
             <MdInfo size={20} />
             <span>Who We Are</span>
+          </Link>
+          <Link
+            href="/blog"
+            className="flex items-center space-x-2 text-gray-700 hover:text-blue-600 px-3 py-2 text-base font-medium transition-colors rounded-lg hover:bg-gray-50"
+            onClick={closeMobileMenu}
+          >
+            <MdArticle size={20} />
+            <span>Blogs</span>
           </Link>
           <Link
             href="/contact"
