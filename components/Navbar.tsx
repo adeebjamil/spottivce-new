@@ -222,7 +222,7 @@ export default function Navbar() {
                       >
                         <div className="flex-grow flex items-center justify-center mb-4">
                           <Image 
-                            src="/brand/Uniview.png" 
+                            src="/brand/newunv.png" 
                             alt="Uniview Logo" 
                             width={120} 
                             height={60} 
