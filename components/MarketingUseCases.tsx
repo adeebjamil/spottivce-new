@@ -350,10 +350,7 @@ export default function MarketingUseCases() {
                     Get Free Quote
                   </button>
                   
-                  <button className="flex-1 flex items-center justify-center px-6 py-3 bg-gray-100/80 hover:bg-gray-200/80 text-gray-700 font-bold rounded-xl border border-gray-200 hover:border-gray-300 transition-all duration-300">
-                    Learn More
-                    <MdArrowForward className="ml-2" size={16} />
-                  </button>
+               
                 </div>
               </div>
             </div>

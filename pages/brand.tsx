@@ -1,4 +1,3 @@
-
 'use client';
 import React, { useState, useEffect } from 'react';
 import Image from 'next/image';
@@ -16,13 +15,23 @@ import {
   MdShield,
   MdVisibility,
   MdPlayArrow,
-  MdCheckCircle
+  MdCheckCircle,
+  MdStore,
+  MdInventory,
+  MdHandshake,
+  MdGrade,
+  MdWorkspacePremium,
+  MdShoppingCart,
+  MdSearch,
+  MdCategory,
+  MdViewModule
 } from 'react-icons/md';
 
 export default function BrandsPage() {
   const [isVisible, setIsVisible] = useState(false);
   const [activeBrand, setActiveBrand] = useState(0);
   const [hoveredBrand, setHoveredBrand] = useState<string | null>(null);
+  const [activeOtherBrand, setActiveOtherBrand] = useState(0);
 
   useEffect(() => {
     setIsVisible(true);
@@ -32,7 +41,15 @@ export default function BrandsPage() {
       setActiveBrand((prev) => (prev + 1) % brands.length);
     }, 4000);
 
-    return () => clearInterval(interval);
+    // Auto-cycle other brands
+    const otherBrandsInterval = setInterval(() => {
+      setActiveOtherBrand((prev) => (prev + 1) % otherBrands.length);
+    }, 3000);
+
+    return () => {
+      clearInterval(interval);
+      clearInterval(otherBrandsInterval);
+    };
   }, []);
 
   const brands = [
@@ -40,7 +57,8 @@ export default function BrandsPage() {
       id: 'hikvision',
       name: 'Hikvision',
       logo: '/brand/hikvision.png',
-      description: 'World\'s leading provider of innovative security products and solutions',
+      productLink: '/brand/hikvision',
+      description: 'World\'s leading provider of innovative security products and solutions distributed by Spottive Technologies across UAE and Middle East',
       established: '2001',
       headquarters: 'China',
       specialties: ['AI-Powered Analytics', 'Crystal Clear Imaging', 'Global Trust & Reliability'],
@@ -66,7 +84,8 @@ export default function BrandsPage() {
       id: 'dahua',
       name: 'Dahua',
       logo: '/brand/dahua.png',
-      description: 'Global leader in video surveillance solutions and services',
+      productLink: '/brand/dahua',
+      description: 'Global leader in video surveillance solutions and services, exclusively available through Spottive Technologies in UAE',
       established: '2001',
       headquarters: 'China',
       specialties: ['Smart AI Technology', 'Global Leadership', 'Comprehensive Security'],
@@ -92,7 +111,8 @@ export default function BrandsPage() {
       id: 'unv',
       name: 'UNV (Uniview)',
       logo: '/brand/unv.png',
-      description: 'Professional IP video surveillance solutions with cutting-edge technology',
+      productLink: '/brand/unv',
+      description: 'Professional IP video surveillance solutions with cutting-edge technology, distributed by Spottive Technologies',
       established: '2005',
       headquarters: 'China',
       specialties: ['Professional Grade', 'Advanced IP Technology', 'Scalable Solutions'],
@@ -117,11 +137,12 @@ export default function BrandsPage() {
     {
       id: 'uniview',
       name: 'Uniview',
-      logo: '/brand/uniview.png',
-      description: 'Pioneer in IP video surveillance with smart and reliable solutions',
+      logo: '/brand/id_BRVGCZ-_1748322463519.png',
+      productLink: '/brand/uniview',
+      description: 'Pioneer in IP video surveillance with smart and reliable solutions, exclusively supplied by Spottive Technologies',
       established: '2005',
       headquarters: 'China',
-      specialties: ['IP Innovation Pioneer', 'Smart Solutions', 'Reliable Performance'],
+      specialties: ['IP Innovation Pioneer', 'Smart Solutions', 'Reliable Performance',],
       bgColor: 'from-green-500 to-green-700',
       products: '50+',
       marketShare: 'Growing Fast',
@@ -142,33 +163,57 @@ export default function BrandsPage() {
     }
   ];
 
+  // Other brands from your folder with product links
+  const otherBrands = [
+    { id: 1, name: 'Security Brand 1', image: '/brand/2.jpg', category: 'Surveillance' },
+    { id: 2, name: 'Tech Solutions 2', image: '/brand/3.jpg', category: 'Access Control' },
+    { id: 3, name: 'Smart Security 3', image: '/brand/4.jpg', category: 'IoT Solutions' },
+    { id: 4, name: 'Advanced Systems 4', image: '/brand/5.jpg', category: 'AI Analytics' },
+    { id: 5, name: 'Professional Grade 5', image: '/brand/6.jpg', category: 'Enterprise' },
+    { id: 6, name: 'Innovation Tech 6', image: '/brand/7.jpg', category: 'Cloud Solutions' },
+    { id: 7, name: 'Secure Vision 7', image: '/brand/8.jpg', category: 'Thermal Imaging' },
+    { id: 8, name: 'Global Security 8', image: '/brand/9.jpg', category: 'Network Security' },
+    { id: 9, name: 'Smart Guard 9', image: '/brand/10.jpg', category: 'Mobile Solutions' },
+    { id: 10, name: 'Tech Pro 10', image: '/brand/11.jpg', category: 'Video Analytics' },
+    { id: 11, name: 'Advanced Shield 11', image: '/brand/12.jpg', category: 'Perimeter Security' },
+    { id: 12, name: 'Security Plus 12', image: '/brand/13.jpg', category: 'Digital Solutions' },
+    { id: 13, name: 'Vision Pro 13', image: '/brand/14.jpg', category: 'HD Technology' },
+    { id: 14, name: 'Smart Tech 14', image: '/brand/15.jpg', category: 'Wireless Systems' },
+    { id: 15, name: 'Guard Elite 15', image: '/brand/16.jpg', category: 'Premium Solutions' },
+    { id: 16, name: 'Secure Max 16', image: '/brand/17.jpg', category: 'Industrial Grade' },
+    { id: 17, name: 'Tech Vision 17', image: '/brand/18.jpg', category: 'Smart Cities' },
+    { id: 18, name: 'Pro Security 18', image: '/brand/19.jpg', category: 'Commercial' },
+    { id: 19, name: 'Advanced Guard 19', image: '/brand/20.jpg', category: 'Residential' },
+    { id: 20, name: 'Elite Systems 20', image: '/brand/21.jpg', category: 'Enterprise Solutions' }
+  ];
+
   const stats = [
-    { number: '4', label: 'Premium Brands', icon: MdBusiness },
-    { number: '300+', label: 'Product Models', icon: MdShield },
+    { number: '50+', label: 'Premium Brands', icon: MdBusiness },
+    { number: '1000+', label: 'Product Models', icon: MdShield },
     { number: '15+', label: 'Years Partnership', icon: MdEmojiEvents },
     { number: '100%', label: 'Authentic Products', icon: MdVerified }
   ];
 
-  const whyChooseUs = [
+  const whyChooseSpottive = [
     {
       icon: MdVerified,
-      title: 'Authorized Dealer',
-      description: 'Official partnerships with all major security brands ensuring authenticity and warranty'
+      title: 'Authorized Distributor',
+      description: 'Spottive Technologies is the official distributor of premium security brands across UAE and Middle East'
     },
     {
       icon: MdStar,
       title: 'Expert Consultation',
-      description: 'Professional guidance to help you choose the perfect security solution for your needs'
+      description: 'Our team provides professional guidance as the best CCTV supplier in Dubai, UAE, and Middle East'
     },
     {
       icon: MdShield,
-      title: 'Quality Assurance',
-      description: 'All products undergo rigorous testing and come with comprehensive warranty coverage'
+      title: 'Quality Guarantee',
+      description: 'All products undergo rigorous testing with comprehensive warranty coverage from Spottive Technologies'
     },
     {
       icon: MdTrendingUp,
       title: 'Latest Technology',
-      description: 'Access to cutting-edge security innovations and the newest product releases'
+      description: 'Access to cutting-edge security innovations through Spottive\'s extensive brand partnerships'
     }
   ];
 
@@ -191,21 +236,39 @@ export default function BrandsPage() {
             >
               <div className="inline-flex items-center px-4 py-2 bg-gradient-to-r from-blue-500 to-purple-600 text-white text-sm font-semibold mb-6 rounded-full shadow-lg animate-bounce-slow">
                 <MdBusiness className="mr-2" size={16} />
-                TRUSTED BRANDS
+                SPOTTIVE TECHNOLOGIES - TRUSTED BRANDS
               </div>
               
               <h1 className="text-4xl md:text-6xl font-bold mb-6 leading-tight">
                 <span className="block bg-gradient-to-r from-gray-900 via-blue-800 to-purple-800 bg-clip-text text-transparent">
-                  World-Class
+                  UAE's Premier
                 </span>
                 <span className="block bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 bg-clip-text text-transparent">
-                  Security Brands
+                  Security Brand Distributor
                 </span>
               </h1>
               
               <p className="text-gray-600 text-lg md:text-xl max-w-3xl mx-auto leading-relaxed mb-8">
-                Explore our carefully curated selection of premium security brands, each chosen for their innovation, reliability, and proven track record in protecting what matters most.
+                Spottive Technologies is the best supplier of CCTV in Dubai, UAE, and Middle East region. We distribute premium security brands, ensuring you receive high-quality, reliable equipment for your specific needs.
               </p>
+
+              {/* Hero Action Buttons */}
+              <div className="flex flex-col sm:flex-row gap-4 justify-center mb-12">
+                <Link 
+                  href="/product"
+                  className="inline-flex items-center px-8 py-4 bg-gradient-to-r from-blue-600 to-purple-600 text-white font-bold rounded-xl hover:scale-105 transition-all duration-300 shadow-lg"
+                >
+                  <MdViewModule className="mr-2" size={20} />
+                  Browse All Products
+                </Link>
+                <Link 
+                  href="/contact"
+                  className="inline-flex items-center px-8 py-4 bg-white/80 backdrop-blur-sm text-gray-700 font-bold rounded-xl border border-gray-200 hover:bg-white transition-all duration-300"
+                >
+                  <MdPlayArrow className="mr-2" size={20} />
+                  Get Brand Consultation
+                </Link>
+              </div>
 
               {/* Stats */}
               <div className="grid grid-cols-2 lg:grid-cols-4 gap-6 max-w-4xl mx-auto">
@@ -229,16 +292,98 @@ export default function BrandsPage() {
           </div>
         </section>
 
+        {/* Spottive Technologies Introduction */}
+        <section className="py-16 px-4 bg-white/50 backdrop-blur-sm">
+          <div className="container mx-auto max-w-6xl">
+            <div className="bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 rounded-3xl p-8 md:p-12 text-white mb-16">
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-center">
+                <div>
+                  <div className="flex items-center mb-6">
+                    <div className="w-16 h-16 bg-white/20 backdrop-blur-sm rounded-2xl flex items-center justify-center mr-4">
+                      <MdWorkspacePremium className="text-white" size={32} />
+                    </div>
+                    <div>
+                      <h2 className="text-3xl font-bold">Spottive Technologies</h2>
+                      <p className="text-white/80">UAE's #1 CCTV Supplier & Distributor</p>
+                    </div>
+                  </div>
+                  
+                  <p className="text-xl mb-6 text-white/90 leading-relaxed">
+                    As the leading wholesaler in CCTV in the UAE, Spottive Technologies provides comprehensive range of surveillance systems from globally recognized brands. We are the vital technology provider in the Middle East region.
+                  </p>
+                  
+                  <div className="grid grid-cols-2 gap-4 mb-6">
+                    <div className="bg-white/20 backdrop-blur-sm rounded-lg p-4">
+                      <div className="text-2xl font-bold">50+</div>
+                      <div className="text-white/80 text-sm">Global Brands</div>
+                    </div>
+                    <div className="bg-white/20 backdrop-blur-sm rounded-lg p-4">
+                      <div className="text-2xl font-bold">#1</div>
+                      <div className="text-white/80 text-sm">UAE Supplier</div>
+                    </div>
+                  </div>
+
+                  {/* Product Overview Button */}
+                  <div className="flex flex-col sm:flex-row gap-3">
+                    <Link 
+                      href="/product"
+                      className="inline-flex items-center px-6 py-3 bg-white text-gray-900 font-bold rounded-xl hover:scale-105 transition-all duration-300 shadow-lg"
+                    >
+                      <MdCategory className="mr-2" size={20} />
+                      Product Overview
+                    </Link>
+                    <Link 
+                      href="/contact"
+                      className="inline-flex items-center px-6 py-3 bg-white/20 backdrop-blur-sm text-white border border-white/30 font-bold rounded-xl hover:bg-white/30 transition-all duration-300"
+                    >
+                      <MdPlayArrow className="mr-2" size={20} />
+                      Contact Spottive
+                    </Link>
+                  </div>
+                </div>
+                
+                <div className="space-y-4">
+                  <h4 className="text-xl font-bold mb-4">Why Choose Spottive?</h4>
+                  <div className="grid grid-cols-1 gap-3">
+                    {[
+                      'Best CCTV Supplier in Dubai & UAE',
+                      'Authorized Distributor of Multiple Brands',
+                      'Advanced AV Services & Solutions',
+                      'Digital Signage Expertise',
+                      'Leading Wholesaler in Middle East',
+                      'Comprehensive Technical Support'
+                    ].map((feature, featureIndex) => (
+                      <div key={featureIndex} className="flex items-center bg-white/20 backdrop-blur-sm rounded-lg p-3">
+                        <MdCheckCircle className="text-white mr-3 flex-shrink-0" size={20} />
+                        <span className="text-sm font-medium">{feature}</span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
         {/* Featured Brand Showcase */}
         <section className="py-16 px-4">
           <div className="container mx-auto max-w-6xl">
             <div className="text-center mb-12">
               <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
-                Featured Brand Spotlight
+                Featured Brand Portfolio
               </h2>
-              <p className="text-gray-600 text-lg max-w-2xl mx-auto">
-                Discover the cutting-edge technology and innovative solutions from our partner brands
+              <p className="text-gray-600 text-lg max-w-2xl mx-auto mb-6">
+                Discover the cutting-edge technology from our premium brand partners, exclusively distributed by Spottive Technologies
               </p>
+              
+              {/* Browse Products CTA */}
+              <Link 
+                href="/product"
+                className="inline-flex items-center px-6 py-3 bg-gradient-to-r from-green-500 to-emerald-600 text-white font-bold rounded-xl hover:scale-105 transition-all duration-300 shadow-lg"
+              >
+                <MdShoppingCart className="mr-2" size={20} />
+                Browse All Brand Products
+              </Link>
             </div>
 
             <div className="relative">
@@ -257,7 +402,7 @@ export default function BrandsPage() {
                             <div className="bg-white p-4 rounded-2xl shadow-lg mr-6">
                               <Image
                                 src={brand.logo}
-                                alt={`${brand.name} Logo`}
+                                alt={`${brand.name} Logo - Distributed by Spottive Technologies`}
                                 width={80}
                                 height={40}
                                 className="object-contain"
@@ -265,7 +410,7 @@ export default function BrandsPage() {
                             </div>
                             <div>
                               <h3 className="text-3xl font-bold">{brand.name}</h3>
-                              <p className="text-white/80">Market Leader Since {brand.established}</p>
+                              <p className="text-white/80">Distributed by Spottive Technologies</p>
                             </div>
                           </div>
                           
@@ -284,13 +429,23 @@ export default function BrandsPage() {
                             </div>
                           </div>
 
-                          <Link 
-                            href={`/brand/${brand.id}`}
-                            className="inline-flex items-center px-6 py-3 bg-white text-gray-900 font-bold rounded-xl hover:scale-105 transition-all duration-300 shadow-lg"
-                          >
-                            Explore {brand.name} Products
-                            <MdArrowForward className="ml-2" size={20} />
-                          </Link>
+                          {/* Brand Action Buttons */}
+                          <div className="flex flex-col sm:flex-row gap-3">
+                            <Link 
+                              href={brand.productLink}
+                              className="inline-flex items-center px-6 py-3 bg-white text-gray-900 font-bold rounded-xl hover:scale-105 transition-all duration-300 shadow-lg"
+                            >
+                              <MdInventory className="mr-2" size={20} />
+                              View {brand.name} Products
+                            </Link>
+                            <Link 
+                              href="/contact"
+                              className="inline-flex items-center px-6 py-3 bg-white/20 backdrop-blur-sm text-white border border-white/30 font-bold rounded-xl hover:bg-white/30 transition-all duration-300"
+                            >
+                              <MdPlayArrow className="mr-2" size={20} />
+                              Contact Spottive
+                            </Link>
+                          </div>
                         </div>
                         
                         <div className="space-y-4">
@@ -302,6 +457,19 @@ export default function BrandsPage() {
                                 <span className="text-sm font-medium">{feature}</span>
                               </div>
                             ))}
+                          </div>
+                          
+                          {/* Product Browse Link */}
+                          <div className="mt-6 p-4 bg-white/10 backdrop-blur-sm rounded-xl border border-white/20">
+                            <div className="flex items-center justify-between">
+                              <span className="text-white/90 text-sm font-medium">Explore {brand.name} catalog</span>
+                              <Link 
+                                href={brand.productLink} 
+                                className="text-white hover:text-white/80 transition-colors duration-300"
+                              >
+                                <MdArrowForward size={20} />
+                              </Link>
+                            </div>
                           </div>
                         </div>
                       </div>
@@ -333,18 +501,26 @@ export default function BrandsPage() {
           <div className="container mx-auto max-w-6xl">
             <div className="text-center mb-12">
               <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
-                Our Brand Portfolio
+                Main Brand Partners
               </h2>
-              <p className="text-gray-600 text-lg max-w-2xl mx-auto">
-                Comprehensive selection of trusted security brands for every need and budget
+              <p className="text-gray-600 text-lg max-w-2xl mx-auto mb-6">
+                Comprehensive selection of trusted security brands exclusively distributed by Spottive Technologies
               </p>
+              
+              {/* Product Overview Button */}
+              <Link 
+                href="/product"
+                className="inline-flex items-center px-6 py-3 bg-gradient-to-r from-blue-500 to-purple-600 text-white font-bold rounded-xl hover:scale-105 transition-all duration-300 shadow-lg"
+              >
+                <MdSearch className="mr-2" size={20} />
+                Product Overview & Catalog
+              </Link>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
               {brands.map((brand, index) => (
-                <Link
+                <div
                   key={brand.id}
-                  href={`/brand/${brand.id}`}
                   className="group"
                   onMouseEnter={() => setHoveredBrand(brand.id)}
                   onMouseLeave={() => setHoveredBrand(null)}
@@ -354,7 +530,7 @@ export default function BrandsPage() {
                     <div className="bg-gray-50 rounded-xl p-6 mb-6 text-center">
                       <Image
                         src={brand.logo}
-                        alt={`${brand.name} Logo`}
+                        alt={`${brand.name} Logo - Spottive Technologies`}
                         width={120}
                         height={60}
                         className="object-contain mx-auto"
@@ -388,38 +564,155 @@ export default function BrandsPage() {
                         </div>
                       </div>
 
-                      {/* CTA Button */}
-                      <div className={`inline-flex items-center px-4 py-2 bg-gradient-to-r ${brand.bgColor} text-white rounded-xl font-medium text-sm transition-all duration-300 group-hover:scale-105`}>
-                        Explore Products
-                        <MdArrowForward 
-                          className={`ml-2 transition-transform duration-300 ${
-                            hoveredBrand === brand.id ? 'translate-x-1' : ''
-                          }`} 
-                          size={16} 
-                        />
+                      {/* Action Buttons */}
+                      <div className="space-y-2">
+                        <Link 
+                          href={brand.productLink}
+                          className={`w-full inline-flex items-center justify-center px-4 py-2 bg-gradient-to-r ${brand.bgColor} text-white rounded-xl font-medium text-sm transition-all duration-300 group-hover:scale-105`}
+                        >
+                          <MdViewModule className="mr-2" size={16} />
+                          View Products
+                        </Link>
+                        <Link 
+                          href="/contact"
+                          className="w-full inline-flex items-center justify-center px-4 py-2 bg-gray-100 text-gray-700 rounded-xl font-medium text-sm hover:bg-gray-200 transition-all duration-300"
+                        >
+                          <MdPlayArrow className="mr-2" size={16} />
+                          Contact Spottive
+                        </Link>
                       </div>
                     </div>
                   </div>
-                </Link>
+                </div>
               ))}
             </div>
           </div>
         </section>
 
-        {/* Why Choose Our Brands */}
+        {/* Other Brands Showcase */}
         <section className="py-16 px-4">
           <div className="container mx-auto max-w-6xl">
             <div className="text-center mb-12">
               <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
-                Why Choose Our Brands?
+                Extended Brand Portfolio
+              </h2>
+              <p className="text-gray-600 text-lg max-w-2xl mx-auto mb-6">
+                Discover our extensive range of security and technology brands, all available through Spottive Technologies
+              </p>
+              
+              <Link 
+                href="/product"
+                className="inline-flex items-center px-6 py-3 bg-gradient-to-r from-orange-500 to-red-600 text-white font-bold rounded-xl hover:scale-105 transition-all duration-300 shadow-lg"
+              >
+                <MdCategory className="mr-2" size={20} />
+                Browse Complete Product Range
+              </Link>
+            </div>
+
+            {/* Featured Other Brand */}
+            <div className="bg-white/80 backdrop-blur-xl border border-gray-200/50 rounded-3xl p-8 shadow-2xl mb-12">
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-center">
+                <div className="relative">
+                  <Image
+                    src={otherBrands[activeOtherBrand].image}
+                    alt={`${otherBrands[activeOtherBrand].name} - Spottive Technologies`}
+                    width={500}
+                    height={300}
+                    className="object-cover rounded-2xl shadow-lg"
+                  />
+                  <div className="absolute top-4 left-4 bg-gradient-to-r from-blue-500 to-purple-600 text-white px-3 py-1 rounded-full text-sm font-bold">
+                    {otherBrands[activeOtherBrand].category}
+                  </div>
+                </div>
+                
+                <div>
+                  <h3 className="text-3xl font-bold text-gray-900 mb-4">
+                    {otherBrands[activeOtherBrand].name}
+                  </h3>
+                  <p className="text-gray-600 text-lg mb-6 leading-relaxed">
+                    Premium security solutions in {otherBrands[activeOtherBrand].category} category, exclusively distributed by Spottive Technologies across UAE and Middle East region. We ensure quality, reliability, and cutting-edge technology.
+                  </p>
+                  
+                  <div className="flex flex-wrap gap-3 mb-6">
+                    <span className="bg-gradient-to-r from-blue-500 to-purple-600 text-white px-4 py-2 rounded-full text-sm font-medium">
+                      Spottive Exclusive
+                    </span>
+                    <span className="bg-gradient-to-r from-green-500 to-emerald-600 text-white px-4 py-2 rounded-full text-sm font-medium">
+                      UAE Authorized
+                    </span>
+                    <span className="bg-gradient-to-r from-orange-500 to-red-600 text-white px-4 py-2 rounded-full text-sm font-medium">
+                      Premium Quality
+                    </span>
+                  </div>
+                  
+                 
+                </div>
+              </div>
+
+              {/* Brand Navigation Dots */}
+              <div className="flex justify-center mt-8 space-x-2">
+                {otherBrands.slice(0, 10).map((_, index) => (
+                  <button
+                    key={index}
+                    onClick={() => setActiveOtherBrand(index)}
+                    className={`h-2 rounded-full transition-all duration-300 ${
+                      index === activeOtherBrand 
+                        ? 'w-8 bg-blue-600' 
+                        : 'w-2 bg-gray-300 hover:bg-gray-400'
+                    }`}
+                  />
+                ))}
+              </div>
+            </div>
+
+            {/* Other Brands Grid */}
+            <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-6">
+              {otherBrands.map((brand, index) => (
+                <div 
+                  key={brand.id}
+                  className="bg-white/80 backdrop-blur-xl border border-gray-200/50 rounded-xl p-4 shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105 group cursor-pointer"
+                  onClick={() => setActiveOtherBrand(index)}
+                >
+                  <div className="relative mb-4">
+                    <Image
+                      src={brand.image}
+                      alt={`${brand.name} - Spottive Technologies`}
+                      width={200}
+                      height={120}
+                      className="object-cover rounded-lg w-full h-24"
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent rounded-lg group-hover:from-black/40 transition-all duration-300"></div>
+                  </div>
+                  
+                  <h4 className="text-sm font-bold text-gray-900 mb-2 line-clamp-1">{brand.name}</h4>
+                  <p className="text-xs text-gray-600 mb-3">{brand.category}</p>
+                  
+                  <div className="flex items-center justify-between">
+                    <span className="text-xs bg-blue-100 text-blue-800 px-2 py-1 rounded-full font-medium">
+                      Spottive
+                    </span>
+                   
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </section>
+
+        {/* Why Choose Spottive */}
+        <section className="py-16 px-4 bg-white/50 backdrop-blur-sm">
+          <div className="container mx-auto max-w-6xl">
+            <div className="text-center mb-12">
+              <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
+                Why Choose Spottive Technologies?
               </h2>
               <p className="text-gray-600 text-lg max-w-2xl mx-auto">
-                We partner with only the most trusted and innovative security brands in the industry
+                The best CCTV supplier in Dubai, UAE, and Middle East region with unmatched brand partnerships
               </p>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
-              {whyChooseUs.map((item, index) => {
+              {whyChooseSpottive.map((item, index) => {
                 const Icon = item.icon;
                 return (
                   <div 
@@ -430,7 +723,17 @@ export default function BrandsPage() {
                       <Icon className="text-white" size={32} />
                     </div>
                     <h3 className="text-xl font-bold text-gray-900 mb-4">{item.title}</h3>
-                    <p className="text-gray-600 leading-relaxed">{item.description}</p>
+                    <p className="text-gray-600 leading-relaxed mb-4">{item.description}</p>
+                    
+                    {/* Quick Access Links */}
+                    <div className="flex flex-col gap-2">
+                      <Link 
+                        href="/product"
+                        className="text-blue-600 hover:text-blue-800 text-sm font-medium transition-colors duration-300"
+                      >
+                        View Products →
+                      </Link>
+                    </div>
                   </div>
                 );
               })}
@@ -443,26 +746,26 @@ export default function BrandsPage() {
           <div className="container mx-auto max-w-4xl">
             <div className="bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 rounded-3xl p-8 md:p-12 text-center text-white">
               <h2 className="text-3xl md:text-4xl font-bold mb-4">
-                Ready to Choose Your Security Brand?
+                Partner with UAE's Best Brand Distributor
               </h2>
               <p className="text-xl mb-8 opacity-90">
-                Get expert consultation to find the perfect security solution for your needs
+                Get expert consultation from Spottive Technologies - the leading CCTV supplier in Dubai, UAE, and Middle East
               </p>
               
               <div className="flex flex-col sm:flex-row gap-4 justify-center">
                 <Link 
-                  href="/contact"
+                  href="/product"
                   className="inline-flex items-center px-8 py-4 bg-white text-gray-900 font-bold rounded-xl hover:scale-105 transition-all duration-300 shadow-lg"
                 >
-                  <MdPlayArrow className="mr-2" size={20} />
-                  Get Free Consultation
+                  <MdShoppingCart className="mr-2" size={20} />
+                  Browse Our Products
                 </Link>
                 <Link 
-                  href="/product"
+                  href="/contact"
                   className="inline-flex items-center px-8 py-4 bg-white/20 backdrop-blur-sm text-white border border-white/30 font-bold rounded-xl hover:bg-white/30 transition-all duration-300"
                 >
-                  <MdVisibility className="mr-2" size={20} />
-                  Browse All Products
+                  <MdPlayArrow className="mr-2" size={20} />
+                  Contact Spottive Now
                 </Link>
               </div>
             </div>
@@ -477,6 +780,13 @@ export default function BrandsPage() {
         
         .animate-bounce-slow {
           animation: bounce 3s infinite;
+        }
+        
+        .line-clamp-1 {
+          display: -webkit-box;
+          -webkit-line-clamp: 1;
+          -webkit-box-orient: vertical;
+          overflow: hidden;
         }
         
         .line-clamp-2 {

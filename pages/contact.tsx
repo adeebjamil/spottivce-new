@@ -36,8 +36,8 @@ export default function Contact() {
       icon: MdEmail,
       title: 'Email Us',
       description: 'Get in touch via email',
-      value: 'info@cctvtech.com',
-      action: 'mailto:info@cctvtech.com',
+      value: 'sales@spottive.com',
+      action: 'mailto:sales@spottive.com',
       color: 'from-blue-500 to-blue-600',
       available: '24/7'
     },
@@ -45,28 +45,28 @@ export default function Contact() {
       icon: MdPhone,
       title: 'Call Us',
       description: 'Speak with our experts',
-      value: '+1 (555) 123-4567',
-      action: 'tel:+15551234567',
+      value: '+971 55 234 1712',
+      action: 'tel:+971552341712',
       color: 'from-green-500 to-green-600',
-      available: 'Mon-Fri 9AM-6PM'
+      available: '9:30AM-10:00PM (Mon-Sat)'
     },
     {
       icon: FaWhatsapp,
       title: 'WhatsApp',
       description: 'Quick chat support',
-      value: '+1 (555) 123-4567',
-      action: 'https://wa.me/15551234567',
+      value: '+971 55 234 1712',
+      action: 'https://wa.me/971552341712',
       color: 'from-emerald-500 to-emerald-600',
-      available: '24/7'
+      available: '9:30AM-10:00PM (Mon-Sat)'
     },
     {
       icon: MdLocationOn,
       title: 'Visit Us',
       description: 'Our office location',
-      value: '123 Security St, Tech City',
-      action: 'https://maps.google.com',
+      value: '#2 Lootah Building AI Raffa St. Bur Dubai',
+      action: 'https://maps.app.goo.gl/mTj8YNH8nrgsNuXs9',
       color: 'from-purple-500 to-purple-600',
-      available: 'Mon-Fri 9AM-5PM'
+      available: '9:30AM-10:00PM (Mon-Sat)'
     }
   ];
 
@@ -428,25 +428,29 @@ export default function Contact() {
                     Visit Our Office
                   </h3>
                   
-                  <div className="aspect-video bg-gradient-to-br from-gray-200 to-gray-300 rounded-xl flex items-center justify-center mb-4">
-                    <div className="text-center">
-                      <MdLocationOn className="mx-auto mb-2 text-gray-500" size={48} />
-                      <p className="text-gray-600">Interactive Map</p>
-                      <p className="text-sm text-gray-500">123 Security Street, Tech City</p>
-                    </div>
+                  <div className="aspect-video bg-gray-100 rounded-xl overflow-hidden mb-4">
+                    <iframe 
+                      src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3608.1486001581087!2d55.28793097602559!3d25.262515977249!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0x0!2zMjXCsDE1JzQ1LjEiTiA1NcKwMTcnMjQuNCJF!5e0!3m2!1sen!2sae!4v1716832456783!5m2!1sen!2sae"
+                      width="100%" 
+                      height="100%" 
+                      style={{border: 0}}
+                      allowFullScreen 
+                      loading="lazy" 
+                      referrerPolicy="no-referrer-when-downgrade"
+                      title="Spottive Technologies Location"
+                    ></iframe>
                   </div>
                   
                   <div className="grid grid-cols-2 gap-4 text-sm">
                     <div>
                       <p className="font-semibold text-gray-900">Office Hours</p>
-                      <p className="text-gray-600">Mon-Fri: 9AM-6PM</p>
-                      <p className="text-gray-600">Sat: 10AM-4PM</p>
+                      <p className="text-gray-600">Mon-Sat: 9:30AM-10:00PM</p>
                       <p className="text-gray-600">Sun: Closed</p>
                     </div>
                     <div>
-                      <p className="font-semibold text-gray-900">Emergency</p>
-                      <p className="text-gray-600">24/7 Support</p>
-                      <p className="text-gray-600">Call: +1 (555) 911</p>
+                      <p className="font-semibold text-gray-900">Location</p>
+                      <p className="text-gray-600">#2 Lootah Building</p>
+                      <p className="text-gray-600">AI Raffa St. Bur Dubai</p>
                     </div>
                   </div>
                 </div>
@@ -462,7 +466,7 @@ export default function Contact() {
                       { icon: FaFacebook, color: 'from-blue-500 to-blue-600', href: '#' },
                       { icon: FaTwitter, color: 'from-sky-400 to-sky-500', href: '#' },
                       { icon: FaLinkedin, color: 'from-blue-600 to-blue-700', href: '#' },
-                      { icon: FaWhatsapp, color: 'from-green-500 to-green-600', href: '#' }
+                      { icon: FaWhatsapp, color: 'from-green-500 to-green-600', href: 'https://wa.me/971552341712' }
                     ].map((social, index) => {
                       const Icon = social.icon;
                       return (

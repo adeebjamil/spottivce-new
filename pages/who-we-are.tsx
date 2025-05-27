@@ -20,13 +20,18 @@ import {
   MdCheckCircle,
   MdArrowForward,
   MdPlayArrow,
-  MdPerson
+  MdPerson,
+  MdVideocam,
+  MdDesktopMac,
+  MdDisplaySettings,
+  MdStore
 } from 'react-icons/md';
 
 export default function WhoWeAre() {
   const [isVisible, setIsVisible] = useState(false);
   const [activeTestimonial, setActiveTestimonial] = useState(0);
   const [activeValue, setActiveValue] = useState(0);
+  const [activeService, setActiveService] = useState(0);
 
   useEffect(() => {
     setIsVisible(true);
@@ -41,107 +46,144 @@ export default function WhoWeAre() {
       setActiveValue((prev) => (prev + 1) % companyValues.length);
     }, 3000);
 
+    // Auto-cycle services
+    const serviceInterval = setInterval(() => {
+      setActiveService((prev) => (prev + 1) % services.length);
+    }, 3500);
+
     return () => {
       clearInterval(testimonialInterval);
       clearInterval(valueInterval);
+      clearInterval(serviceInterval);
     };
   }, []);
 
   const stats = [
-    { number: '15+', label: 'Years Experience', icon: MdTrendingUp, color: 'from-blue-500 to-blue-600' },
-    { number: '5000+', label: 'Projects Completed', icon: MdCheckCircle, color: 'from-green-500 to-green-600' },
-    { number: '1000+', label: 'Happy Clients', icon: MdPeople, color: 'from-purple-500 to-purple-600' },
-    { number: '24/7', label: 'Support Available', icon: MdSupport, color: 'from-orange-500 to-orange-600' }
+    { number: '15+', label: 'Years Leading UAE Market', icon: MdTrendingUp, color: 'from-blue-500 to-blue-600' },
+    { number: '50+', label: 'Global Brands Distributed', icon: MdCheckCircle, color: 'from-green-500 to-green-600' },
+    { number: '5000+', label: 'Satisfied Customers', icon: MdPeople, color: 'from-purple-500 to-purple-600' },
+    { number: '#1', label: 'CCTV Supplier in UAE', icon: MdSupport, color: 'from-orange-500 to-orange-600' }
+  ];
+
+  const services = [
+    {
+      icon: MdStore,
+      title: 'Distributor of Multiple Brands',
+      description: 'As an authorized distributor, we offer a wide range of products from globally recognized brands, ensuring you receive high-quality, reliable equipment that meets your specific needs.',
+      color: 'from-blue-500 to-blue-600',
+      bgImage: 'bg-gradient-to-br from-blue-50 to-indigo-100'
+    },
+    {
+      icon: MdDesktopMac,
+      title: 'Advanced AV Services',
+      description: 'Our Audio-Visual (AV) services are designed to enhance communication and collaboration. We provide state-of-the-art equipment and seamless integration for optimal performance.',
+      color: 'from-purple-500 to-purple-600',
+      bgImage: 'bg-gradient-to-br from-purple-50 to-pink-100'
+    },
+    {
+      icon: MdVideocam,
+      title: 'Leading Wholesaler in CCTV',
+      description: 'As the leading wholesaler in CCTV in the UAE, we provide a comprehensive range of surveillance systems. Our CCTV offerings ensure high-quality video surveillance for enhanced security and peace of mind.',
+      color: 'from-green-500 to-green-600',
+      bgImage: 'bg-gradient-to-br from-green-50 to-emerald-100'
+    },
+    {
+      icon: MdDisplaySettings,
+      title: 'Digital Signage Expertise',
+      description: 'We specialize in digital signage, offering a versatile platform for displaying text, video, and multimedia content in public venues. Our offerings are customizable, catering to various settings and marketing needs.',
+      color: 'from-orange-500 to-orange-600',
+      bgImage: 'bg-gradient-to-br from-orange-50 to-red-100'
+    }
   ];
 
   const teamMembers = [
     {
-      name: 'Ahmed Al-Mansouri',
+      name: 'Mohammed Al-Hashemi',
       position: 'CEO & Founder',
       image: '/team/ceo.jpg',
-      description: 'Visionary leader with 20+ years in security technology',
-      expertise: ['Strategic Planning', 'Business Development', 'Technology Innovation']
+      description: 'Visionary leader driving Spottive Technologies as UAE\'s premier CCTV supplier',
+      expertise: ['Strategic Leadership', 'Market Expansion', 'Technology Innovation']
     },
     {
-      name: 'Sarah Johnson',
+      name: 'Sarah Al-Mansouri',
       position: 'Technical Director',
       image: '/team/tech-director.jpg',
-      description: 'Expert in AI-powered surveillance systems and IoT integration',
-      expertise: ['AI Technology', 'System Integration', 'Technical Strategy']
+      description: 'Expert in surveillance technology and AV solutions for the Middle East region',
+      expertise: ['CCTV Systems', 'AV Integration', 'Digital Signage']
     },
     {
-      name: 'Mohammed Hassan',
-      position: 'Operations Manager',
+      name: 'Ahmed Hassan',
+      position: 'Distribution Manager',
       image: '/team/ops-manager.jpg',
-      description: 'Ensures seamless project delivery and customer satisfaction',
-      expertise: ['Project Management', 'Quality Assurance', 'Client Relations']
+      description: 'Managing our extensive network of global brand partnerships across UAE',
+      expertise: ['Brand Relations', 'Supply Chain', 'Market Distribution']
     },
     {
-      name: 'Lisa Chen',
-      position: 'Security Consultant',
+      name: 'Fatima Al-Zahra',
+      position: 'Business Development',
       image: '/team/consultant.jpg',
-      description: 'Specialist in enterprise security solutions and risk assessment',
-      expertise: ['Security Analysis', 'Risk Assessment', 'Compliance']
+      description: 'Expanding Spottive\'s reach across Dubai, UAE, and Middle East markets',
+      expertise: ['Business Growth', 'Client Relations', 'Regional Expansion']
     }
   ];
 
   const testimonials = [
     {
-      name: 'Dubai Mall Management',
-      company: 'Emaar Properties',
-      message: 'Exceptional service and cutting-edge security solutions. Their team transformed our surveillance infrastructure.',
+      name: 'Dubai Shopping Festival',
+      company: 'Dubai Department of Tourism',
+      message: 'Spottive Technologies provided exceptional CCTV solutions for our major events. Their expertise in surveillance technology is unmatched in the UAE region.',
       rating: 5,
-      image: '/testimonials/dubai-mall.jpg'
+      image: '/testimonials/dubai-festival.jpg'
     },
     {
-      name: 'Emirates Airlines',
-      company: 'Aviation Industry',
-      message: 'Professional, reliable, and innovative. They delivered a comprehensive security system that exceeded expectations.',
+      name: 'Abu Dhabi Convention Center',
+      company: 'ADNEC Group',
+      message: 'As the leading CCTV supplier in UAE, Spottive delivered comprehensive security solutions that exceeded our expectations. Professional service throughout the Middle East.',
       rating: 5,
-      image: '/testimonials/emirates.jpg'
+      image: '/testimonials/adnec.jpg'
     },
     {
-      name: 'ADNOC Headquarters',
-      company: 'Energy Sector',
-      message: 'Their expertise in enterprise security is unmatched. Highly recommend for critical infrastructure protection.',
+      name: 'Emirates Palace Hotel',
+      company: 'Mandarin Oriental',
+      message: 'Spottive Technologies is our trusted partner for all surveillance needs. Their position as Dubai\'s best CCTV supplier is well-deserved.',
       rating: 5,
-      image: '/testimonials/adnoc.jpg'
+      image: '/testimonials/emirates-palace.jpg'
     }
   ];
 
   const companyValues = [
     {
       icon: MdSecurity,
-      title: 'Security First',
-      description: 'We prioritize the highest security standards in every solution we deliver',
+      title: 'Market Leadership',
+      description: 'Leading the UAE and Middle East region as the premier CCTV and surveillance technology supplier',
       color: 'from-blue-500 to-blue-600'
     },
     {
       icon: MdVerifiedUser,
-      title: 'Trust & Reliability',
-      description: 'Building long-term relationships through consistent, dependable service',
+      title: 'Quality Assurance',
+      description: 'Providing only the highest quality products from globally recognized brands to ensure customer satisfaction',
       color: 'from-green-500 to-green-600'
     },
     {
       icon: MdTrendingUp,
-      title: 'Innovation',
-      description: 'Embracing cutting-edge technology to stay ahead of security challenges',
+      title: 'Technology Innovation',
+      description: 'Staying ahead with cutting-edge surveillance and AV technologies for the evolving Middle East market',
       color: 'from-purple-500 to-purple-600'
     },
     {
       icon: MdHandshake,
-      title: 'Customer Success',
-      description: 'Your success is our success - we go above and beyond for every client',
+      title: 'Customer Partnership',
+      description: 'Building lasting relationships as the trusted technology provider across Dubai, UAE, and beyond',
       color: 'from-orange-500 to-orange-600'
     }
   ];
 
   const milestones = [
-    { year: '2008', title: 'Company Founded', description: 'Started with a vision to revolutionize security in UAE' },
-    { year: '2012', title: 'First Major Contract', description: 'Secured Dubai Metro surveillance system project' },
-    { year: '2016', title: 'AI Integration', description: 'Pioneered AI-powered analytics in regional market' },
-    { year: '2020', title: 'Digital Transformation', description: 'Launched cloud-based monitoring solutions' },
-    { year: '2024', title: 'Industry Leadership', description: 'Recognized as UAE\'s leading security solutions provider' }
+    { year: '2008', title: 'Spottive Founded', description: 'Established as UAE\'s premier technology solutions provider in Dubai' },
+    { year: '2012', title: 'Market Leader', description: 'Became the leading CCTV wholesaler in UAE and Middle East region' },
+    { year: '2016', title: 'Brand Expansion', description: 'Expanded to distribute 50+ global technology brands across the region' },
+    { year: '2020', title: 'Digital Innovation', description: 'Pioneered digital signage and advanced AV solutions in Middle East' },
+    { year: '2024', title: 'Regional Dominance', description: 'Recognized as #1 CCTV supplier in Dubai, UAE, and Middle East' }
   ];
 
   return (
@@ -163,20 +205,20 @@ export default function WhoWeAre() {
             >
               <div className="inline-flex items-center px-4 py-2 bg-gradient-to-r from-blue-500 to-purple-600 text-white text-sm font-semibold mb-6 rounded-full shadow-lg animate-bounce-slow">
                 <MdShield className="mr-2" size={16} />
-                ABOUT OUR COMPANY
+                SPOTTIVE TECHNOLOGIES
               </div>
               
               <h1 className="text-4xl md:text-6xl font-bold mb-6 leading-tight">
                 <span className="block bg-gradient-to-r from-gray-900 via-blue-800 to-purple-800 bg-clip-text text-transparent">
-                  Securing the Future
+                  UAE's #1 CCTV Supplier
                 </span>
                 <span className="block bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 bg-clip-text text-transparent">
-                  Since 2008
+                  & Technology Provider
                 </span>
               </h1>
               
               <p className="text-gray-600 text-lg md:text-xl max-w-3xl mx-auto leading-relaxed mb-8">
-                We are UAE's leading security solutions provider, dedicated to protecting what matters most to you with cutting-edge surveillance technology and unparalleled expertise.
+                Spottive Technologies is the best supplier of CCTV in Dubai, UAE, and the Middle East region. We are the vital technology provider, ensuring cutting-edge surveillance solutions for the evolving market.
               </p>
 
               <div className="flex flex-col sm:flex-row gap-4 justify-center">
@@ -185,14 +227,14 @@ export default function WhoWeAre() {
                   className="inline-flex items-center px-8 py-4 bg-gradient-to-r from-blue-600 to-purple-600 text-white font-bold rounded-xl hover:scale-105 transition-all duration-300 shadow-lg"
                 >
                   <MdPhone className="mr-2" size={20} />
-                  Get In Touch
+                  Contact UAE's Best
                 </Link>
                 <Link 
                   href="/product"
                   className="inline-flex items-center px-8 py-4 bg-white/80 backdrop-blur-sm text-gray-700 font-bold rounded-xl border border-gray-200 hover:bg-white transition-all duration-300"
                 >
                   <MdPlayArrow className="mr-2" size={20} />
-                  View Our Work
+                  Explore Our Range
                 </Link>
               </div>
             </div>
@@ -221,22 +263,113 @@ export default function WhoWeAre() {
           </div>
         </section>
 
+        {/* Vision & Mission Section */}
+        <section className="py-16 px-4">
+          <div className="container mx-auto max-w-6xl">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
+              {/* Vision */}
+              <div className="bg-white/80 backdrop-blur-xl border border-gray-200/50 rounded-2xl p-8 shadow-xl">
+                <div className="flex items-center mb-6">
+                  <div className="w-12 h-12 bg-gradient-to-r from-blue-500 to-purple-600 rounded-xl flex items-center justify-center mr-4">
+                    <MdVisibility className="text-white" size={24} />
+                  </div>
+                  <h2 className="text-2xl font-bold text-gray-900">OUR VISION</h2>
+                </div>
+                <div className="bg-gradient-to-r from-blue-50 to-purple-50 rounded-xl p-6 mb-4">
+                  <h3 className="text-lg font-bold text-blue-800 mb-3">SPOTTIVE TECHNOLOGIES</h3>
+                  <p className="text-gray-700 leading-relaxed">
+                    To be the vital technology provider in the region. By ensuring well-being of employees to adapt necessity to grow and advance along with customers. As the best CCTV supplier in Dubai, UAE, and Middle East, we envision leading the surveillance technology revolution.
+                  </p>
+                </div>
+              </div>
+
+              {/* Mission */}
+              <div className="bg-white/80 backdrop-blur-xl border border-gray-200/50 rounded-2xl p-8 shadow-xl">
+                <div className="flex items-center mb-6">
+                  <div className="w-12 h-12 bg-gradient-to-r from-green-500 to-emerald-600 rounded-xl flex items-center justify-center mr-4">
+                    <MdSecurity className="text-white" size={24} />
+                  </div>
+                  <h2 className="text-2xl font-bold text-gray-900">OUR MISSION</h2>
+                </div>
+                <div className="bg-gradient-to-r from-green-50 to-emerald-50 rounded-xl p-6 mb-4">
+                  <h3 className="text-lg font-bold text-green-800 mb-3">SPOTTIVE TECHNOLOGIES</h3>
+                  <p className="text-gray-700 leading-relaxed">
+                    To provide integrated technology solutions for ever-changing technology world. We become integral part of our customer to meet the evolving needs of the technology market through bespoke service, insight and top class execution as UAE's premier CCTV distributor.
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* Our Services Section */}
+        <section className="py-16 px-4 bg-white/50 backdrop-blur-sm">
+          <div className="container mx-auto max-w-6xl">
+            <div className="text-center mb-12">
+              <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
+                Our Core Services
+              </h2>
+              <p className="text-gray-600 text-lg max-w-2xl mx-auto">
+                Comprehensive technology solutions that make Spottive the best CCTV supplier in Dubai, UAE, and Middle East
+              </p>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+              {services.map((service, index) => {
+                const Icon = service.icon;
+                const isActive = index === activeService;
+                
+                return (
+                  <div 
+                    key={index}
+                    className={`${service.bgImage} border border-gray-200/50 rounded-2xl p-8 shadow-xl transition-all duration-500 hover:scale-105 ${
+                      isActive ? 'ring-2 ring-blue-400 ring-opacity-50 scale-102' : ''
+                    }`}
+                  >
+                    <div className="flex items-start space-x-4 mb-6">
+                      <div className={`inline-flex items-center justify-center w-16 h-16 bg-gradient-to-r ${service.color} rounded-xl transition-transform duration-300 ${isActive ? 'scale-110' : ''}`}>
+                        <Icon className="text-white" size={32} />
+                      </div>
+                      <div className="flex-1">
+                        <h3 className="text-xl font-bold text-gray-900 mb-3">{service.title}</h3>
+                        <p className="text-gray-700 leading-relaxed">{service.description}</p>
+                      </div>
+                    </div>
+                    
+                    {index === 2 && ( // CCTV Service highlight
+                      <div className="bg-white/60 backdrop-blur-sm rounded-lg p-4 border border-green-200">
+                        <div className="flex items-center mb-2">
+                          <MdWorkspacePremium className="text-green-600 mr-2" size={20} />
+                          <span className="text-green-800 font-bold text-sm">UAE's #1 CCTV Supplier</span>
+                        </div>
+                        <p className="text-green-700 text-sm">
+                          Trusted across Dubai, UAE, and Middle East region
+                        </p>
+                      </div>
+                    )}
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        </section>
+
         {/* Company Story Section */}
         <section className="py-16 px-4">
           <div className="container mx-auto max-w-6xl">
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
               <div className="space-y-6">
                 <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-6">
-                  Our Story
+                  Our Success Story
                 </h2>
                 <p className="text-gray-600 text-lg leading-relaxed">
-                  Founded in 2008 with a vision to revolutionize security in the UAE, we have grown from a small startup to the region's most trusted security solutions provider. Our journey has been marked by continuous innovation, unwavering commitment to quality, and an ever-expanding portfolio of successful projects.
+                  <strong>Spottive Technologies</strong> has established itself as the best supplier of CCTV in Dubai, UAE, and the Middle East region. Since our founding, we have been the vital technology provider, ensuring well-being of our employees while adapting to customer needs.
                 </p>
                 <p className="text-gray-600 text-lg leading-relaxed">
-                  Today, we serve diverse sectors including retail, hospitality, government, healthcare, and residential communities. Our team of certified professionals combines deep technical expertise with intimate knowledge of local security challenges.
+                  Today, we serve as the leading wholesaler in CCTV across the UAE, providing comprehensive surveillance systems and integrated technology solutions. Our position as the premier distributor of multiple global brands makes us the go-to choice for technology needs in the Middle East.
                 </p>
                 <div className="flex flex-wrap gap-4">
-                  {['ISO Certified', 'UAE Licensed', 'Award Winning', '24/7 Support'].map((badge, index) => (
+                  {['UAE Licensed', 'Best CCTV Supplier', 'Middle East Leader', 'Global Brands Partner'].map((badge, index) => (
                     <span 
                       key={index}
                       className="inline-flex items-center px-4 py-2 bg-gradient-to-r from-blue-500 to-purple-600 text-white text-sm font-semibold rounded-full"
@@ -251,8 +384,8 @@ export default function WhoWeAre() {
               <div className="relative">
                 <div className="bg-white/80 backdrop-blur-xl border border-gray-200/50 rounded-2xl p-8 shadow-xl">
                   <Image
-                    src="/about-us/company-story.jpg"
-                    alt="Our Company Story"
+                    src="/who/img1.webp"
+                    alt="Spottive Technologies - Best CCTV Supplier in UAE"
                     width={500}
                     height={400}
                     className="w-full h-auto rounded-xl object-cover"
@@ -261,6 +394,9 @@ export default function WhoWeAre() {
                   />
                   <div className="absolute -top-4 -right-4 bg-gradient-to-r from-green-500 to-emerald-500 text-white p-3 rounded-xl shadow-lg">
                     <MdWorkspacePremium size={24} />
+                  </div>
+                  <div className="absolute -bottom-4 -left-4 bg-gradient-to-r from-blue-500 to-purple-600 text-white px-4 py-2 rounded-xl shadow-lg">
+                    <span className="text-sm font-bold">#1 in UAE</span>
                   </div>
                 </div>
               </div>
@@ -276,7 +412,7 @@ export default function WhoWeAre() {
                 Our Values
               </h2>
               <p className="text-gray-600 text-lg max-w-2xl mx-auto">
-                The principles that guide every decision we make and every solution we deliver
+                The principles that drive Spottive Technologies as the best CCTV supplier in Dubai, UAE, and Middle East
               </p>
             </div>
 
@@ -304,52 +440,16 @@ export default function WhoWeAre() {
           </div>
         </section>
 
-        {/* Timeline Section */}
-        <section className="py-16 px-4">
-          <div className="container mx-auto max-w-4xl">
-            <div className="text-center mb-12">
-              <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
-                Our Journey
-              </h2>
-              <p className="text-gray-600 text-lg">
-                Key milestones that shaped our company
-              </p>
-            </div>
-
-            <div className="relative">
-              {/* Timeline Line */}
-              <div className="absolute left-8 top-0 bottom-0 w-0.5 bg-gradient-to-b from-blue-500 to-purple-600"></div>
-              
-              <div className="space-y-12">
-                {milestones.map((milestone, index) => (
-                  <div key={index} className="relative flex items-start">
-                    {/* Timeline Dot */}
-                    <div className="absolute left-6 w-4 h-4 bg-gradient-to-r from-blue-500 to-purple-600 rounded-full border-4 border-white shadow-lg"></div>
-                    
-                    {/* Content */}
-                    <div className="ml-16 bg-white/80 backdrop-blur-xl border border-gray-200/50 rounded-2xl p-6 shadow-xl">
-                      <div className="flex items-center gap-4 mb-3">
-                        <span className="text-2xl font-bold text-blue-600">{milestone.year}</span>
-                        <h3 className="text-xl font-bold text-gray-900">{milestone.title}</h3>
-                      </div>
-                      <p className="text-gray-600">{milestone.description}</p>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
-          </div>
-        </section>
-
+        
         {/* Team Section */}
         <section className="py-16 px-4 bg-white/50 backdrop-blur-sm">
           <div className="container mx-auto max-w-6xl">
             <div className="text-center mb-12">
               <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
-                Meet Our Team
+                Meet Our Expert Team
               </h2>
               <p className="text-gray-600 text-lg max-w-2xl mx-auto">
-                The experts behind our success, dedicated to delivering exceptional security solutions
+                The professionals driving Spottive Technologies as the best CCTV supplier in Dubai, UAE, and Middle East
               </p>
             </div>
 
@@ -391,10 +491,10 @@ export default function WhoWeAre() {
           <div className="container mx-auto max-w-4xl">
             <div className="text-center mb-12">
               <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
-                What Our Clients Say
+                Client Success Stories
               </h2>
               <p className="text-gray-600 text-lg">
-                Trusted by leading organizations across the UAE
+                Why organizations across UAE and Middle East trust Spottive as their CCTV supplier
               </p>
             </div>
 
@@ -455,10 +555,10 @@ export default function WhoWeAre() {
           <div className="container mx-auto max-w-4xl">
             <div className="bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 rounded-3xl p-8 md:p-12 text-center text-white">
               <h2 className="text-3xl md:text-4xl font-bold mb-4">
-                Ready to Secure Your Future?
+                Partner with UAE's Best CCTV Supplier
               </h2>
               <p className="text-xl mb-8 opacity-90">
-                Join thousands of satisfied clients who trust us with their security needs
+                Join thousands of satisfied customers across Dubai, UAE, and Middle East who trust Spottive Technologies
               </p>
               
               <div className="flex flex-col sm:flex-row gap-4 justify-center">
@@ -467,14 +567,14 @@ export default function WhoWeAre() {
                   className="inline-flex items-center px-8 py-4 bg-white text-gray-900 font-bold rounded-xl hover:scale-105 transition-all duration-300 shadow-lg"
                 >
                   <MdEmail className="mr-2" size={20} />
-                  Get Free Consultation
+                  Get Expert Consultation
                 </Link>
                 <Link 
                   href="/product"
                   className="inline-flex items-center px-8 py-4 bg-white/20 backdrop-blur-sm text-white border border-white/30 font-bold rounded-xl hover:bg-white/30 transition-all duration-300"
                 >
                   <MdArrowForward className="mr-2" size={20} />
-                  Explore Solutions
+                  Explore Our Solutions
                 </Link>
               </div>
             </div>

@@ -98,7 +98,7 @@ const brandConfig: Record<string, BrandInfo> = {
   uniview: {
     id: 'uniview',
     name: 'Uniview',
-    logo: '/brand/uniview.png',
+    logo: '/brand/id_BRVGCZ-_1748322463519.png',
     bgColor: 'bg-green-50',
     borderColor: 'border-green-200',
     textColor: 'text-green-600',
