@@ -382,17 +382,21 @@ export default function Footer() {
                   </span>
                 </div>
                 
-                <div className="flex flex-wrap justify-center gap-x-6 gap-y-2">
-                  {['Privacy Policy', 'Terms of Service', 'Cookie Policy'].map((item) => (
-                    <Link 
-                      key={item} 
-                      href="/privacy-policy" 
-                      className="text-gray-500 hover:text-blue-600 transition-colors duration-300"
-                    >
-                      {item}
-                    </Link>
-                  ))}
-                </div>
+<div className="flex flex-wrap justify-center gap-x-6 gap-y-2">
+  {[
+    { name: 'Privacy Policy', href: '/privacy-policy' },
+    { name: 'Terms of Service', href: '/terms-of-service' },
+    { name: 'Cookie Policy', href: '/cookie-policy' }
+  ].map((item) => (
+    <Link 
+      key={item.name} 
+      href={item.href}
+      className="text-gray-500 hover:text-blue-600 transition-colors duration-300"
+    >
+      {item.name}
+    </Link>
+  ))}
+</div>
               </div>
             </div>
           </div>

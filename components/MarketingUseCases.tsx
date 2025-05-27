@@ -345,12 +345,10 @@ export default function MarketingUseCases() {
 
                 {/* CTA Buttons */}
                 <div className="flex flex-col sm:flex-row gap-4">
-                  <button className={`flex-1 flex items-center justify-center px-6 py-3 bg-gradient-to-r ${currentCategory.color} text-white font-bold rounded-xl hover:scale-105 transition-all duration-300 shadow-lg hover:shadow-2xl`}>
-                    <MdPlayArrow className="mr-2" size={20} />
-                    Get Free Quote
-                  </button>
-                  
-               
+                  <a href="/contact" className={`flex-1 flex items-center justify-center px-6 py-3 bg-gradient-to-r ${currentCategory.color} text-white font-bold rounded-xl hover:scale-105 transition-all duration-300 shadow-lg hover:shadow-2xl`}>
+                  <MdPlayArrow className="mr-2" size={20} />
+                  Get Free Quote
+                  </a>
                 </div>
               </div>
             </div>

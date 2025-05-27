@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { 
@@ -20,6 +20,10 @@ export default function Navbar() {
   const [isProductsOpen, setIsProductsOpen] = useState(false);
   const [isBrandsOpen, setIsBrandsOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
+  
+  // Refs for dropdown containers
+  const productsDropdownRef = useRef<HTMLDivElement>(null);
+  const brandsDropdownRef = useRef<HTMLDivElement>(null);
 
   // Handle scroll effect for navbar
   useEffect(() => {
@@ -31,27 +35,17 @@ export default function Navbar() {
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
-  // Fixed dropdown handlers with proper timing and cleanup
-  const handleProductsMouseEnter = () => {
-    setIsBrandsOpen(false);
-    setIsProductsOpen(true);
+  // Toggle dropdown handlers (replaces hover handlers)
+  const toggleProductsDropdown = (e: React.MouseEvent) => {
+    e.preventDefault();
+    if (isBrandsOpen) setIsBrandsOpen(false);
+    setIsProductsOpen(!isProductsOpen);
   };
 
-  const handleProductsMouseLeave = () => {
-    setTimeout(() => {
-      setIsProductsOpen(false);
-    }, 150);
-  };
-
-  const handleBrandsMouseEnter = () => {
-    setIsProductsOpen(false);
-    setIsBrandsOpen(true);
-  };
-
-  const handleBrandsMouseLeave = () => {
-    setTimeout(() => {
-      setIsBrandsOpen(false);
-    }, 150);
+  const toggleBrandsDropdown = (e: React.MouseEvent) => {
+    e.preventDefault();
+    if (isProductsOpen) setIsProductsOpen(false);
+    setIsBrandsOpen(!isBrandsOpen);
   };
 
   // Close dropdowns when clicking outside
@@ -59,15 +53,20 @@ export default function Navbar() {
     const handleClickOutside = (event: MouseEvent) => {
       const target = event.target as HTMLElement;
       
-      if (!target.closest('.products-dropdown') && !target.closest('.brands-dropdown')) {
+      if (isProductsOpen && productsDropdownRef.current && 
+          !productsDropdownRef.current.contains(target)) {
         setIsProductsOpen(false);
+      }
+      
+      if (isBrandsOpen && brandsDropdownRef.current && 
+          !brandsDropdownRef.current.contains(target)) {
         setIsBrandsOpen(false);
       }
     };
 
     document.addEventListener("click", handleClickOutside);
     return () => document.removeEventListener("click", handleClickOutside);
-  }, []);
+  }, [isProductsOpen, isBrandsOpen]);
 
   // Close mobile menu when route changes
   const closeMobileMenu = () => {
@@ -107,11 +106,10 @@ export default function Navbar() {
                 <span>Home</span>
               </Link>
               
-              {/* Our Products with hover dropdown */}
+              {/* Our Products with click dropdown */}
               <div 
                 className="relative products-dropdown"
-                onMouseEnter={handleProductsMouseEnter}
-                onMouseLeave={handleProductsMouseLeave}
+                ref={productsDropdownRef}
               >
                 <div className="flex items-center">
                   {/* Main Product Link */}
@@ -127,7 +125,9 @@ export default function Navbar() {
                   {/* Dropdown Arrow Button */}
                   <button
                     className="flex items-center text-gray-700 hover:text-blue-600 px-1 py-2 text-sm font-medium transition-colors duration-200"
-                    onClick={() => setIsProductsOpen(!isProductsOpen)}
+                    onClick={toggleProductsDropdown}
+                    aria-expanded={isProductsOpen}
+                    aria-label="Toggle products menu"
                   >
                     <MdKeyboardArrowDown 
                       className={`transition-transform duration-300 ${
@@ -145,8 +145,6 @@ export default function Navbar() {
                       ? 'opacity-100 visible translate-y-0' 
                       : 'opacity-0 invisible -translate-y-4 pointer-events-none'
                   }`}
-                  onMouseEnter={() => setIsProductsOpen(true)}
-                  onMouseLeave={() => setIsProductsOpen(false)}
                 >
                   <div className="py-6 px-6 grid grid-cols-12 gap-4">
                     {/* Left column - Product categories */}
@@ -302,11 +300,10 @@ export default function Navbar() {
                 <span>Blog</span>
               </Link>
 
-              {/* Our Brands with hover dropdown */}
+              {/* Our Brands with click dropdown */}
               <div 
                 className="relative brands-dropdown"
-                onMouseEnter={handleBrandsMouseEnter}
-                onMouseLeave={handleBrandsMouseLeave}
+                ref={brandsDropdownRef}
               >
                 <div className="flex items-center">
                   {/* Main Brands Link */}
@@ -322,7 +319,9 @@ export default function Navbar() {
                   {/* Dropdown Arrow Button */}
                   <button
                     className="flex items-center text-gray-700 hover:text-blue-600 px-1 py-2 text-sm font-medium transition-colors duration-200"
-                    onClick={() => setIsBrandsOpen(!isBrandsOpen)}
+                    onClick={toggleBrandsDropdown}
+                    aria-expanded={isBrandsOpen}
+                    aria-label="Toggle brands menu"
                   >
                     <MdKeyboardArrowDown 
                       className={`transition-transform duration-300 ${
@@ -340,8 +339,6 @@ export default function Navbar() {
                       ? 'opacity-100 visible translate-y-0' 
                       : 'opacity-0 invisible -translate-y-4 pointer-events-none'
                   }`}
-                  onMouseEnter={() => setIsBrandsOpen(true)}
-                  onMouseLeave={() => setIsBrandsOpen(false)}
                 >
                   <div className="py-8 px-6">
                     <h3 className="text-lg font-bold mb-6 text-gray-900 text-center flex items-center justify-center">
@@ -415,7 +412,7 @@ export default function Navbar() {
             </div>
           </nav>
 
-          {/* Mobile menu button */}
+          {/* Mobile menu button - Keep this unchanged */}
           <div className="md:hidden flex items-center">
             <button
               onClick={() => setIsMenuOpen(!isMenuOpen)}
@@ -442,10 +439,11 @@ export default function Navbar() {
         </div>
       </div>
 
-      {/* Mobile menu */}
+      {/* Mobile menu - Keep this unchanged */}
       <div className={`md:hidden bg-white border-t border-gray-200 transition-all duration-300 ${
         isMenuOpen ? 'max-h-screen opacity-100' : 'max-h-0 opacity-0 overflow-hidden'
       }`}>
+        {/* Keep the rest of the mobile menu unchanged */}
         <div className="px-2 pt-2 pb-3 space-y-1 sm:px-3">
           <Link
             href="/"

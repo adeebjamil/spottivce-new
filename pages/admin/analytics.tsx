@@ -29,33 +29,12 @@ import {
 } from 'react-icons/md';
 import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-import { Chart } from 'react-chartjs-2';
-import {
-  Chart as ChartJS,
-  CategoryScale,
-  LinearScale,
-  PointElement,
-  LineElement,
-  BarElement,
-  ArcElement,
-  Title,
-  Tooltip,
-  Legend,
-  Filler
-} from 'chart.js';
+import dynamic from 'next/dynamic';
 
-// Register ChartJS components
-ChartJS.register(
-  CategoryScale,
-  LinearScale,
-  PointElement,
-  LineElement,
-  BarElement,
-  ArcElement,
-  Title,
-  Tooltip,
-  Legend,
-  Filler
+// Dynamic import with SSR disabled
+const Chart = dynamic(
+  () => import('react-chartjs-2').then(mod => mod.Chart),
+  { ssr: false }
 );
 
 interface AnalyticsData {
@@ -137,6 +116,7 @@ const AnalyticsPage = () => {
   const [dateRange, setDateRange] = useState('7d'); // '7d', '30d', '90d', '1y'
   const [refreshing, setRefreshing] = useState(false);
   const [lastUpdated, setLastUpdated] = useState<Date | null>(null);
+  const [isMounted, setIsMounted] = useState(false);
   const refreshTimeoutRef = useRef<NodeJS.Timeout | null>(null);
   const router = useRouter();
 
@@ -164,6 +144,10 @@ const AnalyticsPage = () => {
       }
     };
   }, [router, isAuthenticated, dateRange]);
+
+  useEffect(() => {
+    setIsMounted(true);
+  }, []);
 
   const fetchAnalyticsData = async (silent = false) => {
     if (!silent) {
@@ -403,7 +387,7 @@ const AnalyticsPage = () => {
                 </div>
               </div>
               <div className="h-16 bg-gradient-to-r from-blue-50 to-indigo-50 px-6">
-                {analyticsData.pageViews.data.length > 0 && (
+                {isMounted && analyticsData.pageViews.data.length > 0 && (
                   <div className="h-full w-full">
                     <Chart 
                       type="line" 
@@ -458,7 +442,7 @@ const AnalyticsPage = () => {
                 </div>
               </div>
               <div className="h-16 bg-gradient-to-r from-purple-50 to-pink-50 px-6">
-                {analyticsData.visitors.data.length > 0 && (
+                {isMounted && analyticsData.visitors.data.length > 0 && (
                   <div className="h-full w-full">
                     <Chart 
                       type="line" 
@@ -582,8 +566,7 @@ const AnalyticsPage = () => {
                         legend: { 
                           display: false 
                         }
-                      },
-                      cutout: '70%'
+                      }
                     }}
                     data={{
                       labels: ['Desktop', 'Mobile', 'Tablet'],
@@ -598,7 +581,8 @@ const AnalyticsPage = () => {
                           '#8b5cf6',
                           '#10b981'
                         ],
-                        borderWidth: 0
+                        borderWidth: 0,
+                      
                       }]
                     }}
                   />
