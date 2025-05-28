@@ -1,6 +1,6 @@
 /** @type {import('next-sitemap').IConfig} */
 module.exports = {
-  siteUrl: process.env.SITE_URL || 'https://yourwebsite.com',
+ siteUrl: process.env.SITE_URL || 'https://spottivce-new.vercel.app',
   generateRobotsTxt: true, // (optional)
   // optional
   robotsTxtOptions: {
