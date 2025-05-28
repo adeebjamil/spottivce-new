@@ -31,11 +31,39 @@ import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import dynamic from 'next/dynamic';
 
-// Dynamic import with SSR disabled
-const Chart = dynamic(
-  () => import('react-chartjs-2').then(mod => mod.Chart),
-  { ssr: false }
+// Import Chart.js components and register them
+import {
+  Chart as ChartJS,
+  CategoryScale,
+  LinearScale,
+  PointElement,
+  LineElement,
+  BarElement,
+  Title,
+  Tooltip,
+  Legend,
+  ArcElement,
+  Filler
+} from 'chart.js';
+
+// Register Chart.js components
+ChartJS.register(
+  CategoryScale,
+  LinearScale,
+  PointElement,
+  LineElement,
+  BarElement,
+  Title,
+  Tooltip,
+  Legend,
+  ArcElement,
+  Filler
 );
+
+// Dynamic imports for Chart components
+const Line = dynamic(() => import('react-chartjs-2').then(mod => mod.Line), { ssr: false });
+const Bar = dynamic(() => import('react-chartjs-2').then(mod => mod.Bar), { ssr: false });
+const Doughnut = dynamic(() => import('react-chartjs-2').then(mod => mod.Doughnut), { ssr: false });
 
 interface AnalyticsData {
   pageViews: {
@@ -389,8 +417,7 @@ const AnalyticsPage = () => {
               <div className="h-16 bg-gradient-to-r from-blue-50 to-indigo-50 px-6">
                 {isMounted && analyticsData.pageViews.data.length > 0 && (
                   <div className="h-full w-full">
-                    <Chart 
-                      type="line" 
+                    <Line 
                       options={{
                         responsive: true,
                         maintainAspectRatio: false,
@@ -444,8 +471,7 @@ const AnalyticsPage = () => {
               <div className="h-16 bg-gradient-to-r from-purple-50 to-pink-50 px-6">
                 {isMounted && analyticsData.visitors.data.length > 0 && (
                   <div className="h-full w-full">
-                    <Chart 
-                      type="line" 
+                    <Line 
                       options={{
                         responsive: true,
                         maintainAspectRatio: false,
@@ -557,35 +583,35 @@ const AnalyticsPage = () => {
               
               <div className="flex items-center h-64">
                 <div className="w-1/2">
-                  <Chart
-                    type="doughnut"
-                    options={{
-                      responsive: true,
-                      maintainAspectRatio: false,
-                      plugins: {
-                        legend: { 
-                          display: false 
+                  {isMounted && (
+                    <Doughnut
+                      options={{
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                          legend: { 
+                            display: false 
+                          }
                         }
-                      }
-                    }}
-                    data={{
-                      labels: ['Desktop', 'Mobile', 'Tablet'],
-                      datasets: [{
-                        data: [
-                          analyticsData.devices.desktop,
-                          analyticsData.devices.mobile,
-                          analyticsData.devices.tablet
-                        ],
-                        backgroundColor: [
-                          '#3b82f6',
-                          '#8b5cf6',
-                          '#10b981'
-                        ],
-                        borderWidth: 0,
-                      
-                      }]
-                    }}
-                  />
+                      }}
+                      data={{
+                        labels: ['Desktop', 'Mobile', 'Tablet'],
+                        datasets: [{
+                          data: [
+                            analyticsData.devices.desktop,
+                            analyticsData.devices.mobile,
+                            analyticsData.devices.tablet
+                          ],
+                          backgroundColor: [
+                            '#3b82f6',
+                            '#8b5cf6',
+                            '#10b981'
+                          ],
+                          borderWidth: 0,
+                        }]
+                      }}
+                    />
+                  )}
                 </div>
                 <div className="w-1/2 pl-4">
                   <div className="space-y-4">
@@ -617,53 +643,54 @@ const AnalyticsPage = () => {
               </h3>
               
               <div className="h-64">
-                <Chart
-                  type="bar"
-                  options={{
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    plugins: {
-                      legend: { display: false }
-                    },
-                    scales: {
-                      x: {
-                        grid: { display: false }
+                {isMounted && (
+                  <Bar
+                    options={{
+                      responsive: true,
+                      maintainAspectRatio: false,
+                      plugins: {
+                        legend: { display: false }
                       },
-                      y: {
-                        beginAtZero: true,
-                        max: 100,
-                        ticks: { 
-                          callback: (value) => `${value}%` 
+                      scales: {
+                        x: {
+                          grid: { display: false }
+                        },
+                        y: {
+                          beginAtZero: true,
+                          max: 100,
+                          ticks: { 
+                            callback: (value) => `${value}%` 
+                          }
                         }
                       }
-                    }
-                  }}
-                  data={{
-                    labels: ['Chrome', 'Firefox', 'Safari', 'Edge', 'Other'],
-                    datasets: [{
-                      data: [
-                        analyticsData.browsers.chrome,
-                        analyticsData.browsers.firefox,
-                        analyticsData.browsers.safari,
-                        analyticsData.browsers.edge,
-                        analyticsData.browsers.other
-                      ],
-                      backgroundColor: [
-                        'rgba(59, 130, 246, 0.7)',
-                        'rgba(139, 92, 246, 0.7)',
-                        'rgba(16, 185, 129, 0.7)',
-                        'rgba(249, 115, 22, 0.7)',
-                        'rgba(107, 114, 128, 0.7)'
-                      ],
-                      borderWidth: 0,
-                      borderRadius: 4
-                    }]
-                  }}
-                />
+                    }}
+                    data={{
+                      labels: ['Chrome', 'Firefox', 'Safari', 'Edge', 'Other'],
+                      datasets: [{
+                        data: [
+                          analyticsData.browsers.chrome,
+                          analyticsData.browsers.firefox,
+                          analyticsData.browsers.safari,
+                          analyticsData.browsers.edge,
+                          analyticsData.browsers.other
+                        ],
+                        backgroundColor: [
+                          'rgba(59, 130, 246, 0.7)',
+                          'rgba(139, 92, 246, 0.7)',
+                          'rgba(16, 185, 129, 0.7)',
+                          'rgba(249, 115, 22, 0.7)',
+                          'rgba(107, 114, 128, 0.7)'
+                        ],
+                        borderWidth: 0,
+                        borderRadius: 4
+                      }]
+                    }}
+                  />
+                )}
               </div>
             </div>
             
-            {/* Geo Distribution */}
+            {/* Geo Distribution - Keep as table, no charts needed */}
             <div className="bg-white rounded-xl shadow-md p-6">
               <h3 className="text-lg font-bold text-gray-900 mb-6 relative inline-block">
                 Geographic Distribution
@@ -736,47 +763,48 @@ const AnalyticsPage = () => {
               
               {/* Chart */}
               <div className="h-48">
-                <Chart
-                  type="line"
-                  options={{
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    plugins: {
-                      legend: { display: false }
-                    },
-                    scales: {
-                      x: {
-                        grid: { display: false }
+                {isMounted && (
+                  <Line
+                    options={{
+                      responsive: true,
+                      maintainAspectRatio: false,
+                      plugins: {
+                        legend: { display: false }
                       },
-                      y: {
-                        beginAtZero: true,
-                        grid: { 
-                          display: true,
-                          color: 'rgba(156, 163, 175, 0.5)'
+                      scales: {
+                        x: {
+                          grid: { display: false }
+                        },
+                        y: {
+                          beginAtZero: true,
+                          grid: { 
+                            display: true,
+                            color: 'rgba(156, 163, 175, 0.5)'
+                          }
+                        }
+                      },
+                      elements: {
+                        line: {
+                          tension: 0.4,
+                          borderColor: '#3b82f6',
+                          borderWidth: 2
+                        },
+                        point: {
+                          radius: 3,
+                          backgroundColor: '#3b82f6'
                         }
                       }
-                    },
-                    elements: {
-                      line: {
-                        tension: 0.4,
-                        borderColor: '#3b82f6',
-                        borderWidth: 2
-                      },
-                      point: {
-                        radius: 3,
-                        backgroundColor: '#3b82f6'
-                      }
-                    }
-                  }}
-                  data={{
-                    labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
-                    datasets: [{
-                      data: analyticsData.contactSubmissions.monthlyData,
-                      backgroundColor: 'rgba(59, 130, 246, 0.1)',
-                      fill: true
-                    }]
-                  }}
-                />
+                    }}
+                    data={{
+                      labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
+                      datasets: [{
+                        data: analyticsData.contactSubmissions.monthlyData,
+                        backgroundColor: 'rgba(59, 130, 246, 0.1)',
+                        fill: true
+                      }]
+                    }}
+                  />
+                )}
               </div>
             </div>
             
@@ -814,46 +842,47 @@ const AnalyticsPage = () => {
               
               {/* Chart */}
               <div className="h-48">
-                <Chart
-                  type="line"
-                  options={{
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    plugins: {
-                      legend: { display: false }
-                    },
-                    scales: {
-                      x: {
-                        grid: { display: false }
+                {isMounted && (
+                  <Line
+                    options={{
+                      responsive: true,
+                      maintainAspectRatio: false,
+                      plugins: {
+                        legend: { display: false }
                       },
-                      y: {
-                        beginAtZero: true,
-                        grid: { 
-                          display: true
+                      scales: {
+                        x: {
+                          grid: { display: false }
+                        },
+                        y: {
+                          beginAtZero: true,
+                          grid: { 
+                            display: true
+                          }
+                        }
+                      },
+                      elements: {
+                        line: {
+                          tension: 0.4,
+                          borderColor: '#8b5cf6',
+                          borderWidth: 2
+                        },
+                        point: {
+                          radius: 3,
+                          backgroundColor: '#8b5cf6'
                         }
                       }
-                    },
-                    elements: {
-                      line: {
-                        tension: 0.4,
-                        borderColor: '#8b5cf6',
-                        borderWidth: 2
-                      },
-                      point: {
-                        radius: 3,
-                        backgroundColor: '#8b5cf6'
-                      }
-                    }
-                  }}
-                  data={{
-                    labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
-                    datasets: [{
-                      data: analyticsData.productEnquiries.monthlyData,
-                      backgroundColor: 'rgba(139, 92, 246, 0.1)',
-                      fill: true
-                    }]
-                  }}
-                />
+                    }}
+                    data={{
+                      labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
+                      datasets: [{
+                        data: analyticsData.productEnquiries.monthlyData,
+                        backgroundColor: 'rgba(139, 92, 246, 0.1)',
+                        fill: true
+                      }]
+                    }}
+                  />
+                )}
               </div>
             </div>
             
@@ -887,36 +916,37 @@ const AnalyticsPage = () => {
               
               {/* Chart */}
               <div className="h-48">
-                <Chart
-                  type="bar"
-                  options={{
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    plugins: {
-                      legend: { display: false }
-                    },
-                    scales: {
-                      x: {
-                        grid: { display: false }
+                {isMounted && (
+                  <Bar
+                    options={{
+                      responsive: true,
+                      maintainAspectRatio: false,
+                      plugins: {
+                        legend: { display: false }
                       },
-                      y: {
-                        beginAtZero: true,
-                        grid: { 
-                          color: 'rgba(156, 163, 175, 0.5)'
+                      scales: {
+                        x: {
+                          grid: { display: false }
+                        },
+                        y: {
+                          beginAtZero: true,
+                          grid: { 
+                            color: 'rgba(156, 163, 175, 0.5)'
+                          }
                         }
                       }
-                    }
-                  }}
-                  data={{
-                    labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
-                    datasets: [{
-                      data: analyticsData.newsletterSubscribers.monthlyData,
-                      backgroundColor: 'rgba(16, 185, 129, 0.7)',
-                      borderRadius: 4,
-                      borderWidth: 0
-                    }]
-                  }}
-                />
+                    }}
+                    data={{
+                      labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
+                      datasets: [{
+                        data: analyticsData.newsletterSubscribers.monthlyData,
+                        backgroundColor: 'rgba(16, 185, 129, 0.7)',
+                        borderRadius: 4,
+                        borderWidth: 0
+                      }]
+                    }}
+                  />
+                )}
               </div>
             </div>
           </div>
