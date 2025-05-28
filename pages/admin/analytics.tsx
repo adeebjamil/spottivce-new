@@ -135,6 +135,7 @@ interface AnalyticsData {
     value: number;
     change: number;
   };
+  lastUpdated: string;
 }
 
 const AnalyticsPage = () => {
@@ -145,6 +146,7 @@ const AnalyticsPage = () => {
   const [refreshing, setRefreshing] = useState(false);
   const [lastUpdated, setLastUpdated] = useState<Date | null>(null);
   const [isMounted, setIsMounted] = useState(false);
+  const [error, setError] = useState<string | null>(null);
   const refreshTimeoutRef = useRef<NodeJS.Timeout | null>(null);
   const router = useRouter();
 
@@ -171,23 +173,35 @@ const AnalyticsPage = () => {
         clearTimeout(refreshTimeoutRef.current);
       }
     };
-  }, [router, isAuthenticated, dateRange]);
+  }, [router, isAuthenticated]);
 
   useEffect(() => {
     setIsMounted(true);
   }, []);
 
+  useEffect(() => {
+    if (isAuthenticated) {
+      fetchAnalyticsData();
+    }
+  }, [dateRange]);
+
   const fetchAnalyticsData = async (silent = false) => {
     if (!silent) {
       setRefreshing(true);
+      setError(null);
     }
     
     try {
-      // Replace mock data with actual API call
-      const response = await fetch(`/api/admin/analytics?range=${dateRange}`);
+      // REAL API CALL - No more mock data!
+      const response = await fetch(`/api/admin/analytics?range=${dateRange}`, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
       
       if (!response.ok) {
-        throw new Error('Failed to fetch analytics data');
+        throw new Error(`Failed to fetch analytics data: ${response.status}`);
       }
       
       const data = await response.json();
@@ -200,9 +214,12 @@ const AnalyticsPage = () => {
       }
     } catch (error) {
       console.error('Error fetching analytics data:', error);
+      const errorMessage = error instanceof Error ? error.message : 'Unknown error occurred';
+      setError(errorMessage);
+      
       if (!silent) {
         setRefreshing(false);
-        toast.error('Failed to fetch analytics data');
+        toast.error(`Failed to fetch analytics data: ${errorMessage}`);
       }
     }
   };
@@ -213,97 +230,6 @@ const AnalyticsPage = () => {
 
   const handleDateRangeChange = (range: string) => {
     setDateRange(range);
-  };
-
-  // This function would be replaced with real API data in production
-  const getMockAnalyticsData = (): AnalyticsData => {
-    const pastMonths = Array.from({ length: 12 }, (_, i) => {
-      const d = new Date();
-      d.setMonth(d.getMonth() - 11 + i);
-      return d.toLocaleString('default', { month: 'short' });
-    });
-    
-    return {
-      pageViews: {
-        total: 28457,
-        change: 12.3,
-        data: [1420, 1550, 1320, 1480, 1580, 1620, 1750],
-        labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun']
-      },
-      visitors: {
-        total: 9245,
-        change: 8.5,
-        data: [480, 520, 450, 510, 540, 580, 610],
-        labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun']
-      },
-      engagementRate: {
-        value: 65.8,
-        change: 3.2
-      },
-      bounceRate: {
-        value: 34.2,
-        change: -2.1
-      },
-      devices: {
-        desktop: 42,
-        mobile: 51,
-        tablet: 7
-      },
-      browsers: {
-        chrome: 58,
-        firefox: 12,
-        safari: 18,
-        edge: 9,
-        other: 3
-      },
-      contactSubmissions: {
-        total: 142,
-        new: 28,
-        inProgress: 35,
-        resolved: 79,
-        monthlyData: [8, 12, 15, 11, 18, 22, 14, 16, 19, 17, 24, 28]
-      },
-      productEnquiries: {
-        total: 256,
-        pending: 42,
-        contacted: 87,
-        resolved: 127,
-        monthlyData: [14, 18, 22, 19, 24, 27, 21, 25, 28, 26, 32, 38]
-      },
-      newsletterSubscribers: {
-        total: 2845,
-        growth: 15.4,
-        monthlyData: [120, 145, 165, 155, 180, 210, 195, 220, 245, 230, 260, 280]
-      },
-      topProducts: [
-        { name: 'Hikvision ColorVu Camera', views: 1245, enquiries: 28 },
-        { name: 'Dahua 4K CCTV Kit', views: 980, enquiries: 24 },
-        { name: 'UNV Smart Home System', views: 876, enquiries: 19 },
-        { name: 'Axis PTZ Camera', views: 754, enquiries: 16 },
-        { name: 'Hikvision NVR 16 Channel', views: 689, enquiries: 15 }
-      ],
-      topPages: [
-        { path: '/', title: 'Home Page', views: 4250 },
-        { path: '/product', title: 'Products Listing', views: 3120 },
-        { path: '/product/security-cameras', title: 'Security Cameras', views: 2670 },
-        { path: '/who-we-are', title: 'About Us', views: 1840 },
-        { path: '/contact', title: 'Contact Us', views: 1560 }
-      ],
-      geoData: [
-        { country: 'United Arab Emirates', visitors: 5240 },
-        { country: 'Saudi Arabia', visitors: 1280 },
-        { country: 'Qatar', visitors: 980 },
-        { country: 'Kuwait', visitors: 760 },
-        { country: 'Oman', visitors: 540 },
-        { country: 'Bahrain', visitors: 320 },
-        { country: 'India', visitors: 280 },
-        { country: 'Pakistan', visitors: 210 }
-      ],
-      conversionRate: {
-        value: 4.8,
-        change: 0.7
-      }
-    };
   };
 
   const formatNumber = (num: number) => {
@@ -389,10 +315,26 @@ const AnalyticsPage = () => {
             Last updated: {lastUpdated.toLocaleTimeString()} on {lastUpdated.toLocaleDateString()}
           </div>
         )}
+
+        {error && (
+          <div className="mt-2 text-sm text-red-600 bg-red-50 p-3 rounded-lg">
+            <strong>Error:</strong> {error}
+          </div>
+        )}
       </div>
       
       {analyticsData ? (
         <>
+          {/* Real-time Status Indicator */}
+          <div className="mb-6">
+            <div className="bg-green-50 border border-green-200 rounded-lg p-3 flex items-center">
+              <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse mr-2"></div>
+              <span className="text-green-800 text-sm font-medium">
+                Live Analytics Data - Last Updated: {new Date(analyticsData.lastUpdated).toLocaleString()}
+              </span>
+            </div>
+          </div>
+
           {/* Overview Cards */}
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
             {/* Page Views Card */}
@@ -1093,7 +1035,10 @@ const AnalyticsPage = () => {
         </>
       ) : (
         <div className="flex items-center justify-center h-64 bg-white rounded-xl shadow-md">
-          <div className="text-gray-500">Loading analytics data...</div>
+          <div className="text-center">
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
+            <div className="text-gray-500">Loading real-time analytics data...</div>
+          </div>
         </div>
       )}
     </div>

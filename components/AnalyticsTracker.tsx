@@ -1,51 +1,72 @@
 import { useEffect } from 'react';
 import { useRouter } from 'next/router';
 
+declare global {
+  interface Window {
+    pageStartTime?: number;
+  }
+}
+
 export default function AnalyticsTracker() {
   const router = useRouter();
-  
+
   useEffect(() => {
-    let startTime = Date.now();
-    
-    // Handle page unload to track time on site
-    const handleBeforeUnload = async () => {
-      const timeSpent = Math.floor((Date.now() - startTime) / 1000);
-      
+    // Generate or get session ID
+    let sessionId = sessionStorage.getItem('analytics_session');
+    if (!sessionId) {
+      sessionId = `session_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+      sessionStorage.setItem('analytics_session', sessionId);
+    }
+
+    // Track page view
+    const trackPageView = async (path: string) => {
       try {
-        // Use Navigator.sendBeacon for more reliable sending during page unload
-        if (navigator.sendBeacon) {
-          const blob = new Blob([
-            JSON.stringify({
-              path: router.pathname,
-              timeOnSite: timeSpent
-            })
-          ], { type: 'application/json' });
-          
-          navigator.sendBeacon('/api/analytics/update-time', blob);
-        } else {
-          // Fallback to fetch
-          await fetch('/api/analytics/update-time', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-              path: router.pathname,
-              timeOnSite: timeSpent
-            }),
-            // Keeping it short to increase chances of completion
-            keepalive: true
-          });
-        }
+        console.log('📊 Tracking visitor:', {
+          sessionId,
+          path,
+          device: /Mobile|Android|iPhone/.test(navigator.userAgent) ? 'mobile' : 'desktop',
+          timestamp: new Date().toISOString()
+        });
+
+        const response = await fetch('/api/analytics/track-visitor', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            sessionId,
+            userAgent: navigator.userAgent,
+            path,
+            referrer: document.referrer,
+            timestamp: new Date().toISOString(),
+            timeOnSite: Date.now() - (window.pageStartTime || Date.now())
+          }),
+        });
+
+        const result = await response.json();
+        console.log('✅ Analytics response:', result);
       } catch (error) {
-        console.error('Error updating time on site', error);
+        console.error('❌ Analytics tracking failed:', error);
       }
     };
-    
-    window.addEventListener('beforeunload', handleBeforeUnload);
-    
-    return () => {
-      window.removeEventListener('beforeunload', handleBeforeUnload);
+
+    // Track initial page load
+    window.pageStartTime = Date.now();
+    trackPageView(router.asPath);
+
+    // Track route changes
+    const handleRouteChange = (url: string) => {
+      window.pageStartTime = Date.now();
+      trackPageView(url);
     };
-  }, [router.pathname]);
-  
+
+    router.events.on('routeChangeComplete', handleRouteChange);
+
+    // Cleanup
+    return () => {
+      router.events.off('routeChangeComplete', handleRouteChange);
+    };
+  }, [router]);
+
   return null;
 }
