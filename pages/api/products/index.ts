@@ -45,5 +45,4 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
   }
 }
 
-// IMPORTANT: This line protects the endpoint with JWT authentication
 export default withAuth(handler);
