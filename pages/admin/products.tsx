@@ -55,17 +55,29 @@ const ProductsPage = () => {
     setLoading(false);
   }, [router]);
 
-  // Fetch products from API
+  // Fix the fetchProducts function
   const fetchProducts = async () => {
+    setLoading(true);
     try {
-      const response = await fetch('/api/products');
+      // Use authenticatedFetch instead of regular fetch
+      const response = await authenticatedFetch('/api/products');
+      
       if (response.ok) {
         const data = await response.json();
         setProducts(data);
+      } else if (response.status === 401) {
+        toast.error('Session expired. Please login again.');
+        // Redirect to login
+        router.push('/admin');
+      } else {
+        toast.error('Failed to fetch products');
+        console.error('Fetch error:', response.status);
       }
     } catch (error) {
       console.error('Error fetching products:', error);
       toast.error('Failed to fetch products');
+    } finally {
+      setLoading(false);
     }
   };
 

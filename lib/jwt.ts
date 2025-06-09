@@ -1,7 +1,7 @@
 import jwt from 'jsonwebtoken';
 import { NextApiRequest } from 'next';
 
-const JWT_SECRET = process.env.JWT_SECRET || 'your-fallback-secret';
+const JWT_SECRET = process.env.JWT_SECRET!;
 
 export interface JWTPayload {
   userId: string;
@@ -19,6 +19,7 @@ export function verifyToken(token: string): JWTPayload | null {
   try {
     return jwt.verify(token, JWT_SECRET) as JWTPayload;
   } catch (error) {
+    console.error('JWT verification error:', error);
     return null;
   }
 }

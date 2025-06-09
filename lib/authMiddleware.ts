@@ -12,9 +12,7 @@ export function withAuth(handler: (req: NextApiRequest, res: NextApiResponse) =>
       });
     }
 
-    // Add user info to request
     (req as any).user = user;
-    
     return handler(req, res);
   };
 }
