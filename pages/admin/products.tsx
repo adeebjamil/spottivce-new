@@ -11,6 +11,7 @@ import {
   MdCancel
 } from 'react-icons/md';
 import { toast } from 'react-toastify';
+import { authenticatedFetch } from '../../lib/apiHelper';
 
 interface Product {
   _id: string;
@@ -165,13 +166,16 @@ const ProductsPage = () => {
     if (!confirm('Are you sure you want to delete this product?')) return;
 
     try {
-      const response = await fetch(`/api/products/${id}`, {
+      const response = await authenticatedFetch(`/api/products/${id}`, {
         method: 'DELETE',
       });
 
       if (response.ok) {
-        await fetchProducts(); // Refresh the list
+        await fetchProducts();
         toast.success('Product deleted successfully!');
+      } else if (response.status === 401) {
+        toast.error('Unauthorized. Please login again.');
+        router.push('/admin');
       } else {
         toast.error('Failed to delete product');
       }

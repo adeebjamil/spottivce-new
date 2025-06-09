@@ -15,20 +15,33 @@ const AdminLogin = () => {
     e.preventDefault();
     setLoading(true);
 
-    // Simulate loading delay
-    await new Promise(resolve => setTimeout(resolve, 1000));
+    try {
+      const response = await fetch('/api/admin/login', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ username, password }),
+      });
 
-    // Simple authentication check
-    if (username === 'adeeb' && password === '123') {
-      localStorage.setItem('adminAuth', 'true');
-      toast.success('Welcome back, Adeeb! 🎉');
-      setTimeout(() => {
+      const data = await response.json();
+
+      if (data.success) {
+        // Store both auth flag and JWT token
+        localStorage.setItem('adminAuth', 'true');
+        localStorage.setItem('adminToken', data.token);
+        
+        toast.success('Login successful!');
         router.push('/admin/dashboard');
-      }, 1500);
-    } else {
-      toast.error('Invalid credentials! Please try again.');
+      } else {
+        toast.error(data.message || 'Invalid credentials');
+      }
+    } catch (error) {
+      console.error('Login error:', error);
+      toast.error('Login failed. Please try again.');
+    } finally {
+      setLoading(false);
     }
-    setLoading(false);
   };
 
   return (

@@ -1,20 +1,19 @@
 import { NextApiRequest, NextApiResponse } from 'next';
 import clientPromise from '../../../lib/mongodb';
 import { ObjectId } from 'mongodb';
+import { withAuth } from '../../../lib/authMiddleware';
 
-export default async function handler(req: NextApiRequest, res: NextApiResponse) {
+async function handler(req: NextApiRequest, res: NextApiResponse) {
+  const { id } = req.query;
+
   try {
     const client = await clientPromise;
     const db = client.db('spottive');
     const collection = db.collection('products');
-    const { id } = req.query;
-
-    if (!ObjectId.isValid(id as string)) {
-      return res.status(400).json({ error: 'Invalid product ID' });
-    }
 
     switch (req.method) {
       case 'PUT':
+        // Only authenticated users can update
         const { name, shortDesc, category, subCategory, image } = req.body;
         
         if (!name || !shortDesc || !category || !subCategory) {
@@ -43,6 +42,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         break;
 
       case 'DELETE':
+        // Only authenticated users can delete
         const deleteResult = await collection.deleteOne({ _id: new ObjectId(id as string) });
         
         if (deleteResult.deletedCount === 0) {
@@ -61,3 +61,6 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     res.status(500).json({ error: 'Internal server error' });
   }
 }
+
+// Export with authentication protection
+export default withAuth(handler);

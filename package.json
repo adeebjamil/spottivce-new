@@ -13,6 +13,7 @@
     "chart.js": "^4.4.9",
     "cloudinary": "^2.6.1",
     "formidable": "^3.5.4",
+    "jsonwebtoken": "^9.0.2",
     "mongodb": "^6.16.0",
     "multer": "^2.0.0",
     "next": "^15.3.2",
@@ -27,6 +28,7 @@
   "devDependencies": {
     "@eslint/eslintrc": "^3",
     "@types/formidable": "^3.4.5",
+    "@types/jsonwebtoken": "^9.0.9",
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",
