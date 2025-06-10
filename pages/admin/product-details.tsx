@@ -97,7 +97,19 @@ const ProductDetailsPage = () => {
   // Fetch products
   const fetchProducts = async () => {
     try {
-      const response = await fetch('/api/products');
+      const token = localStorage.getItem('adminToken');
+      
+      if (!token) {
+        toast.error('Authentication token missing');
+        return;
+      }
+      
+      const response = await fetch('/api/products', {
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      });
+      
       if (response.ok) {
         const data = await response.json();
         setProducts(data);
@@ -110,7 +122,19 @@ const ProductDetailsPage = () => {
   // Fetch product details
   const fetchProductDetails = async () => {
     try {
-      const response = await fetch('/api/product-details');
+      const token = localStorage.getItem('adminToken');
+      
+      if (!token) {
+        toast.error('Authentication token missing');
+        return;
+      }
+      
+      const response = await fetch('/api/product-details', {
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      });
+      
       if (response.ok) {
         const data = await response.json();
         setProductDetails(data);
@@ -127,8 +151,18 @@ const ProductDetailsPage = () => {
     }
 
     try {
+      const token = localStorage.getItem('adminToken');
+      
+      if (!token) {
+        toast.error('Authentication token missing');
+        return;
+      }
+      
       const response = await fetch(`/api/product-details/${detailId}`, {
         method: 'DELETE',
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
       });
 
       if (response.ok) {
@@ -435,9 +469,20 @@ const ProductDetailsPage = () => {
         }
       };
 
+      const token = localStorage.getItem('adminToken');
+    
+      if (!token) {
+        toast.error('Authentication token missing');
+        setSubmitting(false);
+        return;
+      }
+
       const response = await fetch(url, {
         method,
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
         body: JSON.stringify(submitData),
       });
 
