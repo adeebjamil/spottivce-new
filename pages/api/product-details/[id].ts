@@ -63,6 +63,16 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
           return res.status(404).json({ error: 'Product detail not found' });
         }
 
+        if (updateResult.matchedCount > 0) {
+          try {
+            // Tell Next.js to update the product page
+            await res.revalidate(`/product/${productId}`);
+            console.log(`Revalidated product page: ${productId}`);
+          } catch (revalidateErr) {
+            console.error('Revalidation failed:', revalidateErr);
+          }
+        }
+
         res.status(200).json({ _id: id, ...updateData });
         break;
 
