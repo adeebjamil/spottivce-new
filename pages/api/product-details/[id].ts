@@ -46,8 +46,8 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
           specifications: specifications || {},
           featureImages: featureImages || [],
           seo: seo || {
-            focusKeyword: '',
-            seoKeywords: [],
+            focusKeywords: [],   // Changed to match frontend (plural)
+            seoKeyword: '',      // Changed to match frontend (singular)
             autoTitle: '',
             autoDescription: ''
           },
