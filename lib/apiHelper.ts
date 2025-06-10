@@ -6,21 +6,19 @@ export function getAuthHeaders() {
   };
 }
 
-export async function authenticatedFetch(url: string, options: RequestInit = {}) {
-  const response = await fetch(url, {
+export const authenticatedFetch = async (url: string, options: RequestInit = {}) => {
+  // Get token from the correct localStorage key
+  const token = localStorage.getItem('adminToken'); // Make sure this matches where token is stored
+  
+  // Prepare headers
+  const headers = {
+    ...options.headers,
+    'Authorization': `Bearer ${token}`
+  };
+  
+  // Make the authenticated request
+  return fetch(url, {
     ...options,
-    headers: {
-      ...getAuthHeaders(),
-      ...options.headers
-    }
+    headers
   });
-
-  if (response.status === 401) {
-    // Token expired or invalid
-    localStorage.removeItem('adminToken');
-    localStorage.removeItem('adminAuth');
-    window.location.href = '/admin';
-  }
-
-  return response;
-}
+};

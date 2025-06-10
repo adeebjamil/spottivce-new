@@ -78,7 +78,7 @@ const brands: Brand[] = [
   {
     id: 'uniview',
     name: 'Uniview',
-    logo: '/brand/uniview.png',
+    logo: '/brand/newunv.png',
     bgColor: 'bg-green-50',
     borderColor: 'border-green-200',
     textColor: 'text-green-600',

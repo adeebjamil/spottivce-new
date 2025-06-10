@@ -45,8 +45,8 @@ const ProductsPage = () => {
 
   // Authentication check
   useEffect(() => {
-    const auth = localStorage.getItem('adminAuth');
-    if (auth === 'true') {
+    const token = localStorage.getItem('adminToken'); // Change this line to match where token is stored
+    if (token && token.length > 20) {
       setIsAuthenticated(true);
       fetchProducts();
     } else {
@@ -133,7 +133,8 @@ const ProductsPage = () => {
       const method = editingProduct ? 'PUT' : 'POST';
       const url = editingProduct ? `/api/products/${editingProduct._id}` : '/api/products';
       
-      const response = await fetch(url, {
+      // Use the authenticatedFetch utility that's already imported
+      const response = await authenticatedFetch(url, {
         method,
         headers: {
           'Content-Type': 'application/json',
