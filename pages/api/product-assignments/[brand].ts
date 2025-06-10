@@ -1,10 +1,19 @@
 import { NextApiRequest, NextApiResponse } from 'next';
 import clientPromise from '../../../lib/mongodb';
+import { authenticateToken } from '../../../lib/auth';
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   const client = await clientPromise;
   const db = client.db('spottive');
   const { brand } = req.query;
+
+  // For product-details/[id].ts, product-assignments/[brand].ts, and product-enquiry/[id].ts
+  if (req.method !== 'GET') {
+    const user = authenticateToken(req);
+    if (!user) {
+      return res.status(401).json({ message: 'Auth required' });
+    }
+  }
 
   try {
     if (req.method === 'GET') {

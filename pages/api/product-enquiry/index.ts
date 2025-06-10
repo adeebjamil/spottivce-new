@@ -1,11 +1,21 @@
 import { NextApiRequest, NextApiResponse } from 'next';
 import clientPromise from '../../../lib/mongodb';
+import { authenticateToken } from '../../../lib/auth';
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   try {
     const client = await clientPromise;
     const db = client.db('spottive');
     const collection = db.collection('productEnquiry');
+
+    // Only require authentication for GET, DELETE methods (admin operations)
+    // Allow POST without authentication (for customer enquiries)
+    if (req.method === 'GET' || req.method === 'DELETE') {
+      const user = authenticateToken(req);
+      if (!user) {
+        return res.status(401).json({ message: 'Auth required' });
+      }
+    }
 
     switch (req.method) {
       case 'GET':

@@ -1,12 +1,41 @@
 import { NextApiRequest, NextApiResponse } from 'next';
 import clientPromise from '../../../lib/mongodb';
-import { ObjectId } from 'mongodb';
+import jwt from 'jsonwebtoken';
+
+// Authentication middleware - same as in products endpoint
+const authenticateToken = (req: NextApiRequest) => {
+  try {
+    const authHeader = req.headers.authorization;
+    const token = authHeader && authHeader.split(' ')[1];
+    
+    if (!token) {
+      return null;
+    }
+    
+    const jwtSecret = process.env.JWT_SECRET;
+    if (!jwtSecret) {
+      return null;
+    }
+    
+    return jwt.verify(token, jwtSecret);
+  } catch (error) {
+    return null;
+  }
+};
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   try {
     const client = await clientPromise;
     const db = client.db('spottive');
     const collection = db.collection('productDetails');
+
+    // Add this block - same as in your products endpoint
+    if (req.method !== 'GET') {
+      const user = authenticateToken(req);
+      if (!user) {
+        return res.status(401).json({ message: 'Auth required' });
+      }
+    }
 
     switch (req.method) {
       case 'GET':

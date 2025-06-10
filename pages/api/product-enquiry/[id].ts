@@ -1,6 +1,7 @@
 import { NextApiRequest, NextApiResponse } from 'next';
 import clientPromise from '../../../lib/mongodb';
 import { ObjectId } from 'mongodb';
+import { authenticateToken } from '../../../lib/auth';
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   try {
@@ -11,6 +12,14 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
     if (!ObjectId.isValid(id as string)) {
       return res.status(400).json({ error: 'Invalid enquiry ID' });
+    }
+
+    // For product-details/[id].ts, product-assignments/[brand].ts, and product-enquiry/[id].ts
+    if (req.method !== 'GET') {
+      const user = authenticateToken(req);
+      if (!user) {
+        return res.status(401).json({ message: 'Auth required' });
+      }
     }
 
     switch (req.method) {

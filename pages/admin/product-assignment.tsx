@@ -1,4 +1,3 @@
-
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/router';
 import Image from 'next/image';
@@ -178,10 +177,20 @@ const ProductAssignmentPage = () => {
 
     setSubmitting(true);
     try {
+      // Get token from localStorage
+      const token = localStorage.getItem('adminToken');
+
+      if (!token) {
+        toast.error('Authentication token missing');
+        setSubmitting(false);
+        return;
+      }
+
       const response = await fetch('/api/product-assignments', {
         method: 'POST',
-        headers: {
+        headers: { 
           'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`  // Add token
         },
         body: JSON.stringify({
           brand: selectedBrand.id,

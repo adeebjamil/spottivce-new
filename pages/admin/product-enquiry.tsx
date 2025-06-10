@@ -40,11 +40,20 @@ const ProductEnquiryPage = () => {
   const router = useRouter();
 
   useEffect(() => {
+    // Current check:
+    // const auth = localStorage.getItem('adminAuth');
+    // if (auth === 'true') {
+    
+    // Update to this:
     const auth = localStorage.getItem('adminAuth');
-    if (auth === 'true') {
+    const token = localStorage.getItem('adminToken');
+    
+    if (auth === 'true' && token) {
       setIsAuthenticated(true);
       fetchEnquiries();
     } else {
+      // If token doesn't exist, redirect to login
+      toast.error('Authentication required');
       router.push('/admin');
     }
     setLoading(false);
@@ -53,7 +62,20 @@ const ProductEnquiryPage = () => {
   // Fetch enquiries from API
   const fetchEnquiries = async () => {
     try {
-      const response = await fetch('/api/product-enquiry');
+      // Get token from localStorage
+      const token = localStorage.getItem('adminToken');
+      
+      if (!token) {
+        toast.error('Authentication token missing');
+        return;
+      }
+      
+      const response = await fetch('/api/product-enquiry', {
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      });
+      
       if (response.ok) {
         const data = await response.json();
         setEnquiries(data);
@@ -101,10 +123,19 @@ const ProductEnquiryPage = () => {
     try {
       console.log('Updating status for enquiry:', enquiryId, 'to:', newStatus);
       
+      // Get token from localStorage
+      const token = localStorage.getItem('adminToken');
+
+      if (!token) {
+        toast.error('Authentication token missing');
+        return;
+      }
+
       const response = await fetch(`/api/product-enquiry/${enquiryId}`, {
         method: 'PUT',
-        headers: {
+        headers: { 
           'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`  // Add token
         },
         body: JSON.stringify({ status: newStatus }),
       });
@@ -140,12 +171,21 @@ const ProductEnquiryPage = () => {
     if (!confirm('Are you sure you want to delete this enquiry?')) return;
 
     try {
-      console.log('Deleting enquiry:', enquiryId);
+      // Get token from localStorage
+      const token = localStorage.getItem('adminToken');
+      
+      if (!token) {
+        toast.error('Authentication token missing');
+        return;
+      }
       
       const response = await fetch(`/api/product-enquiry/${enquiryId}`, {
         method: 'DELETE',
+        headers: {
+          'Authorization': `Bearer ${token}`  // Add this line
+        }
       });
-
+      
       console.log('Delete response status:', response.status);
 
       if (response.ok) {
