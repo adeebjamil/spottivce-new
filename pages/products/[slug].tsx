@@ -435,36 +435,31 @@ export default function ProductPage() {
 
   // Download brochure handler
   const handleDownloadBrochure = () => {
-    // Create a temporary download link for demonstration
-    // You can replace this with actual brochure files later
-    const link = document.createElement('a');
-    link.href = `/brochures/${slug}-brochure.pdf`; // Path where you'll upload brochures
-    link.download = `${product?.title.replace(/\s+/g, '-').toLowerCase()}-brochure.pdf`;
-    
-    // Fallback: Create a placeholder PDF content for now
-    const pdfContent = `
-      ${product?.title} - Product Brochure
-      
-      ${product?.description}
-      
-      Key Features:
-      ${product?.features.map(f => `• ${f.title}: ${f.description}`).join('\n')}
-      
-      For more information, contact us at +971 55 234 1712
-      Visit: www.spottive.com
-    `;
-    
-    const blob = new Blob([pdfContent], { type: 'text/plain' });
-    const url = URL.createObjectURL(blob);
-    link.href = url;
-    
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-    URL.revokeObjectURL(url);
+    // Map product slugs to actual PDF files
+    const brochureMap: Record<string, string> = {
+      'surveillance': 'surveillance-brochure.pdf',
+      'commercial': 'commercial-brochure.pdf',
+      'residential': 'residential-brochure.pdf',
+      'cloud': 'cloud-brochure.pdf'
+    };
 
-    // Show success message (optional)
-    alert('Brochure download started! Please check your downloads folder.');
+    const brochureFile = brochureMap[slug as string];
+    
+    if (brochureFile) {
+      // Direct download of actual PDF
+      const link = document.createElement('a');
+      link.href = `/brochures/${brochureFile}`;
+      link.download = brochureFile;
+      link.target = '_blank'; // Fallback to open in new tab
+      
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      
+      console.log(`Downloading: ${brochureFile}`);
+    } else {
+      alert('Brochure not available. Please contact us for more information.');
+    }
   };
 
   // Call now handler

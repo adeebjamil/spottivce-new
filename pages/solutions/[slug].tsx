@@ -268,6 +268,37 @@ export default function SolutionPage() {
     setIsVideoModalOpen(true);
   };
 
+  const handleDownloadBrochure = () => {
+    // Map solution slugs to their corresponding brochure files
+    const brochureMap: Record<string, string> = {
+      'surveillance': 'surveillance-brochure.pdf',
+      'command-center': 'commercial-brochure.pdf', // Command center uses commercial brochure
+      'rapid-response': 'commercial-brochure.pdf',  // Rapid response uses commercial brochure
+      'cloud-security': 'cloud-brochure.pdf',
+      'security-analytics': 'commercial-brochure.pdf' // Analytics uses commercial brochure
+    };
+
+    const brochureFile = brochureMap[slug as string];
+    
+    if (brochureFile) {
+      // Create download link for the actual PDF file
+      const link = document.createElement('a');
+      link.href = `/brochures/${brochureFile}`;
+      link.download = brochureFile;
+      link.target = '_blank'; // Open in new tab if download fails
+      
+      // Trigger download
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      
+      console.log(`Downloading: ${brochureFile}`);
+    } else {
+      console.error('Brochure not found for solution:', slug);
+      alert('Brochure not available for this solution. Please contact us for more information.');
+    }
+  };
+
   if (!solution) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-slate-50 to-blue-50">
@@ -418,7 +449,7 @@ export default function SolutionPage() {
                 <MdPhone size={20} />
                 <span>Contact Sales</span>
               </button>
-              <button className="px-8 py-4 border border-white/30 text-white rounded-xl font-semibold hover:bg-white/10 hover:scale-105 transition-all duration-300 flex items-center justify-center space-x-2">
+              <button onClick={handleDownloadBrochure} className="px-8 py-4 border border-white/30 text-white rounded-xl font-semibold hover:bg-white/10 hover:scale-105 transition-all duration-300 flex items-center justify-center space-x-2">
                 <MdDownload size={20} />
                 <span>Download Brochure</span>
               </button>
