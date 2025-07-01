@@ -159,12 +159,40 @@ export default function Blog() {
     console.log("Searching for:", searchQuery);
   };
   
-  const handleSubscribe = (e: React.FormEvent) => {
+  const handleSubscribe = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (email) {
-      setIsSubscribed(true);
-      setEmail('');
-      setTimeout(() => setIsSubscribed(false), 3000);
+    if (!email) return;
+
+    console.log('Attempting to subscribe email:', email, 'from source: blog');
+
+    try {
+      const response = await fetch('/api/newsletter', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ 
+          email, 
+          source: 'blog' 
+        }),
+      });
+
+      console.log('Response status:', response.status);
+      const result = await response.json();
+      console.log('Response data:', result);
+
+      if (result.success) {
+        setIsSubscribed(true);
+        setEmail('');
+        setTimeout(() => setIsSubscribed(false), 5000);
+        console.log('Newsletter subscription successful');
+      } else {
+        console.error('Newsletter subscription failed:', result.message);
+        alert(result.message || 'Subscription failed. Please try again.');
+      }
+    } catch (error) {
+      console.error('Newsletter subscription error:', error);
+      alert('Network error. Please try again.');
     }
   };
   

@@ -10,8 +10,19 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
 
     switch (req.method) {
       case 'GET':
-        const products = await collection.find({}).toArray();
-        res.status(200).json(products);
+        try {
+          const products = await collection.find({}).toArray();
+          
+          // Ensure we always return an array
+          if (!products) {
+            return res.status(200).json([]);
+          }
+          
+          res.status(200).json(products);
+        } catch (dbError) {
+          console.error('Database query error:', dbError);
+          res.status(500).json({ error: 'Database query failed', products: [] });
+        }
         break;
 
       case 'POST':
@@ -32,6 +43,19 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
         };
 
         const result = await collection.insertOne(newProduct);
+        
+        // Log the activity for analytics
+        const analyticsDb = db.collection('analytics');
+        await analyticsDb.insertOne({
+          action: 'product_created',
+          productId: result.insertedId,
+          productName: name,
+          category,
+          subCategory,
+          timestamp: new Date(),
+          user: (req as any).user?.username || 'admin'
+        });
+
         res.status(201).json({ _id: result.insertedId, ...newProduct });
         break;
 
@@ -40,8 +64,12 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
         res.status(405).end(`Method ${req.method} Not Allowed`);
     }
   } catch (error) {
-    console.error('Database error:', error);
-    res.status(500).json({ error: 'Internal server error' });
+    console.error('API error:', error);
+    res.status(500).json({ 
+      error: 'Internal server error', 
+      message: error instanceof Error ? error.message : 'Unknown error',
+      products: [] // Always provide fallback
+    });
   }
 }
 

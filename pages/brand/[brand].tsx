@@ -222,63 +222,69 @@ const BrandProductsPage = () => {
 
   useEffect(() => {
     if (brand && brandInfo) {
-      fetchAssignedProducts();
+      fetchAssignedProducts(brand as string);
     }
   }, [brand, brandInfo]);
 
-  const fetchAssignedProducts = async () => {
+  const fetchAssignedProducts = async (brandName: string) => {
     try {
-      setLoading(true);
-      console.log('Fetching products for brand:', brand);
+      // Add proper error handling and fallback
+      const productsResponse = await fetch('/api/products', {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
       
-      // First, get the assignment for this brand
-      const assignmentResponse = await fetch(`/api/product-assignments/${brand}`);
-      console.log('Assignment response status:', assignmentResponse.status);
-      
-      if (!assignmentResponse.ok) {
-        console.log('No assignment found for brand:', brand);
-        setProducts([]);
-        setLoading(false);
-        return;
-      }
-      
-      const assignment = await assignmentResponse.json();
-      console.log('Assignment data:', assignment);
-      
-      if (!assignment || !assignment.productIds || assignment.productIds.length === 0) {
-        console.log('No products assigned to brand:', brand);
-        setProducts([]);
-        setLoading(false);
-        return;
-      }
-
-      // Then fetch all products and filter by assigned IDs
-      const productsResponse = await fetch('/api/products');
-      console.log('Products response status:', productsResponse.status);
-      
+      // Check if the response is ok
       if (!productsResponse.ok) {
-        throw new Error('Failed to fetch products');
+        console.error('Products API response not ok:', productsResponse.status, productsResponse.statusText);
+        
+        // Return empty array instead of throwing error to prevent crash
+        return [];
       }
       
       const allProducts = await productsResponse.json();
-      console.log('All products count:', allProducts.length);
-      console.log('Assigned product IDs:', assignment.productIds);
       
-      // Filter products that are assigned to this brand
-      const assignedProducts = allProducts.filter((product: Product) => 
-        assignment.productIds.includes(product._id)
+      // Ensure allProducts is an array
+      if (!Array.isArray(allProducts)) {
+        console.error('Products response is not an array:', allProducts);
+        return [];
+      }
+      
+      // Filter products by brand (case-insensitive)
+      const brandProducts = allProducts.filter(product => 
+        product.brand && product.brand.toLowerCase() === brandName.toLowerCase()
       );
       
-      console.log('Filtered assigned products:', assignedProducts.length);
-      setProducts(assignedProducts);
+      return brandProducts;
+      
     } catch (error) {
-      console.error('Error fetching assigned products:', error);
-      toast.error('Failed to load products for this brand');
-      setProducts([]);
-    } finally {
-      setLoading(false);
+      console.error('Error fetching products:', error);
+      // Return empty array instead of throwing to prevent component crash
+      return [];
     }
   };
+
+  // Also update your useEffect or wherever you're calling this function
+  useEffect(() => {
+    const loadProducts = async () => {
+      if (brand) {
+        setLoading(true);
+        try {
+          const products = await fetchAssignedProducts(brand as string);
+          setProducts(products);
+        } catch (error) {
+          console.error('Error loading products:', error);
+          setProducts([]); // Set empty array on error
+        } finally {
+          setLoading(false);
+        }
+      }
+    };
+    
+    loadProducts();
+  }, [brand]);
 
   // Filter products based on search and category
   const filteredProducts = products.filter(product => {

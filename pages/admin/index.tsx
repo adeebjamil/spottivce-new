@@ -18,27 +18,26 @@ const AdminLogin = () => {
     try {
       const response = await fetch('/api/admin/login', {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ username, password }),
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ username, password })
       });
 
       const data = await response.json();
 
-      if (data.success) {
-        // Store both auth flag and JWT token
-        localStorage.setItem('adminAuth', 'true');
+      if (response.ok && data.token) {
+        // Store both the token and auth flag
         localStorage.setItem('adminToken', data.token);
+        localStorage.setItem('adminAuth', 'true');
+        localStorage.setItem('adminUser', JSON.stringify(data.user));
         
         toast.success('Login successful!');
-        router.push('/admin/dashboard');
+        router.push('/admin/dashboard'); // Start with dashboard
       } else {
-        toast.error(data.message || 'Invalid credentials');
+        toast.error(data.error || 'Login failed');
       }
     } catch (error) {
       console.error('Login error:', error);
-      toast.error('Login failed. Please try again.');
+      toast.error('Network error. Please try again.');
     } finally {
       setLoading(false);
     }

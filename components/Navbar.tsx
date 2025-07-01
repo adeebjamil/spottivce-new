@@ -19,6 +19,8 @@ export default function Navbar() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isProductsOpen, setIsProductsOpen] = useState(false);
   const [isBrandsOpen, setIsBrandsOpen] = useState(false);
+  const [mobileProductsOpen, setMobileProductsOpen] = useState(false);
+  const [mobileBrandsOpen, setMobileBrandsOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
   
   // Refs for dropdown containers
@@ -35,15 +37,19 @@ export default function Navbar() {
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
-  // Toggle dropdown handlers (replaces hover handlers)
+  // Toggle dropdown handlers for DESKTOP
   const toggleProductsDropdown = (e: React.MouseEvent) => {
     e.preventDefault();
+    e.stopPropagation();
+    console.log('Products dropdown clicked, current state:', isProductsOpen);
     if (isBrandsOpen) setIsBrandsOpen(false);
     setIsProductsOpen(!isProductsOpen);
   };
 
   const toggleBrandsDropdown = (e: React.MouseEvent) => {
     e.preventDefault();
+    e.stopPropagation();
+    console.log('Brands dropdown clicked, current state:', isBrandsOpen);
     if (isProductsOpen) setIsProductsOpen(false);
     setIsBrandsOpen(!isBrandsOpen);
   };
@@ -55,11 +61,13 @@ export default function Navbar() {
       
       if (isProductsOpen && productsDropdownRef.current && 
           !productsDropdownRef.current.contains(target)) {
+        console.log('Clicking outside products dropdown');
         setIsProductsOpen(false);
       }
       
       if (isBrandsOpen && brandsDropdownRef.current && 
           !brandsDropdownRef.current.contains(target)) {
+        console.log('Clicking outside brands dropdown');
         setIsBrandsOpen(false);
       }
     };
@@ -73,7 +81,17 @@ export default function Navbar() {
     setIsMenuOpen(false);
     setIsProductsOpen(false);
     setIsBrandsOpen(false);
+    setMobileProductsOpen(false);
+    setMobileBrandsOpen(false);
   };
+
+  // Close desktop dropdowns when mobile menu opens
+  useEffect(() => {
+    if (isMenuOpen) {
+      setIsProductsOpen(false);
+      setIsBrandsOpen(false);
+    }
+  }, [isMenuOpen]);
 
   return (
     <header className={`fixed w-full z-50 transition-all duration-300 ${
@@ -106,7 +124,7 @@ export default function Navbar() {
                 <span>Home</span>
               </Link>
               
-              {/* Our Products with click dropdown */}
+              {/* Our Products with click dropdown - FIXED VERSION */}
               <div 
                 className="relative products-dropdown"
                 ref={productsDropdownRef}
@@ -116,7 +134,10 @@ export default function Navbar() {
                   <Link
                     href="/product"
                     className="flex items-center space-x-1 text-gray-700 hover:text-blue-600 px-3 py-2 text-sm font-medium transition-colors duration-200"
-                    onClick={closeMobileMenu}
+                    onClick={(e) => {
+                      // Don't prevent default here, let the link work
+                      closeMobileMenu();
+                    }}
                   >
                     <MdViewModule size={18} />
                     <span>Our Products</span>
@@ -128,6 +149,7 @@ export default function Navbar() {
                     onClick={toggleProductsDropdown}
                     aria-expanded={isProductsOpen}
                     aria-label="Toggle products menu"
+                    type="button"
                   >
                     <MdKeyboardArrowDown 
                       className={`transition-transform duration-300 ${
@@ -138,13 +160,14 @@ export default function Navbar() {
                   </button>
                 </div>
                 
-                {/* Products Mega Dropdown */}
+                {/* Products Mega Dropdown - FIXED POSITIONING */}
                 <div 
-                  className={`absolute left-1/2 transform -translate-x-1/2 mt-1 w-[800px] bg-white rounded-xl shadow-2xl border border-gray-200 overflow-hidden transition-all duration-300 z-50 ${
+                  className={`absolute left-1/2 transform -translate-x-1/2 mt-2 w-[800px] bg-white rounded-xl shadow-2xl border border-gray-200 overflow-hidden transition-all duration-300 z-[60] ${
                     isProductsOpen 
                       ? 'opacity-100 visible translate-y-0' 
                       : 'opacity-0 invisible -translate-y-4 pointer-events-none'
                   }`}
+                  style={{ top: '100%' }}
                 >
                   <div className="py-6 px-6 grid grid-cols-12 gap-4">
                     {/* Left column - Product categories */}
@@ -300,7 +323,7 @@ export default function Navbar() {
                 <span>Blog</span>
               </Link>
 
-              {/* Our Brands with click dropdown */}
+              {/* Our Brands dropdown - keep as is */}
               <div 
                 className="relative brands-dropdown"
                 ref={brandsDropdownRef}
@@ -412,7 +435,7 @@ export default function Navbar() {
             </div>
           </nav>
 
-          {/* Mobile menu button - Keep this unchanged */}
+          {/* Mobile menu button */}
           <div className="md:hidden flex items-center">
             <button
               onClick={() => setIsMenuOpen(!isMenuOpen)}
@@ -439,11 +462,10 @@ export default function Navbar() {
         </div>
       </div>
 
-      {/* Mobile menu - Keep this unchanged */}
+      {/* Mobile menu - UPDATE to use separate state */}
       <div className={`md:hidden bg-white border-t border-gray-200 transition-all duration-300 ${
         isMenuOpen ? 'max-h-screen opacity-100' : 'max-h-0 opacity-0 overflow-hidden'
       }`}>
-        {/* Keep the rest of the mobile menu unchanged */}
         <div className="px-2 pt-2 pb-3 space-y-1 sm:px-3">
           <Link
             href="/"
@@ -467,11 +489,11 @@ export default function Navbar() {
               </Link>
               <button 
                 className="text-gray-700 hover:text-blue-600 px-3 py-2 text-base font-medium transition-colors rounded-lg hover:bg-gray-50"
-                onClick={() => setIsProductsOpen(!isProductsOpen)}
+                onClick={() => setMobileProductsOpen(!mobileProductsOpen)}
               >
                 <MdKeyboardArrowDown 
                   className={`transition-transform duration-300 ${
-                    isProductsOpen ? "rotate-180" : ""
+                    mobileProductsOpen ? "rotate-180" : ""
                   }`} 
                   size={20} 
                 />
@@ -479,37 +501,105 @@ export default function Navbar() {
             </div>
             
             <div className={`overflow-hidden transition-all duration-300 ${
-              isProductsOpen ? 'max-h-64 opacity-100' : 'max-h-0 opacity-0'
+              mobileProductsOpen ? 'max-h-96 opacity-100' : 'max-h-0 opacity-0'
             }`}>
               <div className="pl-4 py-2 space-y-2">
-                <Link
-                  href="/brand/hikvision"
-                  className="flex items-center space-x-2 text-gray-600 hover:text-blue-600 px-3 py-2 text-sm font-medium transition-colors rounded-lg hover:bg-gray-50"
-                  onClick={closeMobileMenu}
-                >
-                  <span>Hikvision</span>
-                </Link>
-                <Link
-                  href="/brand/unv"
-                  className="flex items-center space-x-2 text-gray-600 hover:text-blue-600 px-3 py-2 text-sm font-medium transition-colors rounded-lg hover:bg-gray-50"
-                  onClick={closeMobileMenu}
-                >
-                  <span>UNV</span>
-                </Link>
-                <Link
-                  href="/brand/dahua"
-                  className="flex items-center space-x-2 text-gray-600 hover:text-blue-600 px-3 py-2 text-sm font-medium transition-colors rounded-lg hover:bg-gray-50"
-                  onClick={closeMobileMenu}
-                >
-                  <span>Dahua</span>
-                </Link>
-                <Link
-                  href="/brand/uniview"
-                  className="flex items-center space-x-2 text-gray-600 hover:text-blue-600 px-3 py-2 text-sm font-medium transition-colors rounded-lg hover:bg-gray-50"
-                  onClick={closeMobileMenu}
-                >
-                  <span>Uniview</span>
-                </Link>
+                {/* Product Categories Section */}
+                <div className="py-2">
+                  <p className="text-xs text-gray-500 font-semibold uppercase tracking-wider px-3 mb-2">Product Categories</p>
+                  <Link
+                    href="/products/surveillance"
+                    className="flex items-center space-x-2 text-gray-600 hover:text-blue-600 px-3 py-2 text-sm font-medium transition-colors rounded-lg hover:bg-gray-50"
+                    onClick={closeMobileMenu}
+                  >
+                    <MdSecurity size={16} />
+                    <span>Surveillance Systems</span>
+                  </Link>
+                  <Link
+                    href="/products/commercial"
+                    className="flex items-center space-x-2 text-gray-600 hover:text-blue-600 px-3 py-2 text-sm font-medium transition-colors rounded-lg hover:bg-gray-50"
+                    onClick={closeMobileMenu}
+                  >
+                    <MdBusiness size={16} />
+                    <span>Commercial Security</span>
+                  </Link>
+                  <Link
+                    href="/products/residential"
+                    className="flex items-center space-x-2 text-gray-600 hover:text-blue-600 px-3 py-2 text-sm font-medium transition-colors rounded-lg hover:bg-gray-50"
+                    onClick={closeMobileMenu}
+                  >
+                    <MdHome size={16} />
+                    <span>Residential Security</span>
+                  </Link>
+                  <Link
+                    href="/products/cloud"
+                    className="flex items-center space-x-2 text-gray-600 hover:text-blue-600 px-3 py-2 text-sm font-medium transition-colors rounded-lg hover:bg-gray-50"
+                    onClick={closeMobileMenu}
+                  >
+                    <MdVideocam size={16} />
+                    <span>Cloud Solutions</span>
+                  </Link>
+                </div>
+                
+                {/* Divider */}
+                <div className="border-t border-gray-200 my-2"></div>
+                
+                {/* Featured Brands Section */}
+                <div className="py-2">
+                  <p className="text-xs text-gray-500 font-semibold uppercase tracking-wider px-3 mb-2">Featured Brands</p>
+                  <Link
+                    href="/brand/hikvision"
+                    className="flex items-center space-x-3 text-gray-600 hover:text-blue-600 px-3 py-2 text-sm font-medium transition-colors rounded-lg hover:bg-gray-50"
+                    onClick={closeMobileMenu}
+                  >
+                    <div className="w-6 h-6 bg-blue-100 rounded flex items-center justify-center">
+                      <span className="text-xs font-bold text-blue-600">H</span>
+                    </div>
+                    <span>Hikvision Products</span>
+                  </Link>
+                  <Link
+                    href="/brand/unv"
+                    className="flex items-center space-x-3 text-gray-600 hover:text-gray-600 px-3 py-2 text-sm font-medium transition-colors rounded-lg hover:bg-gray-50"
+                    onClick={closeMobileMenu}
+                  >
+                    <div className="w-6 h-6 bg-gray-100 rounded flex items-center justify-center">
+                      <span className="text-xs font-bold text-gray-600">U</span>
+                    </div>
+                    <span>UNV Products</span>
+                  </Link>
+                  <Link
+                    href="/brand/dahua"
+                    className="flex items-center space-x-3 text-gray-600 hover:text-purple-600 px-3 py-2 text-sm font-medium transition-colors rounded-lg hover:bg-gray-50"
+                    onClick={closeMobileMenu}
+                  >
+                    <div className="w-6 h-6 bg-purple-100 rounded flex items-center justify-center">
+                      <span className="text-xs font-bold text-purple-600">D</span>
+                    </div>
+                    <span>Dahua Products</span>
+                  </Link>
+                  <Link
+                    href="/brand/uniview"
+                    className="flex items-center space-x-3 text-gray-600 hover:text-green-600 px-3 py-2 text-sm font-medium transition-colors rounded-lg hover:bg-gray-50"
+                    onClick={closeMobileMenu}
+                  >
+                    <div className="w-6 h-6 bg-green-100 rounded flex items-center justify-center">
+                      <span className="text-xs font-bold text-green-600">UV</span>
+                    </div>
+                    <span>Uniview Products</span>
+                  </Link>
+                </div>
+                
+                {/* View All Products Button */}
+                <div className="pt-2">
+                  <Link
+                    href="/product"
+                    className="flex items-center justify-center space-x-2 bg-blue-600 text-white px-3 py-2 text-sm font-medium transition-colors rounded-lg hover:bg-blue-700 mx-3"
+                    onClick={closeMobileMenu}
+                  >
+                    <MdViewModule size={16} />
+                    <span>View All Products</span>
+                  </Link>
+                </div>
               </div>
             </div>
           </div>
@@ -527,11 +617,11 @@ export default function Navbar() {
               </Link>
               <button 
                 className="text-gray-700 hover:text-blue-600 px-3 py-2 text-base font-medium transition-colors rounded-lg hover:bg-gray-50"
-                onClick={() => setIsBrandsOpen(!isBrandsOpen)}
+                onClick={() => setMobileBrandsOpen(!mobileBrandsOpen)}
               >
                 <MdKeyboardArrowDown 
                   className={`transition-transform duration-300 ${
-                    isBrandsOpen ? "rotate-180" : ""
+                    mobileBrandsOpen ? "rotate-180" : ""
                   }`} 
                   size={20} 
                 />
@@ -539,37 +629,77 @@ export default function Navbar() {
             </div>
             
             <div className={`overflow-hidden transition-all duration-300 ${
-              isBrandsOpen ? 'max-h-64 opacity-100' : 'max-h-0 opacity-0'
+              mobileBrandsOpen ? 'max-h-80 opacity-100' : 'max-h-0 opacity-0'
             }`}>
-              <div className="pl-4 py-2">
-                <Link
-                  href="/brand/hikvision"
-                  className="flex items-center space-x-2 text-gray-600 hover:text-blue-600 px-3 py-2 text-sm font-medium transition-colors rounded-lg hover:bg-gray-50"
-                  onClick={closeMobileMenu}
-                >
-                  <span>Hikvision</span>
-                </Link>
-                <Link
-                  href="/brand/dahua"
-                  className="flex items-center space-x-2 text-gray-600 hover:text-blue-600 px-3 py-2 text-sm font-medium transition-colors rounded-lg hover:bg-gray-50"
-                  onClick={closeMobileMenu}
-                >
-                  <span>Dahua</span>
-                </Link>
-                <Link
-                  href="/brand/uniview"
-                  className="flex items-center space-x-2 text-gray-600 hover:text-blue-600 px-3 py-2 text-sm font-medium transition-colors rounded-lg hover:bg-gray-50"
-                  onClick={closeMobileMenu}
-                >
-                  <span>Uniview</span>
-                </Link>
-                <Link
-                  href="/brand"
-                  className="flex items-center space-x-2 text-gray-600 hover:text-blue-600 px-3 py-2 text-sm font-medium transition-colors rounded-lg hover:bg-gray-50"
-                  onClick={closeMobileMenu}
-                >
-                  <span>All Brands</span>
-                </Link>
+              <div className="pl-4 py-2 space-y-2">
+                {/* Featured Brands */}
+                <div className="py-2">
+                  <p className="text-xs text-gray-500 font-semibold uppercase tracking-wider px-3 mb-2">Premium Security Brands</p>
+                  <Link
+                    href="/brand/hikvision"
+                    className="flex items-center space-x-3 text-gray-600 hover:text-blue-600 px-3 py-2 text-sm font-medium transition-colors rounded-lg hover:bg-gray-50"
+                    onClick={closeMobileMenu}
+                  >
+                    <div className="w-8 h-8 bg-blue-100 rounded flex items-center justify-center">
+                      <span className="text-xs font-bold text-blue-600">H</span>
+                    </div>
+                    <div>
+                      <div className="font-medium">Hikvision</div>
+                      <div className="text-xs text-gray-500">World Leader #1</div>
+                    </div>
+                  </Link>
+                  <Link
+                    href="/brand/dahua"
+                    className="flex items-center space-x-3 text-gray-600 hover:text-purple-600 px-3 py-2 text-sm font-medium transition-colors rounded-lg hover:bg-gray-50"
+                    onClick={closeMobileMenu}
+                  >
+                    <div className="w-8 h-8 bg-purple-100 rounded flex items-center justify-center">
+                      <span className="text-xs font-bold text-purple-600">D</span>
+                    </div>
+                    <div>
+                      <div className="font-medium">Dahua</div>
+                      <div className="text-xs text-gray-500">Global Leader #2</div>
+                    </div>
+                  </Link>
+                  <Link
+                    href="/brand/unv"
+                    className="flex items-center space-x-3 text-gray-600 hover:text-gray-600 px-3 py-2 text-sm font-medium transition-colors rounded-lg hover:bg-gray-50"
+                    onClick={closeMobileMenu}
+                  >
+                    <div className="w-8 h-8 bg-gray-100 rounded flex items-center justify-center">
+                      <span className="text-xs font-bold text-gray-600">U</span>
+                    </div>
+                    <div>
+                      <div className="font-medium">UNV</div>
+                      <div className="text-xs text-gray-500">Professional Grade</div>
+                    </div>
+                  </Link>
+                  <Link
+                    href="/brand/uniview"
+                    className="flex items-center space-x-3 text-gray-600 hover:text-green-600 px-3 py-2 text-sm font-medium transition-colors rounded-lg hover:bg-gray-50"
+                    onClick={closeMobileMenu}
+                  >
+                    <div className="w-8 h-8 bg-green-100 rounded flex items-center justify-center">
+                      <span className="text-xs font-bold text-green-600">UV</span>
+                    </div>
+                    <div>
+                      <div className="font-medium">Uniview</div>
+                      <div className="text-xs text-gray-500">Innovation Leader</div>
+                    </div>
+                  </Link>
+                </div>
+                
+                {/* View All Brands Button */}
+                <div className="pt-2">
+                  <Link
+                    href="/brand"
+                    className="flex items-center justify-center space-x-2 bg-gradient-to-r from-blue-600 to-purple-600 text-white px-3 py-2 text-sm font-medium transition-colors rounded-lg hover:from-blue-700 hover:to-purple-700 mx-3"
+                    onClick={closeMobileMenu}
+                  >
+                    <MdBusiness size={16} />
+                    <span>View All Brands</span>
+                  </Link>
+                </div>
               </div>
             </div>
           </div>

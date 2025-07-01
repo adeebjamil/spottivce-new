@@ -22,9 +22,16 @@ const AdminSidebar = ({ sidebarOpen, setSidebarOpen }: AdminSidebarProps) => {
   const router = useRouter();
 
   const handleLogout = () => {
+    // Clear all auth data
     localStorage.removeItem('adminAuth');
-    toast.success('Logged out successfully!');
-    router.push('/admin');
+    localStorage.removeItem('adminToken');
+    localStorage.removeItem('adminUser');
+    
+    // Show confirmation
+    toast.success('Logged out successfully');
+    
+    // Redirect to login
+    window.location.href = '/admin';
   };
 
   const menuItems = [

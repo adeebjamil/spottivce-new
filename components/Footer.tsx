@@ -45,12 +45,36 @@ export default function Footer() {
     };
   }, []);
 
-  const handleSubscribe = (e: React.FormEvent) => {
+  const handleSubscribe = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (email) {
-      setIsSubscribed(true);
-      setEmail('');
-      setTimeout(() => setIsSubscribed(false), 3000);
+    if (!email) return;
+
+    try {
+      const response = await fetch('/api/newsletter', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ 
+          email, 
+          source: 'footer' 
+        }),
+      });
+
+      const result = await response.json();
+
+      if (result.success) {
+        setIsSubscribed(true);
+        setEmail('');
+        // Show success message for longer
+        setTimeout(() => setIsSubscribed(false), 5000);
+      } else {
+        // Handle errors (like duplicate email)
+        alert(result.message || 'Subscription failed. Please try again.');
+      }
+    } catch (error) {
+      console.error('Newsletter subscription error:', error);
+      alert('Network error. Please try again.');
     }
   };
   

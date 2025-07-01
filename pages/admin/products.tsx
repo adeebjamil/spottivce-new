@@ -11,7 +11,7 @@ import {
   MdCancel
 } from 'react-icons/md';
 import { toast } from 'react-toastify';
-import { authenticatedFetch } from '../../lib/apiHelper';
+import { authenticatedFetch, refreshAdminData } from '../../lib/apiHelper';
 
 interface Product {
   _id: string;
@@ -46,29 +46,40 @@ const ProductsPage = () => {
   // Authentication check
   useEffect(() => {
     const auth = localStorage.getItem('adminAuth');
-    if (auth === 'true') {
+    const token = localStorage.getItem('adminToken');
+    
+    if (auth === 'true' && token) {
       setIsAuthenticated(true);
       fetchProducts();
     } else {
+      // Clear any stale auth data
+      localStorage.removeItem('adminAuth');
+      localStorage.removeItem('adminToken');
+      localStorage.removeItem('adminUser');
       router.push('/admin');
     }
     setLoading(false);
   }, [router]);
 
-  // Fix the fetchProducts function
+  // Listen for refresh events from other components
+  useEffect(() => {
+    const handleRefresh = () => {
+      fetchProducts();
+    };
+
+    window.addEventListener('refreshProducts', handleRefresh);
+    return () => window.removeEventListener('refreshProducts', handleRefresh);
+  }, []);
+
+  // Fetch products from API
   const fetchProducts = async () => {
     setLoading(true);
     try {
-      // Use authenticatedFetch instead of regular fetch
       const response = await authenticatedFetch('/api/products');
       
       if (response.ok) {
         const data = await response.json();
         setProducts(data);
-      } else if (response.status === 401) {
-        toast.error('Session expired. Please login again.');
-        // Redirect to login
-        router.push('/admin');
       } else {
         toast.error('Failed to fetch products');
         console.error('Fetch error:', response.status);
@@ -145,7 +156,7 @@ const ProductsPage = () => {
       const method = editingProduct ? 'PUT' : 'POST';
       const url = editingProduct ? `/api/products/${editingProduct._id}` : '/api/products';
       
-      const response = await fetch(url, {
+      const response = await authenticatedFetch(url, {
         method,
         headers: {
           'Content-Type': 'application/json',
@@ -157,7 +168,8 @@ const ProductsPage = () => {
       });
 
       if (response.ok) {
-        await fetchProducts(); // Refresh the list
+        await fetchProducts(); // Refresh current page
+        await refreshAdminData(); // Refresh all related admin data
         resetForm();
         setShowForm(false);
         toast.success(editingProduct ? 'Product updated successfully!' : 'Product created successfully!');
@@ -175,7 +187,7 @@ const ProductsPage = () => {
 
   // Handle delete
   const handleDelete = async (id: string) => {
-    if (!confirm('Are you sure you want to delete this product?')) return;
+    if (!confirm('Are you sure you want to delete this product? This will also remove all related data including product details, assignments, and enquiries.')) return;
 
     try {
       const response = await authenticatedFetch(`/api/products/${id}`, {
@@ -184,10 +196,8 @@ const ProductsPage = () => {
 
       if (response.ok) {
         await fetchProducts();
-        toast.success('Product deleted successfully!');
-      } else if (response.status === 401) {
-        toast.error('Unauthorized. Please login again.');
-        router.push('/admin');
+        await refreshAdminData(); // Refresh all related admin data
+        toast.success('Product and all related data deleted successfully!');
       } else {
         toast.error('Failed to delete product');
       }
