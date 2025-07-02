@@ -21,13 +21,6 @@ export default function AnalyticsTracker() {
     // Track page view
     const trackPageView = async (path: string) => {
       try {
-        console.log('📊 Tracking visitor:', {
-          sessionId,
-          path,
-          device: /Mobile|Android|iPhone/.test(navigator.userAgent) ? 'mobile' : 'desktop',
-          timestamp: new Date().toISOString()
-        });
-
         const response = await fetch('/api/analytics/track-visitor', {
           method: 'POST',
           headers: {
@@ -44,9 +37,8 @@ export default function AnalyticsTracker() {
         });
 
         const result = await response.json();
-        console.log('✅ Analytics response:', result);
       } catch (error) {
-        console.error('❌ Analytics tracking failed:', error);
+        // Silent error handling
       }
     };
 

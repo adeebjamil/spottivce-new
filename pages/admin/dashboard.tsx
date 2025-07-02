@@ -98,11 +98,28 @@ const AdminDashboard = () => {
     }
 
     try {
-      // Replace mock data with actual API call
-      const response = await fetch('/api/admin/dashboard');
+      // Get token from localStorage
+      const token = localStorage.getItem('adminToken');
+      
+      // Make authenticated request
+      const response = await fetch('/api/admin/dashboard', {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token || ''}` // Include token in Authorization header
+        }
+      });
       
       if (!response.ok) {
-        throw new Error('Failed to fetch dashboard data');
+        // Handle unauthorized error
+        if (response.status === 401 || response.status === 403) {
+          localStorage.removeItem('adminAuth');
+          localStorage.removeItem('adminToken');
+          router.push('/admin');
+          toast.error('Session expired or access denied. Please log in again.');
+          return;
+        }
+        throw new Error(`Error: ${response.status}`);
       }
       
       const data = await response.json();
@@ -126,7 +143,7 @@ const AdminDashboard = () => {
         toast.error('Failed to refresh dashboard data');
       }
     }
-  }, []);
+  }, [router]);
 
   useEffect(() => {
     // Check if user is authenticated

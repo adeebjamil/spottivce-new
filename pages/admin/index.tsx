@@ -57,7 +57,7 @@ const AdminLogin = () => {
         <div className="bg-white/95 backdrop-blur-sm rounded-2xl shadow-2xl p-8 border border-white/20">
           {/* Logo and Header */}
           <div className="text-center mb-8">
-            <div className="relative w-20 h-20 mx-auto mb-4 rounded-2xl overflow-hidden bg-gradient-to-r from-blue-500 to-purple-500 p-3">
+            <div className="relative w-60 h-40 mx-auto mb-4 rounded-2xl overflow-hidden p-3">
               <img
                 src="/logo.png"
                 alt="Company Logo"

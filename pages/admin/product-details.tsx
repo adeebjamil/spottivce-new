@@ -33,8 +33,8 @@ interface ProductDetail {
   specifications: { [key: string]: string };
   featureImages: string[];
   seo: {
-    focusKeywords: string[]; // Changed from focusKeyword to focusKeywords (array)
-    seoKeyword: string; // Changed from seoKeywords to seoKeyword (single)
+    focusKeywords: string[];
+    seoKeyword: string;
     autoTitle: string;
     autoDescription: string;
   };
@@ -53,8 +53,6 @@ const ProductDetailsPage = () => {
   const [previewImages, setPreviewImages] = useState<string[]>([]);
   const [submitting, setSubmitting] = useState(false);
   const [uploadingImages, setUploadingImages] = useState(false);
-  
-  // Move pagination state to the top with other useState declarations
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage] = useState(10);
   
@@ -66,8 +64,8 @@ const ProductDetailsPage = () => {
     specifications: {},
     featureImages: [],
     seo: {
-      focusKeywords: [], // Multiple focus keywords
-      seoKeyword: '', // Single SEO keyword
+      focusKeywords: [],
+      seoKeyword: '',
       autoTitle: '',
       autoDescription: ''
     }
@@ -80,6 +78,20 @@ const ProductDetailsPage = () => {
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
 
   const router = useRouter();
+
+  // Helper function to get auth headers
+  const getAuthHeaders = () => {
+    const token = localStorage.getItem('adminToken') || localStorage.getItem('adminAuth');
+    const headers: any = {
+      'Content-Type': 'application/json',
+    };
+    
+    if (token && token !== 'true') {
+      headers['Authorization'] = `Bearer ${token}`;
+    }
+    
+    return headers;
+  };
 
   // Authentication check
   useEffect(() => {
@@ -94,33 +106,51 @@ const ProductDetailsPage = () => {
     setLoading(false);
   }, [router]);
 
-  // Fetch products
+  // Fetch products with authentication
   const fetchProducts = async () => {
     try {
-      const response = await fetch('/api/products');
+      const response = await fetch('/api/products', {
+        headers: getAuthHeaders()
+      });
+      
       if (response.ok) {
         const data = await response.json();
         setProducts(data);
+      } else if (response.status === 401 || response.status === 403) {
+        localStorage.removeItem('adminAuth');
+        localStorage.removeItem('adminToken');
+        router.push('/admin');
+        toast.error('Session expired. Please log in again.');
       }
     } catch (error) {
       console.error('Error fetching products:', error);
+      toast.error('Failed to fetch products');
     }
   };
 
-  // Fetch product details
+  // Fetch product details with authentication
   const fetchProductDetails = async () => {
     try {
-      const response = await fetch('/api/product-details');
+      const response = await fetch('/api/product-details', {
+        headers: getAuthHeaders()
+      });
+      
       if (response.ok) {
         const data = await response.json();
         setProductDetails(data);
+      } else if (response.status === 401 || response.status === 403) {
+        localStorage.removeItem('adminAuth');
+        localStorage.removeItem('adminToken');
+        router.push('/admin');
+        toast.error('Session expired. Please log in again.');
       }
     } catch (error) {
       console.error('Error fetching product details:', error);
+      toast.error('Failed to fetch product details');
     }
   };
 
-  // Add the delete function
+  // Delete function with authentication
   const handleDelete = async (detailId: string) => {
     if (!confirm('Are you sure you want to delete this product detail? This action cannot be undone.')) {
       return;
@@ -129,11 +159,17 @@ const ProductDetailsPage = () => {
     try {
       const response = await fetch(`/api/product-details/${detailId}`, {
         method: 'DELETE',
+        headers: getAuthHeaders()
       });
 
       if (response.ok) {
         await fetchProductDetails();
         toast.success('Product detail deleted successfully!');
+      } else if (response.status === 401 || response.status === 403) {
+        localStorage.removeItem('adminAuth');
+        localStorage.removeItem('adminToken');
+        router.push('/admin');
+        toast.error('Session expired. Please log in again.');
       } else {
         const error = await response.json();
         toast.error(error.error || 'Failed to delete product detail');
@@ -168,7 +204,7 @@ const ProductDetailsPage = () => {
     });
   };
 
-  // Upload multiple images
+  // Upload images with authentication
   const uploadImages = async (): Promise<string[]> => {
     if (selectedFiles.length === 0) return formData.featureImages;
 
@@ -180,14 +216,29 @@ const ProductDetailsPage = () => {
         const formDataUpload = new FormData();
         formDataUpload.append('image', file);
 
+        // Get token for authentication
+        const token = localStorage.getItem('adminToken') || localStorage.getItem('adminAuth');
+        const headers: any = {};
+        
+        if (token && token !== 'true') {
+          headers['Authorization'] = `Bearer ${token}`;
+        }
+
         const response = await fetch('/api/upload-image', {
           method: 'POST',
+          headers,
           body: formDataUpload,
         });
 
         if (response.ok) {
           const data = await response.json();
           uploadedUrls.push(data.url);
+        } else if (response.status === 401 || response.status === 403) {
+          localStorage.removeItem('adminAuth');
+          localStorage.removeItem('adminToken');
+          router.push('/admin');
+          toast.error('Session expired. Please log in again.');
+          return [];
         }
       }
       
@@ -437,7 +488,7 @@ const ProductDetailsPage = () => {
 
       const response = await fetch(url, {
         method,
-        headers: { 'Content-Type': 'application/json' },
+        headers: getAuthHeaders(),
         body: JSON.stringify(submitData),
       });
 
@@ -446,6 +497,11 @@ const ProductDetailsPage = () => {
         resetForm();
         setShowForm(false);
         toast.success(editingDetail ? 'Product details updated!' : 'Product details created!');
+      } else if (response.status === 401 || response.status === 403) {
+        localStorage.removeItem('adminAuth');
+        localStorage.removeItem('adminToken');
+        router.push('/admin');
+        toast.error('Session expired. Please log in again.');
       } else {
         const error = await response.json();
         toast.error(error.error || 'Something went wrong');
@@ -468,8 +524,8 @@ const ProductDetailsPage = () => {
       specifications: {},
       featureImages: [],
       seo: {
-        focusKeywords: [], // Multiple focus keywords
-        seoKeyword: '', // Single SEO keyword
+        focusKeywords: [],
+        seoKeyword: '',
         autoTitle: '',
         autoDescription: ''
       }

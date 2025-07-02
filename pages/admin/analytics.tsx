@@ -30,6 +30,7 @@ import {
 import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import dynamic from 'next/dynamic';
+import { authenticatedFetch } from '../../lib/apiHelper';
 
 // Import Chart.js components and register them
 import {
@@ -192,13 +193,8 @@ const AnalyticsPage = () => {
     }
     
     try {
-      // REAL API CALL - No more mock data!
-      const response = await fetch(`/api/admin/analytics?range=${dateRange}`, {
-        method: 'GET',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-      });
+      // Use the authenticatedFetch helper instead of regular fetch
+      const response = await authenticatedFetch(`/api/admin/analytics?range=${dateRange}`);
       
       if (!response.ok) {
         throw new Error(`Failed to fetch analytics data: ${response.status}`);

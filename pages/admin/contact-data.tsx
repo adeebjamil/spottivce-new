@@ -54,12 +54,27 @@ const ContactDataPage = () => {
   // Fetch submissions from API
   const fetchSubmissions = async () => {
     try {
-      const response = await fetch('/api/admin/contacts');
+      const token = localStorage.getItem('adminToken');
+      
+      const response = await fetch('/api/admin/contacts', {
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      });
+      
       if (response.ok) {
         const result = await response.json();
         setSubmissions(result.data);
         setFilteredSubmissions(result.data);
       } else {
+        // If unauthorized (401), redirect to login
+        if (response.status === 401) {
+          localStorage.removeItem('adminAuth');
+          localStorage.removeItem('adminToken');
+          router.push('/admin');
+          toast.error('Session expired. Please log in again.');
+          return;
+        }
         toast.error('Failed to fetch contact submissions');
       }
     } catch (error) {
@@ -99,10 +114,13 @@ const ContactDataPage = () => {
     setUpdating(submissionId);
     
     try {
+      const token = localStorage.getItem('adminToken');
+      
       const response = await fetch('/api/admin/contacts', {
         method: 'PATCH',
         headers: {
           'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}` // Add JWT token for authentication
         },
         body: JSON.stringify({ id: submissionId, status: newStatus }),
       });
@@ -111,6 +129,15 @@ const ContactDataPage = () => {
         await fetchSubmissions();
         toast.success('Status updated successfully!');
       } else {
+        // Handle authentication errors consistently
+        if (response.status === 401) {
+          localStorage.removeItem('adminAuth');
+          localStorage.removeItem('adminToken');
+          router.push('/admin');
+          toast.error('Session expired. Please log in again.');
+          return;
+        }
+        
         const error = await response.json();
         toast.error(error.message || 'Failed to update status');
       }
@@ -127,14 +154,28 @@ const ContactDataPage = () => {
     if (!confirm('Are you sure you want to delete this contact submission?')) return;
 
     try {
+      const token = localStorage.getItem('adminToken');
+      
       const response = await fetch(`/api/admin/contacts?id=${submissionId}`, {
         method: 'DELETE',
+        headers: {
+          'Authorization': `Bearer ${token}` // Add JWT token for authentication
+        }
       });
 
       if (response.ok) {
         await fetchSubmissions();
         toast.success('Contact submission deleted successfully!');
       } else {
+        // Handle authentication errors consistently
+        if (response.status === 401) {
+          localStorage.removeItem('adminAuth');
+          localStorage.removeItem('adminToken');
+          router.push('/admin');
+          toast.error('Session expired. Please log in again.');
+          return;
+        }
+        
         const error = await response.json();
         toast.error(error.message || 'Failed to delete submission');
       }

@@ -1,10 +1,17 @@
 import { NextApiRequest, NextApiResponse } from 'next';
 import clientPromise from '../../../lib/mongodb';
 import { ObjectId } from 'mongodb';
+import { withAuth } from '../../../lib/authMiddleware';
 
-export default async function handler(req: NextApiRequest, res: NextApiResponse) {
+async function dashboardHandler(req: NextApiRequest, res: NextApiResponse) {
   if (req.method !== 'GET') {
     return res.status(405).json({ message: 'Method not allowed' });
+  }
+  
+  // Check if user is admin
+  const user = (req as any).user;
+  if (!user || !user.role || user.role !== 'admin') {
+    return res.status(403).json({ error: 'Admin access required' });
   }
 
   try {
@@ -112,25 +119,21 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     // Get product enquiries data
     const productEnquiries = await db.collection('productEnquiries').find({})
       .sort({ createdAt: -1 })
-      .limit(100)
+      .limit(5)
       .toArray();
     
-    const recentEnquiries = productEnquiries.slice(0, 4).map(enquiry => ({
-      id: enquiry._id.toString(),
-      productName: enquiry.productName || 'Unknown Product',
-      customerName: `${enquiry.firstName || ''} ${enquiry.lastName || ''}`.trim() || 'Anonymous',
-      status: enquiry.status || 'Pending',
-      timestamp: enquiry.createdAt || new Date()
-    }));
-    
-    // Count pending and resolved enquiries
-    const pendingEnquiries = await db.collection('productEnquiries').countDocuments({
-      status: { $in: ['Pending', 'New'] }
-    });
-    
-    const resolvedEnquiries = await db.collection('productEnquiries').countDocuments({
-      status: 'Resolved'
-    });
+    const productEnquiryData = {
+      total: await db.collection('productEnquiries').countDocuments(),
+      recent: productEnquiries.map(enquiry => ({
+        id: enquiry._id.toString(),
+        productName: enquiry.productName || 'Unknown Product',
+        customerName: enquiry.name || 'Unknown Customer',
+        status: enquiry.status || 'new',
+        timestamp: enquiry.createdAt || new Date()
+      })),
+      pending: await db.collection('productEnquiries').countDocuments({ status: 'new' }),
+      resolved: await db.collection('productEnquiries').countDocuments({ status: 'resolved' })
+    };
 
     // Get contact submissions data
     const contactSubmissions = await db.collection('contactSubmissions').find({})
@@ -157,7 +160,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     });
 
     // Return all the data
-    res.status(200).json({
+    return res.status(200).json({
       productData: {
         total: products.length,
         recent: recentProducts,
@@ -174,10 +177,16 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         change: assignmentsChange
       },
       productEnquiryData: {
-        total: productEnquiries.length,
-        recent: recentEnquiries,
-        pending: pendingEnquiries,
-        resolved: resolvedEnquiries
+        total: await db.collection('productEnquiries').countDocuments(),
+        recent: productEnquiries.map(enquiry => ({
+          id: enquiry._id.toString(),
+          productName: enquiry.productName || 'Unknown Product',
+          customerName: enquiry.name || 'Unknown Customer',
+          status: enquiry.status || 'new',
+          timestamp: enquiry.createdAt || new Date()
+        })),
+        pending: await db.collection('productEnquiries').countDocuments({ status: 'new' }),
+        resolved: await db.collection('productEnquiries').countDocuments({ status: 'resolved' })
       },
       contactData: {
         total: contactSubmissions.length,
@@ -192,3 +201,6 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     res.status(500).json({ message: 'Failed to fetch dashboard data', error: String(error) });
   }
 }
+
+// Export with authentication protection
+export default withAuth(dashboardHandler);

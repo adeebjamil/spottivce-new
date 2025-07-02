@@ -1,8 +1,15 @@
 import { NextApiRequest, NextApiResponse } from 'next';
 import { ObjectId } from 'mongodb';
 import clientPromise from '../../../lib/mongodb';
+import { withAuth } from '../../../lib/authMiddleware';
 
-export default async function handler(req: NextApiRequest, res: NextApiResponse) {
+async function newsletterHandler(req: NextApiRequest, res: NextApiResponse) {
+  // Check if user is admin
+  const user = (req as any).user;
+  if (!user || !user.role || user.role !== 'admin') {
+    return res.status(403).json({ error: 'Admin access required' });
+  }
+
   try {
     const client = await clientPromise;
     const db = client.db('spottive');
@@ -61,3 +68,6 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     res.status(500).json({ success: false, message: 'Internal server error' });
   }
 }
+
+// Export with authentication protection
+export default withAuth(newsletterHandler);

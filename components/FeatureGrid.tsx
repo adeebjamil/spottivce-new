@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { 
@@ -17,14 +17,34 @@ import {
   MdFlashOn
 } from 'react-icons/md';
 
+// Update the component to use consistent HTML structure
 export default function FeatureGrid() {
   const [isMounted, setIsMounted] = useState(false);
-  const [visibleItems, setVisibleItems] = useState<Set<number>>(new Set());
+  const [visibleItems, setVisibleItems] = useState(new Set());
   const [hoveredCard, setHoveredCard] = useState<number | null>(null);
   
   useEffect(() => {
     setIsMounted(true);
   }, []);
+
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            const index = parseInt(entry.target.getAttribute('data-index') || '0');
+            setVisibleItems(prev => new Set([...prev, index]));
+          }
+        });
+      },
+      { threshold: 0.1 }
+    );
+
+    const gridItems = document.querySelectorAll('.grid-item');
+    gridItems.forEach(item => observer.observe(item));
+
+    return () => observer.disconnect();
+  }, [isMounted]);
 
   const gridItems = [
     {
@@ -73,43 +93,26 @@ export default function FeatureGrid() {
     }
   ];
 
-  useEffect(() => {
-    if (!isMounted) return;
-
-    const observer = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((entry) => {
-          const index = parseInt(entry.target.getAttribute('data-index') || '0');
-          
-          if (entry.isIntersecting) {
-            setVisibleItems(prev => new Set([...prev, index]));
-          }
-        });
-      },
-      { threshold: 0.1 }
-    );
-
-    const items = document.querySelectorAll('.grid-item');
-    items.forEach((item) => observer.observe(item));
-
-    return () => {
-      items.forEach((item) => observer.unobserve(item));
-    };
-  }, [isMounted]);
-
   if (!isMounted) {
     return (
       <section className="py-20 relative overflow-hidden bg-gradient-to-b from-white via-slate-50 to-blue-50">
         <div className="container mx-auto px-4">
           <div className="text-center mb-16">
             <div className="w-32 h-8 bg-gray-200 rounded-full mx-auto mb-6 animate-pulse"></div>
-            <div className="w-96 h-12 bg-gray-200 rounded mx-auto mb-4 animate-pulse"></div>
-            <div className="w-80 h-6 bg-gray-200 rounded mx-auto animate-pulse"></div>
-          </div>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-6xl mx-auto">
-            {[1, 2, 3, 4].map((item) => (
-              <div key={item} className="bg-gray-200 animate-pulse rounded-3xl h-96"></div>
-            ))}
+            <div className="h-4 bg-gray-200 rounded-full max-w-md mx-auto mb-2 animate-pulse"></div>
+            <div className="h-4 bg-gray-200 rounded-full max-w-sm mx-auto animate-pulse"></div>
+            
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mt-16">
+              {/* Skeleton cards */}
+              {[...Array(6)].map((_, i) => (
+                <div key={i} className="bg-white rounded-xl shadow-md p-6 animate-pulse">
+                  <div className="h-40 bg-gray-200 rounded-lg mb-4"></div>
+                  <div className="h-5 bg-gray-200 rounded-full mb-3 w-3/4"></div>
+                  <div className="h-4 bg-gray-200 rounded-full mb-2"></div>
+                  <div className="h-4 bg-gray-200 rounded-full w-5/6"></div>
+                </div>
+              ))}
+            </div>
           </div>
         </div>
       </section>

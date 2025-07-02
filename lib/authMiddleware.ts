@@ -4,20 +4,23 @@ import { verifyToken } from './jwt';
 export function withAuth(handler: (req: NextApiRequest, res: NextApiResponse) => Promise<void>) {
   return async (req: NextApiRequest, res: NextApiResponse) => {
     try {
-      // Get token from Authorization header
-      const authHeader = req.headers.authorization;
+      // Get token from Authorization header or cookies
+      const token = req.headers.authorization?.split(' ')[1] || req.cookies.token;
       
-      if (!authHeader || !authHeader.startsWith('Bearer ')) {
-        return res.status(401).json({ error: 'No token provided' });
+      if (!token) {
+        return res.status(401).json({ error: 'Authentication required' });
       }
 
-      const token = authHeader.split(' ')[1];
-      
       // Verify the token
       const decoded = verifyToken(token);
       
       if (!decoded) {
         return res.status(401).json({ error: 'Invalid token' });
+      }
+
+      // Make sure it's an admin user
+      if (typeof decoded === 'string' || !decoded.role || decoded.role !== 'admin') {
+        return res.status(403).json({ error: 'Admin access required' });
       }
 
       // Add user info to request

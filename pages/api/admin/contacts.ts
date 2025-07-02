@@ -2,8 +2,10 @@
 import { NextApiRequest, NextApiResponse } from 'next';
 import clientPromise from '../../../lib/mongodb';
 import { ObjectId } from 'mongodb';
+import { withAuth } from '../../../lib/authMiddleware';
 
-export default async function handler(req: NextApiRequest, res: NextApiResponse) {
+// Create handler function separate from export
+async function contactsHandler(req: NextApiRequest, res: NextApiResponse) {
   try {
     const client = await clientPromise;
     const db = client.db('spottive');
@@ -112,3 +114,6 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     });
   }
 }
+
+// Export the handler wrapped with authentication middleware
+export default withAuth(contactsHandler);

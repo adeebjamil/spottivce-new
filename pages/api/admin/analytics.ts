@@ -1,5 +1,6 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
 import clientPromise from '../../../lib/mongodb';
+import { withAuth } from '../../../lib/authMiddleware';
 
 interface AnalyticsData {
   pageViews: {
@@ -74,9 +75,16 @@ interface AnalyticsData {
   lastUpdated: string;
 }
 
-export default async function handler(req: NextApiRequest, res: NextApiResponse) {
+// Create the handler function
+async function analyticsHandler(req: NextApiRequest, res: NextApiResponse) {
   if (req.method !== 'GET') {
     return res.status(405).json({ message: 'Method not allowed' });
+  }
+
+  // Check if user is admin
+  const user = (req as any).user;
+  if (!user || !user.role || user.role !== 'admin') {
+    return res.status(403).json({ error: 'Admin access required' });
   }
 
   try {
@@ -542,6 +550,9 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     res.status(500).json({ error: 'Failed to fetch analytics data' });
   }
 }
+
+// Export with authentication protection
+export default withAuth(analyticsHandler);
 
 // Helper function to get page titles
 function getPageTitle(path: string): string {

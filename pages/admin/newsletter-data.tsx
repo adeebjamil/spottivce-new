@@ -68,13 +68,28 @@ const NewsletterDataPage = () => {
   // Fetch newsletter data from API
   const fetchNewsletterData = async () => {
     try {
-      const response = await fetch('/api/admin/newsletter');
+      const token = localStorage.getItem('adminToken');
+      
+      const response = await fetch('/api/admin/newsletter', {
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      });
+      
       if (response.ok) {
         const result = await response.json();
         setSubscribers(result.data.subscribers);
         setFilteredSubscribers(result.data.subscribers);
         setStats(result.data.stats);
       } else {
+        // If unauthorized (401), redirect to login
+        if (response.status === 401 || response.status === 403) {
+          localStorage.removeItem('adminAuth');
+          localStorage.removeItem('adminToken');
+          router.push('/admin');
+          toast.error('Session expired. Please log in again.');
+          return;
+        }
         toast.error('Failed to fetch newsletter data');
       }
     } catch (error) {
@@ -114,14 +129,27 @@ const NewsletterDataPage = () => {
 
     setDeleting(subscriberId);
     try {
+      const token = localStorage.getItem('adminToken');
+      
       const response = await fetch(`/api/admin/newsletter?id=${subscriberId}`, {
         method: 'DELETE',
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
       });
 
       if (response.ok) {
         await fetchNewsletterData();
         toast.success('Subscriber deleted successfully!');
       } else {
+        // Handle auth errors
+        if (response.status === 401 || response.status === 403) {
+          localStorage.removeItem('adminAuth');
+          localStorage.removeItem('adminToken');
+          router.push('/admin');
+          toast.error('Session expired. Please log in again.');
+          return;
+        }
         const error = await response.json();
         toast.error(error.message || 'Failed to delete subscriber');
       }
@@ -136,10 +164,13 @@ const NewsletterDataPage = () => {
   // Update subscriber status
   const updateStatus = async (subscriberId: string, newStatus: string) => {
     try {
+      const token = localStorage.getItem('adminToken');
+      
       const response = await fetch('/api/admin/newsletter', {
         method: 'PATCH',
         headers: {
           'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
         },
         body: JSON.stringify({ id: subscriberId, status: newStatus }),
       });
@@ -148,6 +179,14 @@ const NewsletterDataPage = () => {
         await fetchNewsletterData();
         toast.success('Status updated successfully!');
       } else {
+        // Handle auth errors
+        if (response.status === 401 || response.status === 403) {
+          localStorage.removeItem('adminAuth');
+          localStorage.removeItem('adminToken');
+          router.push('/admin');
+          toast.error('Session expired. Please log in again.');
+          return;
+        }
         const error = await response.json();
         toast.error(error.message || 'Failed to update status');
       }
