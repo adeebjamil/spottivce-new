@@ -620,7 +620,7 @@ const ProductDetailPage = ({ product, productDetail }: Props) => {
             {/* Thumbnail Images */}
             {allImages.length > 1 && (
               <div className="flex space-x-4 overflow-x-auto pb-2">
-                {allImages.map((image, index) => (
+                {allImages.map((image: string, index) => (
                   <button
                     key={index}
                     onClick={() => setSelectedImage(index)}
