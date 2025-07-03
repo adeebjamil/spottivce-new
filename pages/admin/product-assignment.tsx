@@ -111,6 +111,15 @@ const ProductAssignmentPage = () => {
     setLoading(false);
   }, [router]);
 
+  // Add this helper function (after the useEffect for authentication check)
+  const getAuthHeaders = () => {
+    const token = localStorage.getItem('adminToken') || localStorage.getItem('adminAuth');
+    return {
+      'Content-Type': 'application/json',
+      'Authorization': token && token !== 'true' ? `Bearer ${token}` : ''
+    };
+  };
+
   // Fetch products
   const fetchProducts = async () => {
     try {
@@ -167,13 +176,26 @@ const ProductAssignmentPage = () => {
   // Fetch assignments
   const fetchAssignments = async () => {
     try {
-      const response = await fetch('/api/product-assignments');
+      const response = await fetch('/api/product-assignments', {
+        headers: getAuthHeaders()
+      });
+      
       if (response.ok) {
         const data = await response.json();
         setAssignments(data);
+      } else if (response.status === 401 || response.status === 403) {
+        // Handle authentication error
+        toast.error('Session expired. Please log in again.');
+        localStorage.removeItem('adminAuth');
+        localStorage.removeItem('adminToken');
+        router.push('/admin');
+      } else {
+        console.error('Error fetching assignments:', await response.text());
+        toast.error('Failed to fetch assignments');
       }
     } catch (error) {
       console.error('Error fetching assignments:', error);
+      toast.error('Failed to fetch assignments');
     }
   };
 
@@ -208,7 +230,7 @@ const ProductAssignmentPage = () => {
     );
   };
 
-  // Save assignment
+  // Update the handleSaveAssignment function
   const handleSaveAssignment = async () => {
     if (!selectedBrand) return;
 
@@ -216,9 +238,7 @@ const ProductAssignmentPage = () => {
     try {
       const response = await fetch('/api/product-assignments', {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
+        headers: getAuthHeaders(),
         body: JSON.stringify({
           brand: selectedBrand.id,
           productIds: selectedProductIds
@@ -231,6 +251,11 @@ const ProductAssignmentPage = () => {
         setShowAssignModal(false);
         setSelectedBrand(null);
         setSelectedProductIds([]);
+      } else if (response.status === 401 || response.status === 403) {
+        toast.error('Session expired. Please log in again.');
+        localStorage.removeItem('adminAuth');
+        localStorage.removeItem('adminToken');
+        router.push('/admin');
       } else {
         toast.error('Failed to save assignment');
       }

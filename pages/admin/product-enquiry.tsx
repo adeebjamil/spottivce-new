@@ -50,14 +50,42 @@ const ProductEnquiryPage = () => {
     setLoading(false);
   }, [router]);
 
+  // Add this helper function
+  const getAuthHeaders = () => {
+    const token = localStorage.getItem('adminToken') || localStorage.getItem('adminAuth');
+    return {
+      'Content-Type': 'application/json',
+      'Authorization': token && token !== 'true' ? `Bearer ${token}` : ''
+    };
+  };
+
   // Fetch enquiries from API
   const fetchEnquiries = async () => {
     try {
-      const response = await fetch('/api/product-enquiry');
+      const response = await fetch('/api/product-enquiry', {
+        headers: getAuthHeaders()
+      });
+      
       if (response.ok) {
         const data = await response.json();
-        setEnquiries(data);
-        setFilteredEnquiries(data);
+        console.log("Enquiries fetched:", data.length); // Debug log
+        
+        // Sort data by most recent first
+        const sortedData = data.sort((a: ProductEnquiry, b: ProductEnquiry) => 
+          new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+        );
+        
+        setEnquiries(sortedData);
+        setFilteredEnquiries(sortedData);
+        
+        // Reset to page 1 when new data is loaded
+        setCurrentPage(1);
+      } else if (response.status === 401 || response.status === 403) {
+        // Handle authentication errors
+        toast.error('Session expired. Please log in again.');
+        localStorage.removeItem('adminAuth');
+        localStorage.removeItem('adminToken');
+        router.push('/admin');
       } else {
         const errorData = await response.text();
         console.error('Failed to fetch enquiries:', errorData);
@@ -99,18 +127,12 @@ const ProductEnquiryPage = () => {
     setUpdating(enquiryId);
     
     try {
-      console.log('Updating status for enquiry:', enquiryId, 'to:', newStatus);
-      
       const response = await fetch(`/api/product-enquiry/${enquiryId}`, {
         method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-        },
+        headers: getAuthHeaders(),
         body: JSON.stringify({ status: newStatus }),
       });
 
-      console.log('Response status:', response.status);
-      
       if (response.ok) {
         const result = await response.json();
         console.log('Update result:', result);
@@ -140,13 +162,10 @@ const ProductEnquiryPage = () => {
     if (!confirm('Are you sure you want to delete this enquiry?')) return;
 
     try {
-      console.log('Deleting enquiry:', enquiryId);
-      
       const response = await fetch(`/api/product-enquiry/${enquiryId}`, {
         method: 'DELETE',
+        headers: getAuthHeaders(),
       });
-
-      console.log('Delete response status:', response.status);
 
       if (response.ok) {
         const result = await response.json();
@@ -198,6 +217,26 @@ const ProductEnquiryPage = () => {
   const indexOfFirstItem = indexOfLastItem - itemsPerPage;
   const currentItems = filteredEnquiries.slice(indexOfFirstItem, indexOfLastItem);
   const totalPages = Math.ceil(filteredEnquiries.length / itemsPerPage);
+
+  // Debug function - add this to help troubleshoot
+  const logPaginationDebug = () => {
+    console.log({
+      totalItems: filteredEnquiries.length,
+      currentPage,
+      itemsPerPage,
+      indexOfFirstItem,
+      indexOfLastItem,
+      currentItemsCount: currentItems.length,
+      totalPages
+    });
+  };
+
+  // Call this in an effect or when data changes
+  useEffect(() => {
+    if (process.env.NODE_ENV === 'development') {
+      logPaginationDebug();
+    }
+  }, [currentPage, filteredEnquiries]);
 
   const goToNextPage = () => {
     setCurrentPage(prev => Math.min(prev + 1, totalPages));

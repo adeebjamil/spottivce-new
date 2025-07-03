@@ -1,8 +1,9 @@
 import { NextApiRequest, NextApiResponse } from 'next';
 import clientPromise from '../../../lib/mongodb';
 import { ObjectId } from 'mongodb';
+import { withAuth } from '../../../lib/authMiddleware';
 
-export default async function handler(req: NextApiRequest, res: NextApiResponse) {
+async function handler(req: NextApiRequest, res: NextApiResponse) {
   try {
     const client = await clientPromise;
     const db = client.db('spottive');
@@ -57,3 +58,6 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     res.status(500).json({ error: 'Internal server error' });
   }
 }
+
+// Protect all operations on individual enquiries with authentication
+export default withAuth(handler);

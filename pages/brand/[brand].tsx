@@ -220,9 +220,66 @@ const BrandProductsPage = () => {
     return stars;
   };
 
+  // Fetch brand products
+  const fetchBrandProducts = async (brandId: string) => {
+    try {
+      // 1. First fetch the product assignments with special header
+      const assignmentResponse = await fetch(`/api/product-assignments/${brandId}`, {
+        headers: {
+          'X-App-Client': 'spottive-frontend'
+        }
+      });
+      
+      if (assignmentResponse.status === 404) {
+        // No assignments found for this brand
+        setProducts([]);
+        setLoading(false);
+        return;
+      }
+      
+      if (!assignmentResponse.ok) {
+        console.error('Failed to fetch brand assignments');
+        setLoading(false);
+        return;
+      }
+      
+      const assignment = await assignmentResponse.json();
+      
+      if (!assignment.productIds || assignment.productIds.length === 0) {
+        // No products assigned
+        setProducts([]);
+        setLoading(false);
+        return;
+      }
+      
+      // 2. Then fetch the actual product details with special header
+      const productResponse = await fetch('/api/products-by-ids', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'X-App-Client': 'spottive-frontend'
+        },
+        body: JSON.stringify({ ids: assignment.productIds })
+      });
+      
+      if (!productResponse.ok) {
+        console.error('Failed to fetch products');
+        setLoading(false);
+        return;
+      }
+      
+      const products = await productResponse.json();
+      setProducts(products);
+      setLoading(false);
+    } catch (error) {
+      console.error('Error fetching brand products:', error);
+      setLoading(false);
+    }
+  };
+
   useEffect(() => {
     if (brand && brandInfo) {
-      fetchAssignedProducts(brand as string);
+      fetchBrandProducts(brand as string);
     }
   }, [brand, brandInfo]);
 

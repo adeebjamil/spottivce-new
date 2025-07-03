@@ -1,8 +1,11 @@
 import { NextApiRequest, NextApiResponse } from 'next';
 import clientPromise from '../../../lib/mongodb';
 import { ObjectId } from 'mongodb';
+import { withAuth } from '../../../lib/authMiddleware';
+import { protectDirectApiAccess } from '../../../lib/apiAccessMiddleware';
 
-export default async function handler(req: NextApiRequest, res: NextApiResponse) {
+// Original handler function
+async function handler(req: NextApiRequest, res: NextApiResponse) {
   try {
     const client = await clientPromise;
     const db = client.db('spottive');
@@ -64,4 +67,15 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     console.error('Database error:', error);
     res.status(500).json({ error: 'Internal server error' });
   }
+}
+
+// Apply both middlewares:
+// 1. Direct API access protection
+// 2. Authentication protection
+export default function combinedMiddleware(req: NextApiRequest, res: NextApiResponse) {
+  // First apply direct API access protection
+  return protectDirectApiAccess((protectedReq: NextApiRequest, protectedRes: NextApiResponse) => {
+    // Then apply authentication middleware
+    return withAuth(handler)(protectedReq, protectedRes);
+  })(req, res);
 }

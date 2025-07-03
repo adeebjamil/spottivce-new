@@ -1,7 +1,8 @@
 import { NextApiRequest, NextApiResponse } from 'next';
 import clientPromise from '../../../lib/mongodb';
+import { withAuth } from '../../../lib/authMiddleware';
 
-export default async function handler(req: NextApiRequest, res: NextApiResponse) {
+async function handler(req: NextApiRequest, res: NextApiResponse) {
   try {
     const client = await clientPromise;
     const db = client.db('spottive');
@@ -9,11 +10,13 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
     switch (req.method) {
       case 'GET':
+        // Protected - only authenticated admins can get all enquiries
         const enquiries = await collection.find({}).sort({ createdAt: -1 }).toArray();
         res.status(200).json(enquiries);
         break;
 
       case 'POST':
+        // Public - allows users to submit enquiries
         const { 
           productId,
           productName, 
@@ -61,5 +64,17 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   } catch (error) {
     console.error('Database error:', error);
     res.status(500).json({ error: 'Internal server error' });
+  }
+}
+
+// For GET requests, apply authentication middleware
+// For POST requests, allow without authentication
+export default async function combinedHandler(req: NextApiRequest, res: NextApiResponse) {
+  if (req.method === 'GET') {
+    // Apply auth middleware only for GET requests
+    return withAuth(handler)(req, res);
+  } else {
+    // For POST or other methods, don't require authentication
+    return handler(req, res);
   }
 }
