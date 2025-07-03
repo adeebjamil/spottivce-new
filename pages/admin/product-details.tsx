@@ -1247,109 +1247,122 @@ const ProductDetailsPage = () => {
             </div>
 
             <div className="overflow-x-auto">
-              <table className="min-w-full divide-y divide-gray-200">
-                <thead className="bg-gradient-to-r from-gray-50 to-gray-100">
-                  <tr>
-                    <th className="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      Product
-                    </th>
-                    <th className="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      Title
-                    </th>
-                    <th className="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      Features
-                    </th>
-                    <th className="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      SEO
-                    </th>
-                    <th className="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      Actions
-                    </th>
-                  </tr>
-                </thead>
-                <tbody className="bg-white divide-y divide-gray-200">
-                  {currentItems.map((detail) => {
-                    const product = products.find(p => p._id === detail.productId);
-                    return (
-                      <tr key={detail._id} className="hover:bg-gray-50 transition-colors">
-                        <td className="px-6 py-4 whitespace-nowrap">
-                          <div className="flex items-center">
-                            <div className="flex-shrink-0 h-10 w-10">
-                              <div className="h-10 w-10 rounded-lg overflow-hidden bg-gray-200">
-                                {product?.image ? (
-                                  <img
-                                    src={product.image}
-                                    alt={product.name}
-                                    className="h-10 w-10 object-cover"
-                                  />
-                                ) : (
-                                  <div className="h-10 w-10 flex items-center justify-center">
-                                    <MdImage size={20} className="text-gray-400" />
-                                  </div>
-                                )}
+              {/* Add scrollable container */}
+              <div 
+                style={{ 
+                  height: "600px", 
+                  overflowY: "scroll", 
+                  border: "1px solid #f3f4f6",
+                  borderRadius: "0.5rem",
+                }}
+              >
+                <table className="min-w-full divide-y divide-gray-200">
+                  <thead className="bg-gradient-to-r from-gray-50 to-gray-100 sticky top-0 z-10">
+                    <tr>
+                      <th className="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                        Product
+                      </th>
+                      <th className="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                        Title
+                      </th>
+                      <th className="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                        Features
+                      </th>
+                      <th className="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                        SEO
+                      </th>
+                      <th className="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                        Actions
+                      </th>
+                    </tr>
+                  </thead>
+                  <tbody className="bg-white divide-y divide-gray-200">
+                    {currentItems.map((detail) => {
+                      const product = products.find(p => p._id === detail.productId);
+                      return (
+                        <tr key={detail._id} className="hover:bg-gray-50 transition-colors">
+                          <td className="px-6 py-4 whitespace-nowrap">
+                            <div className="flex items-center">
+                              <div className="flex-shrink-0 h-10 w-10">
+                                <div className="h-10 w-10 rounded-lg overflow-hidden bg-gray-200">
+                                  {product?.image ? (
+                                    <img
+                                      src={product.image}
+                                      alt={product.name}
+                                      className="h-10 w-10 object-cover"
+                                    />
+                                  ) : (
+                                    <div className="h-10 w-10 flex items-center justify-center">
+                                      <MdImage size={20} className="text-gray-400" />
+                                    </div>
+                                  )}
+                                </div>
+                              </div>
+                              <div className="ml-4">
+                                <div className="text-sm font-medium text-gray-900">
+                                  {product?.name || 'Unknown Product'}
+                                </div>
+                                <div className="text-sm text-gray-500">{product?.category}</div>
                               </div>
                             </div>
-                            <div className="ml-4">
-                              <div className="text-sm font-medium text-gray-900">
-                                {product?.name || 'Unknown Product'}
-                              </div>
-                              <div className="text-sm text-gray-500">{product?.category}</div>
+                          </td>
+                          <td className="px-6 py-4">
+                            <div className="text-sm font-medium text-gray-900 max-w-xs truncate">
+                              {detail.productTitle}
                             </div>
-                          </div>
-                        </td>
-                        <td className="px-6 py-4">
-                          <div className="text-sm font-medium text-gray-900 max-w-xs truncate">
-                            {detail.productTitle}
-                          </div>
-                          <div className="text-sm text-gray-500 max-w-xs truncate">
-                            {detail.productDescription}
-                          </div>
-                        </td>
-                        <td className="px-6 py-4">
-                          <div className="text-sm text-gray-900">
-                            {detail.features.filter(f => f.trim()).length} features
-                          </div>
-                          <div className="text-sm text-gray-500">
-                            {detail.featureImages.length} images
-                          </div>
-                        </td>
-                        <td className="px-6 py-4">
-                          <div className="text-sm text-gray-900">
-                            {detail.seo.focusKeywords?.[0] || 'No focus keyword'}
-                          </div>
-                          <div className="text-sm text-gray-500">
-                            {(detail.seo.focusKeywords?.length || 0)} focus keywords
-                          </div>
-                        </td>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                          <div className="flex space-x-2">
-                            <button
-                              onClick={() => {
-                                setEditingDetail(detail);
-                                setFormData(detail);
-                                setSpecifications(convertObjectToSpecifications(detail.specifications));
-                                setPreviewImages(detail.featureImages);
-                                setShowForm(true);
-                              }}
-                              className="inline-flex items-center px-3 py-1 rounded-lg text-blue-600 hover:bg-blue-50 transition-colors"
-                            >
-                              <MdEdit size={16} className="mr-1" />
-                              Edit
-                            </button>
-                            <button
-                              onClick={() => handleDelete(detail._id!)}
-                              className="inline-flex items-center px-3 py-1 rounded-lg text-red-600 hover:bg-red-50 transition-colors"
-                            >
-                              <MdDelete size={16} className="mr-1" />
-                              Delete
-                            </button>
-                          </div>
-                        </td>
-                      </tr>
-                    );
-                  })}
-                </tbody>
-              </table>
+                            <div className="text-sm text-gray-500 max-w-xs truncate">
+                              {detail.productDescription}
+                            </div>
+                          </td>
+                          <td className="px-6 py-4">
+                            <div className="text-sm text-gray-900">
+                              {detail.features.filter(f => f.trim()).length} features
+                            </div>
+                            <div className="text-sm text-gray-500">
+                              {detail.featureImages.length} images
+                            </div>
+                          </td>
+                          <td className="px-6 py-4">
+                            <div className="text-sm text-gray-900">
+                              {detail.seo.focusKeywords?.[0] || 'No focus keyword'}
+                            </div>
+                            <div className="text-sm text-gray-500">
+                              {(detail.seo.focusKeywords?.length || 0)} focus keywords
+                            </div>
+                          </td>
+                          <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                            <div className="flex space-x-2">
+                              <button
+                                onClick={() => {
+                                  setEditingDetail(detail);
+                                  setFormData(detail);
+                                  setSpecifications(convertObjectToSpecifications(detail.specifications));
+                                  setPreviewImages(detail.featureImages);
+                                  setShowForm(true);
+                                }}
+                                className="inline-flex items-center px-3 py-1 rounded-lg text-blue-600 hover:bg-blue-50 transition-colors"
+                              >
+                                <MdEdit size={16} className="mr-1" />
+                                Edit
+                              </button>
+                              <button
+                                onClick={() => handleDelete(detail._id!)}
+                                className="inline-flex items-center px-3 py-1 rounded-lg text-red-600 hover:bg-red-50 transition-colors"
+                              >
+                                <MdDelete size={16} className="mr-1" />
+                                Delete
+                              </button>
+                            </div>
+                          </td>
+                        </tr>
+                      );
+                    })}
+                  </tbody>
+                </table>
+                
+                {/* Add invisible spacer to force scrollbar if needed */}
+                <div style={{ height: "50px", width: "1px" }}></div>
+              </div>
             </div>
 
             {/* Pagination */}

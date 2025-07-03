@@ -359,105 +359,118 @@ const NewsletterDataPage = () => {
       {/* Subscribers Table */}
       <div className="bg-white rounded-xl shadow-md overflow-hidden">
         <div className="overflow-x-auto">
-          <table className="min-w-full divide-y divide-gray-200">
-            <thead className="bg-gradient-to-r from-gray-50 to-gray-100">
-              <tr>
-                <th className="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Email
-                </th>
-                <th className="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Source
-                </th>
-                <th className="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Status
-                </th>
-                <th className="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Subscribed Date
-                </th>
-                <th className="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Actions
-                </th>
-              </tr>
-            </thead>
-            <tbody className="bg-white divide-y divide-gray-200">
-              {currentItems.map((subscriber) => (
-                <tr key={subscriber._id} className="hover:bg-gray-50 transition-colors">
-                  <td className="px-6 py-4">
-                    <div className="flex items-center">
-                      <div className="flex-shrink-0">
-                        <div className="h-10 w-10 rounded-full bg-blue-100 flex items-center justify-center">
-                          <MdEmail className="h-5 w-5 text-blue-600" />
-                        </div>
-                      </div>
-                      <div className="ml-4">
-                        <div className="text-sm font-medium text-gray-900">
-                          {subscriber.email}
-                        </div>
-                      </div>
-                    </div>
-                  </td>
-                  <td className="px-6 py-4">
-                    <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-800 capitalize">
-                      {subscriber.source}
-                    </span>
-                  </td>
-                  <td className="px-6 py-4">
-                    <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
-                      subscriber.status === 'active' 
-                        ? 'bg-green-100 text-green-800' 
-                        : 'bg-red-100 text-red-800'
-                    }`}>
-                      {subscriber.status === 'active' ? (
-                        <>
-                          <MdCheckCircle className="mr-1" size={12} />
-                          Active
-                        </>
-                      ) : (
-                        <>
-                          <MdCancel className="mr-1" size={12} />
-                          Unsubscribed
-                        </>
-                      )}
-                    </span>
-                  </td>
-                  <td className="px-6 py-4 text-sm text-gray-500">
-                    {new Date(subscriber.subscribedAt).toLocaleDateString('en-US', {
-                      year: 'numeric',
-                      month: 'short',
-                      day: 'numeric',
-                      hour: '2-digit',
-                      minute: '2-digit'
-                    })}
-                  </td>
-                  <td className="px-6 py-4">
-                    <div className="flex items-center space-x-2">
-                      {/* Status Toggle */}
-                      <select
-                        value={subscriber.status}
-                        onChange={(e) => updateStatus(subscriber._id, e.target.value)}
-                        className="text-xs border border-gray-300 rounded px-2 py-1 focus:outline-none focus:ring-1 focus:ring-blue-500"
-                      >
-                        <option value="active">Active</option>
-                        <option value="unsubscribed">Unsubscribed</option>
-                      </select>
-
-                      {/* Delete Button */}
-                      <button
-                        onClick={() => deleteSubscriber(subscriber._id)}
-                        disabled={deleting === subscriber._id}
-                        className={`inline-flex items-center p-1 rounded text-red-600 hover:bg-red-50 transition-colors ${
-                          deleting === subscriber._id ? 'opacity-50 cursor-not-allowed' : ''
-                        }`}
-                        title="Delete subscriber"
-                      >
-                        <MdDelete size={16} />
-                      </button>
-                    </div>
-                  </td>
+          {/* Add scrollable container */}
+          <div 
+            style={{ 
+              height: "600px", 
+              overflowY: "scroll", 
+              border: "1px solid #f3f4f6",
+              borderRadius: "0.5rem",
+            }}
+          >
+            <table className="min-w-full divide-y divide-gray-200">
+              <thead className="bg-gradient-to-r from-gray-50 to-gray-100 sticky top-0 z-10">
+                <tr>
+                  <th className="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Email
+                  </th>
+                  <th className="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Source
+                  </th>
+                  <th className="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Status
+                  </th>
+                  <th className="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Subscribed Date
+                  </th>
+                  <th className="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Actions
+                  </th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
+              </thead>
+              <tbody className="bg-white divide-y divide-gray-200">
+                {currentItems.map((subscriber) => (
+                  <tr key={subscriber._id} className="hover:bg-gray-50 transition-colors">
+                    <td className="px-6 py-4">
+                      <div className="flex items-center">
+                        <div className="flex-shrink-0">
+                          <div className="h-10 w-10 rounded-full bg-blue-100 flex items-center justify-center">
+                            <MdEmail className="h-5 w-5 text-blue-600" />
+                          </div>
+                        </div>
+                        <div className="ml-4">
+                          <div className="text-sm font-medium text-gray-900">
+                            {subscriber.email}
+                          </div>
+                        </div>
+                      </div>
+                    </td>
+                    <td className="px-6 py-4">
+                      <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-800 capitalize">
+                        {subscriber.source}
+                      </span>
+                    </td>
+                    <td className="px-6 py-4">
+                      <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
+                        subscriber.status === 'active' 
+                          ? 'bg-green-100 text-green-800' 
+                          : 'bg-red-100 text-red-800'
+                      }`}>
+                        {subscriber.status === 'active' ? (
+                          <>
+                            <MdCheckCircle className="mr-1" size={12} />
+                            Active
+                          </>
+                        ) : (
+                          <>
+                            <MdCancel className="mr-1" size={12} />
+                            Unsubscribed
+                          </>
+                        )}
+                      </span>
+                    </td>
+                    <td className="px-6 py-4 text-sm text-gray-500">
+                      {new Date(subscriber.subscribedAt).toLocaleDateString('en-US', {
+                        year: 'numeric',
+                        month: 'short',
+                        day: 'numeric',
+                        hour: '2-digit',
+                        minute: '2-digit'
+                      })}
+                    </td>
+                    <td className="px-6 py-4">
+                      <div className="flex items-center space-x-2">
+                        {/* Status Toggle */}
+                        <select
+                          value={subscriber.status}
+                          onChange={(e) => updateStatus(subscriber._id, e.target.value)}
+                          className="text-xs border border-gray-300 rounded px-2 py-1 focus:outline-none focus:ring-1 focus:ring-blue-500"
+                        >
+                          <option value="active">Active</option>
+                          <option value="unsubscribed">Unsubscribed</option>
+                        </select>
+
+                        {/* Delete Button */}
+                        <button
+                          onClick={() => deleteSubscriber(subscriber._id)}
+                          disabled={deleting === subscriber._id}
+                          className={`inline-flex items-center p-1 rounded text-red-600 hover:bg-red-50 transition-colors ${
+                            deleting === subscriber._id ? 'opacity-50 cursor-not-allowed' : ''
+                          }`}
+                          title="Delete subscriber"
+                        >
+                          <MdDelete size={16} />
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+            
+            {/* Add invisible spacer to force scrollbar if needed */}
+            <div style={{ height: "50px", width: "1px" }}></div>
+          </div>
         </div>
 
         {/* Pagination */}

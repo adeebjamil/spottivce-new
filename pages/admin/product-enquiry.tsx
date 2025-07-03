@@ -394,118 +394,133 @@ const ProductEnquiryPage = () => {
             </div>
 
             <div className="overflow-x-auto">
-              <table className="min-w-full divide-y divide-gray-200">
-                <thead className="bg-gradient-to-r from-gray-50 to-gray-100">
-                  <tr>
-                    <th className="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      Customer
-                    </th>
-                    <th className="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      Product
-                    </th>
-                    <th className="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      Message
-                    </th>
-                    <th className="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      Status
-                    </th>
-                    <th className="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      Date
-                    </th>
-                    <th className="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      Actions
-                    </th>
-                  </tr>
-                </thead>
-                <tbody className="bg-white divide-y divide-gray-200">
-                  {currentItems.map((enquiry) => (
-                    <tr key={enquiry._id} className="hover:bg-gray-50 transition-colors">
-                      <td className="px-6 py-4">
-                        <div className="flex items-start space-x-3">
-                          <div className="flex-shrink-0">
-                            <div className="h-10 w-10 rounded-full bg-blue-100 flex items-center justify-center">
-                              <MdPerson className="h-5 w-5 text-blue-600" />
+              <div style={{ position: "relative" }}>
+                {/* Force fixed height container */}
+                <div 
+                  style={{ 
+                    height: "400px", // Fixed height instead of max-height
+                    overflowY: "scroll", 
+                    border: "1px solid #f3f4f6",
+                    borderRadius: "0.5rem",
+                  }}
+                >
+                  <table className="min-w-full divide-y divide-gray-200">
+                    <thead className="bg-gradient-to-r from-gray-50 to-gray-100">
+                      <tr>
+                        <th className="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                          Customer
+                        </th>
+                        <th className="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                          Product
+                        </th>
+                        <th className="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                          Message
+                        </th>
+                        <th className="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                          Status
+                        </th>
+                        <th className="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                          Date
+                        </th>
+                        <th className="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                          Actions
+                        </th>
+                      </tr>
+                    </thead>
+                    <tbody className="bg-white divide-y divide-gray-200">
+                      {currentItems.map((enquiry) => (
+                        <tr key={enquiry._id} className="hover:bg-gray-50 transition-colors">
+                          <td className="px-6 py-4">
+                            <div className="flex items-start space-x-3">
+                              <div className="flex-shrink-0">
+                                <div className="h-10 w-10 rounded-full bg-blue-100 flex items-center justify-center">
+                                  <MdPerson className="h-5 w-5 text-blue-600" />
+                                </div>
+                              </div>
+                              <div className="flex-1 min-w-0">
+                                <p className="text-sm font-medium text-gray-900 truncate">
+                                  {enquiry.userName}
+                                </p>
+                                <div className="flex items-center text-sm text-gray-500">
+                                  <MdEmail className="flex-shrink-0 mr-1.5 h-4 w-4" />
+                                  <span className="truncate">{enquiry.userEmail}</span>
+                                </div>
+                                <div className="flex items-center text-sm text-gray-500">
+                                  <MdPhone className="flex-shrink-0 mr-1.5 h-4 w-4" />
+                                  <span>{enquiry.userMobile}</span>
+                                </div>
+                              </div>
                             </div>
-                          </div>
-                          <div className="flex-1 min-w-0">
-                            <p className="text-sm font-medium text-gray-900 truncate">
-                              {enquiry.userName}
-                            </p>
-                            <div className="flex items-center text-sm text-gray-500">
-                              <MdEmail className="flex-shrink-0 mr-1.5 h-4 w-4" />
-                              <span className="truncate">{enquiry.userEmail}</span>
+                          </td>
+                          <td className="px-6 py-4">
+                            <div className="text-sm font-medium text-gray-900 max-w-xs truncate">
+                              {enquiry.productName}
                             </div>
-                            <div className="flex items-center text-sm text-gray-500">
-                              <MdPhone className="flex-shrink-0 mr-1.5 h-4 w-4" />
-                              <span>{enquiry.userMobile}</span>
+                          </td>
+                          <td className="px-6 py-4">
+                            <div className="text-sm text-gray-600 max-w-xs">
+                              {enquiry.message ? (
+                                <span className="truncate block" title={enquiry.message}>
+                                  {enquiry.message.length > 50 
+                                    ? `${enquiry.message.substring(0, 50)}...` 
+                                    : enquiry.message
+                                  }
+                                </span>
+                              ) : (
+                                <span className="text-gray-400 italic">No message</span>
+                              )}
                             </div>
-                          </div>
-                        </div>
-                      </td>
-                      <td className="px-6 py-4">
-                        <div className="text-sm font-medium text-gray-900 max-w-xs truncate">
-                          {enquiry.productName}
-                        </div>
-                      </td>
-                      <td className="px-6 py-4">
-                        <div className="text-sm text-gray-600 max-w-xs">
-                          {enquiry.message ? (
-                            <span className="truncate block" title={enquiry.message}>
-                              {enquiry.message.length > 50 
-                                ? `${enquiry.message.substring(0, 50)}...` 
-                                : enquiry.message
-                              }
-                            </span>
-                          ) : (
-                            <span className="text-gray-400 italic">No message</span>
-                          )}
-                        </div>
-                      </td>
-                      <td className="px-6 py-4">
-                        {getStatusBadge(enquiry.status)}
-                      </td>
-                      <td className="px-6 py-4 text-sm text-gray-500">
-                        {new Date(enquiry.createdAt).toLocaleDateString('en-US', {
-                          year: 'numeric',
-                          month: 'short',
-                          day: 'numeric',
-                          hour: '2-digit',
-                          minute: '2-digit'
-                        })}
-                      </td>
-                      <td className="px-6 py-4">
-                        <div className="flex items-center space-x-2">
-                          {/* Status Update Dropdown */}
-                          <select
-                            value={enquiry.status}
-                            onChange={(e) => updateStatus(enquiry._id, e.target.value)}
-                            disabled={updating === enquiry._id}
-                            className={`text-xs border border-gray-300 rounded px-2 py-1 focus:outline-none focus:ring-1 focus:ring-blue-500 ${
-                              updating === enquiry._id ? 'opacity-50 cursor-not-allowed' : ''
-                            }`}
-                          >
-                            <option value="pending">Pending</option>
-                            <option value="contacted">Contacted</option>
-                            <option value="resolved">Resolved</option>
-                          </select>
+                          </td>
+                          <td className="px-6 py-4">
+                            {getStatusBadge(enquiry.status)}
+                          </td>
+                          <td className="px-6 py-4 text-sm text-gray-500">
+                            {new Date(enquiry.createdAt).toLocaleDateString('en-US', {
+                              year: 'numeric',
+                              month: 'short',
+                              day: 'numeric',
+                              hour: '2-digit',
+                              minute: '2-digit'
+                            })}
+                          </td>
+                          <td className="px-6 py-4">
+                            <div className="flex items-center space-x-2">
+                              {/* Status Update Dropdown */}
+                              <select
+                                value={enquiry.status}
+                                onChange={(e) => updateStatus(enquiry._id, e.target.value)}
+                                disabled={updating === enquiry._id}
+                                className={`text-xs border border-gray-300 rounded px-2 py-1 focus:outline-none focus:ring-1 focus:ring-blue-500 ${
+                                  updating === enquiry._id ? 'opacity-50 cursor-not-allowed' : ''
+                                }`}
+                              >
+                                <option value="pending">Pending</option>
+                                <option value="contacted">Contacted</option>
+                                <option value="resolved">Resolved</option>
+                              </select>
 
-                          {/* Delete Button */}
-                          <button
-                            onClick={() => deleteEnquiry(enquiry._id)}
-                            disabled={updating === enquiry._id}
-                            className={`inline-flex items-center p-1 rounded text-red-600 hover:bg-red-50 transition-colors ${
-                              updating === enquiry._id ? 'opacity-50 cursor-not-allowed' : ''
-                            }`}
-                            title="Delete enquiry"
-                          >
-                            <MdDelete size={16} />
-                          </button>
-                        </div>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
+                              {/* Delete Button */}
+                              <button
+                                onClick={() => deleteEnquiry(enquiry._id)}
+                                disabled={updating === enquiry._id}
+                                className={`inline-flex items-center p-1 rounded text-red-600 hover:bg-red-50 transition-colors ${
+                                  updating === enquiry._id ? 'opacity-50 cursor-not-allowed' : ''
+                                }`}
+                                title="Delete enquiry"
+                              >
+                                <MdDelete size={16} />
+                              </button>
+                            </div>
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                  
+                  {/* This is the trick: add padding at the bottom to force scroll */}
+                  <div style={{ height: "200px" }}></div>
+                </div>
+              </div>
             </div>
 
             {/* Enhanced Pagination */}
