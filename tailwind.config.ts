@@ -14,7 +14,8 @@ export default {
       },
     },
   },
-   plugins: [
+  plugins: [
+    // Empty - make sure no tailwind-scrollbar reference exists here
   ],
   
 } satisfies Config;
