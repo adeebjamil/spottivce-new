@@ -1,6 +1,6 @@
 # Spottive - CCTV & Security Products Platform
 
-![Spottive Logo](public/logo.png)
+![Spottive Logo](/logo.png)
 
 ## Overview
 
