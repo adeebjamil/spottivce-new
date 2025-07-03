@@ -26,18 +26,15 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
       return res.status(404).json({ error: 'Product detail not found' });
     }
     
-    // Return only the necessary data for public viewing
-    // Exclude any sensitive or admin-only information
+    // Return ONLY the necessary data for public viewing
+    // REDUCED data set - only what's needed for display
     const publicProductDetail = {
       productTitle: productDetail.productTitle,
       productDescription: productDetail.productDescription,
       features: productDetail.features,
       specifications: productDetail.specifications,
       featureImages: productDetail.featureImages,
-      seo: {
-        autoTitle: productDetail.seo.autoTitle,
-        autoDescription: productDetail.seo.autoDescription
-      }
+      // Remove ALL SEO data from public view
     };
     
     res.status(200).json(publicProductDetail);
@@ -47,7 +44,25 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
   }
 }
 
-// Only protect against direct API access, but don't require admin auth
+// Strengthen direct API access protection
 export default function combinedMiddleware(req: NextApiRequest, res: NextApiResponse) {
+  // Only allow requests with a valid referrer from our app
+  const referer = req.headers.referer || '';
+  const validDomains = [
+    'localhost:3000',
+    'spottive.com', 
+    'www.spottive.com',
+    'spottivce-new.vercel.app'
+  ];
+  const hasValidReferer = validDomains.some(domain => referer.includes(domain));
+  
+  // If accessing directly without a valid referer, block access
+  if (!hasValidReferer && req.headers['x-app-client'] !== 'spottive-frontend') {
+    return res.status(403).json({
+      error: 'Access Denied',
+      message: 'This API endpoint is restricted to application use only.'
+    });
+  }
+  
   return protectDirectApiAccess(handler)(req, res);
 }
