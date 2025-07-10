@@ -87,7 +87,7 @@ export default function FeatureCards() {
       features: ["Predictive AI", "Threat Modeling", "Performance Optimization", "Business Intelligence"],
       rating: 4.9,
       users: "2.1K+ Users",
-      link: "/brand/unv",
+      link: "/brand/ezviz",
       learnMoreLink: "/solutions/security-analytics",
       image: "/features-card/img4.webp",
       imageAlt: "Security Analytics Platform"

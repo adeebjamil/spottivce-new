@@ -55,14 +55,14 @@ const brands: Brand[] = [
     link: '/product/hikvision'
   },
   {
-    id: 'unv',
-    name: 'UNV',
-    logo: '/brand/unv.png',
+    id: 'ezviz',
+    name: 'EZVIZ',
+    logo: '/brand/Ezviz_Logo.png',
     bgColor: 'bg-gray-50',
     borderColor: 'border-gray-200',
     textColor: 'text-gray-600',
     hoverColor: 'hover:bg-gray-100',
-    link: '/product/unv'
+    link: '/product/ezviz'
   },
   {
     id: 'dahua',

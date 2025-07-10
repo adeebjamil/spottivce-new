@@ -193,22 +193,22 @@ export default function Navbar() {
                         </span>
                       </Link>
                       
-                      {/* Card 2 - UNV */}
+                      {/* Card 2 - ezviz */}
                       <Link 
-                        href="/brand/unv"
+                        href="/brand/ezviz"
                         onClick={closeMobileMenu}
                         className="group bg-gray-50 border border-gray-200 p-6 rounded-xl flex flex-col hover:bg-gray-100 transition-all duration-300 hover:shadow-md hover:-translate-y-1"
                       >
                         <div className="flex-grow flex items-center justify-center mb-4">
                           <Image 
-                            src="/brand/unv.png" 
-                            alt="UNV Logo" 
+                            src="/brand/Ezviz_Logo.png" 
+                            alt="ezviz Logo" 
                             width={120} 
                             height={60} 
                             className="object-contain transition-transform duration-300 group-hover:scale-110" 
                           />
                         </div>
-                        <h4 className="font-semibold text-center mb-4 text-gray-900">UNV</h4>
+                        <h4 className="font-semibold text-center mb-4 text-gray-900">Ezviz</h4>
                         <span className="flex items-center text-sm font-medium text-gray-600 hover:text-gray-700 justify-center transition-colors">
                           Learn more →
                         </span>
@@ -558,14 +558,14 @@ export default function Navbar() {
                     <span>Hikvision Products</span>
                   </Link>
                   <Link
-                    href="/brand/unv"
+                    href="/brand/ezviz"
                     className="flex items-center space-x-3 text-gray-600 hover:text-gray-600 px-3 py-2 text-sm font-medium transition-colors rounded-lg hover:bg-gray-50"
                     onClick={closeMobileMenu}
                   >
                     <div className="w-6 h-6 bg-gray-100 rounded flex items-center justify-center">
                       <span className="text-xs font-bold text-gray-600">U</span>
                     </div>
-                    <span>UNV Products</span>
+                    <span>ezviz Products</span>
                   </Link>
                   <Link
                     href="/brand/dahua"

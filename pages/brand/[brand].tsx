@@ -65,16 +65,16 @@ const brandConfig: Record<string, BrandInfo> = {
     gradientTo: 'to-blue-800',
     buttonGradient: 'from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800'
   },
-  unv: {
-    id: 'unv',
-    name: 'UNV',
-    logo: '/brand/unv.png',
+  ezviz: {
+    id: 'Ezviz',
+    name: 'Ezviz',
+    logo: '/brand/Ezviz_Logo.png',
     bgColor: 'bg-gray-50',
     borderColor: 'border-gray-200',
     textColor: 'text-gray-600',
     description: 'Professional IP video surveillance solutions with cutting-edge technology',
     heroTitle: 'Professional Video Surveillance Excellence',
-    heroSubtitle: 'Experience UNV\'s professional-grade IP surveillance solutions with advanced features',
+    heroSubtitle: 'Experience Ezviz\'s professional-grade IP surveillance solutions with advanced features',
     features: ['Professional Grade', 'Advanced IP Technology', 'Scalable Solutions'],
     gradientFrom: 'from-gray-700',
     gradientTo: 'to-gray-900',
@@ -120,6 +120,7 @@ const BrandProductsPage = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
   const [selectedCategory, setSelectedCategory] = useState('all');
+  const [selectedSubCategory, setSelectedSubCategory] = useState('all');
   const [favorites, setFavorites] = useState<Set<string>>(new Set());
 
   const brandInfo = brand ? brandConfig[brand as string] : null;
@@ -355,11 +356,13 @@ const BrandProductsPage = () => {
     const matchesSearch = product.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
                          product.shortDesc.toLowerCase().includes(searchTerm.toLowerCase());
     const matchesCategory = selectedCategory === 'all' || product.category === selectedCategory;
-    return matchesSearch && matchesCategory;
+    const matchesSubCategory = selectedSubCategory === 'all' || product.subCategory === selectedSubCategory;
+    return matchesSearch && matchesCategory && matchesSubCategory;
   });
 
-  // Get unique categories
+  // Get unique categories and sub-categories
   const categories = ['all', ...Array.from(new Set(products.map(p => p.category)))];
+  const subCategories = ['all', ...Array.from(new Set(products.map(p => p.subCategory)))];
 
   if (loading) {
     return (
@@ -583,19 +586,50 @@ const BrandProductsPage = () => {
                   </div>
                 </div>
 
-                {/* Category Filter & View Mode */}
-                <div className="flex items-center space-x-4">
-                  <select
-                    value={selectedCategory}
-                    onChange={(e) => setSelectedCategory(e.target.value)}
-                    className="px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 min-w-[160px]"
-                  >
-                    {categories.map(category => (
-                      <option key={category} value={category}>
-                        {category === 'all' ? 'All Categories' : category}
-                      </option>
-                    ))}
-                  </select>
+                {/* Filters and Controls */}
+                <div className="flex flex-col sm:flex-row items-start sm:items-center space-y-4 sm:space-y-0 sm:space-x-4">
+                  {/* Filter Controls Row */}
+                  <div className="flex items-center space-x-4">
+                    {/* Category Filter */}
+                    <select
+                      value={selectedCategory}
+                      onChange={(e) => setSelectedCategory(e.target.value)}
+                      className="px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 min-w-[160px]"
+                    >
+                      {categories.map(category => (
+                        <option key={category} value={category}>
+                          {category === 'all' ? 'All Categories' : category}
+                        </option>
+                      ))}
+                    </select>
+
+                    {/* Sub-Category Filter */}
+                    <select
+                      value={selectedSubCategory}
+                      onChange={(e) => setSelectedSubCategory(e.target.value)}
+                      className="px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 min-w-[160px]"
+                    >
+                      {subCategories.map(subCategory => (
+                        <option key={subCategory} value={subCategory}>
+                          {subCategory === 'all' ? 'All Sub-Categories' : subCategory}
+                        </option>
+                      ))}
+                    </select>
+
+                    {/* Reset Filter Button */}
+                    <button
+                      onClick={() => {
+                        setSearchTerm('');
+                        setSelectedCategory('all');
+                        setSelectedSubCategory('all');
+                      }}
+                      className="px-4 py-3 bg-gray-100 text-gray-700 border border-gray-300 rounded-xl hover:bg-gray-200 transition-all duration-200 flex items-center space-x-2 min-w-[120px]"
+                      title="Reset all filters"
+                    >
+                      <MdFilterList size={18} />
+                      <span className="font-medium">Reset</span>
+                    </button>
+                  </div>
 
                   {/* View Mode Toggle */}
                   <div className="flex border border-gray-300 rounded-xl overflow-hidden">
@@ -615,16 +649,50 @@ const BrandProductsPage = () => {
                 </div>
               </div>
 
-              {/* Results Count */}
-              <div className="mt-6 pt-6 border-t border-gray-200">
-                <p className="text-gray-600 font-medium">
-                  {filteredProducts.length === products.length 
-                    ? `All ${products.length} products` 
-                    : `Showing ${filteredProducts.length} of ${products.length} products`}
-                  {searchTerm && ` for "${searchTerm}"`}
-                  {selectedCategory !== 'all' && ` in ${selectedCategory}`}
-                </p>
-              </div>
+              {/* Active Filters Display (Optional) */}
+              {(searchTerm || selectedCategory !== 'all' || selectedSubCategory !== 'all') && (
+                <div className="mt-6 pt-6 border-t border-gray-200">
+                  <div className="flex flex-wrap items-center gap-2">
+                    <span className="text-sm font-medium text-gray-600">Active filters:</span>
+                    
+                    {searchTerm && (
+                      <span className="inline-flex items-center px-3 py-1 bg-blue-100 text-blue-800 text-xs font-medium rounded-full">
+                        Search: "{searchTerm}"
+                        <button
+                          onClick={() => setSearchTerm('')}
+                          className="ml-1 text-blue-600 hover:text-blue-800"
+                        >
+                          ×
+                        </button>
+                      </span>
+                    )}
+                    
+                    {selectedCategory !== 'all' && (
+                      <span className="inline-flex items-center px-3 py-1 bg-green-100 text-green-800 text-xs font-medium rounded-full">
+                        Category: {selectedCategory}
+                        <button
+                          onClick={() => setSelectedCategory('all')}
+                          className="ml-1 text-green-600 hover:text-green-800"
+                        >
+                          ×
+                        </button>
+                      </span>
+                    )}
+                    
+                    {selectedSubCategory !== 'all' && (
+                      <span className="inline-flex items-center px-3 py-1 bg-purple-100 text-purple-800 text-xs font-medium rounded-full">
+                        Sub-Category: {selectedSubCategory}
+                        <button
+                          onClick={() => setSelectedSubCategory('all')}
+                          className="ml-1 text-purple-600 hover:text-purple-800"
+                        >
+                          ×
+                        </button>
+                      </span>
+                    )}
+                  </div>
+                </div>
+              )}
             </div>
 
             {/* Products Grid/List */}
@@ -638,6 +706,7 @@ const BrandProductsPage = () => {
                     onClick={() => {
                       setSearchTerm('');
                       setSelectedCategory('all');
+                      setSelectedSubCategory('all');
                     }}
                     className="px-6 py-3 bg-blue-600 text-white rounded-xl hover:bg-blue-700 transition-colors font-medium"
                   >

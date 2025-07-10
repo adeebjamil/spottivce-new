@@ -566,7 +566,7 @@ function getPageTitle(path: string): string {
     '/brand/hikvision': 'Hikvision Products',
     '/brand/dahua': 'Dahua Products',
     '/brand/uniview': 'Uniview Products',
-    '/brand/unv': 'UNV Products'
+    '/brand/ezviz': 'ezviz Products'
   };
   
   return titles[path] || path.replace(/\//g, '').replace(/-/g, ' ').replace(/\b\w/g, l => l.toUpperCase());

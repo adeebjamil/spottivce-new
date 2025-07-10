@@ -86,17 +86,16 @@ export default function Footer() {
   ];
   
   const productCategories = [
-    { name: 'Security Cameras', href: '/product/security-cameras' },
-    { name: 'Smart Home Systems', href: '/product/smart-home' },
-    { name: 'Access Control', href: '/product/access-control' },
-    { name: 'Networking Equipment', href: '/product/networking' },
-    { name: 'Storage Solutions', href: '/product/storage' },
+    { name: 'Surveillance Systems', href: '/products/surveillance' },
+    { name: 'Enterprise Security Solutions', href: '/products/commercial' },
+    { name: 'Home Security', href: '/products/residential' },
+    { name: 'Cloud Security', href: '/products/cloud' },
   ];
   
   const brands = [
     { name: 'Hikvision', href: '/brand/hikvision' },
     { name: 'Dahua', href: '/brand/dahua' },
-    { name: 'UNV', href: '/brand/unv' },
+    { name: 'EZVIZ', href: '/brand/ezviz' },
     { name: 'Uniview', href: '/brand/uniview' },
   ];
   

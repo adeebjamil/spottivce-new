@@ -254,6 +254,20 @@ const ProductsPage = () => {
               ))}
             </select>
 
+            {/* Reset Filter Button */}
+            <button
+              onClick={() => {
+                setSearchTerm("");
+                setSelectedCategory("All Categories");
+                setSelectedSubCategory("All Subcategories");
+                setSortBy("Newest First");
+              }}
+              className="px-4 py-3 bg-gray-100 text-gray-700 border border-gray-200 rounded-xl hover:bg-gray-200 transition-all duration-200 flex items-center space-x-2"
+              title="Reset all filters"
+            >
+              <span className="font-medium">Reset</span>
+            </button>
+
             {/* Sort */}
             <select
               value={sortBy}
@@ -292,15 +306,15 @@ const ProductsPage = () => {
           </div>
         </div>
 
-        {/* Results Count */}
-        <div className="mb-6">
+        {/* Results Count - COMMENTED OUT PER REQUEST */}
+        {/* <div className="mb-6">
           <p className="text-gray-600">
             Showing{" "}
             <span className="font-semibold">{filteredProducts.length}</span> of{" "}
             <span className="font-semibold">{products.length}</span> CCTV
             products
           </p>
-        </div>
+        </div> */}
 
         {/* Loading State */}
         {loading ? (
@@ -330,117 +344,215 @@ const ProductsPage = () => {
           </div>
         ) : (
           /* Products Grid/List */
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+          <div
+            className={
+              viewMode === "grid"
+                ? "grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6"
+                : "flex flex-col space-y-6"
+            }
+          >
             {filteredProducts.map((product) => (
               <div
                 key={product._id}
-                className="group relative bg-white rounded-3xl shadow-md hover:shadow-2xl transition-all duration-500 overflow-hidden border border-gray-100 hover:border-blue-200 hover:-translate-y-2"
+                className={`group relative bg-white rounded-3xl shadow-md hover:shadow-2xl transition-all duration-500 overflow-hidden border border-gray-100 hover:border-blue-200 ${
+                  viewMode === "grid" ? "hover:-translate-y-2" : ""
+                }`}
               >
-                {/* Image Container */}
-                <div className="aspect-[4/3] relative bg-gradient-to-br from-gray-50 to-gray-100 overflow-hidden">
-                  {product.image ? (
-                    <img
-                      src={product.image}
-                      alt={product.name}
-                      className="w-full h-full object-contain group-hover:scale-105 transition-transform duration-700"
-                    />
-                  ) : (
-                    <div className="w-full h-full flex items-center justify-center">
-                      <div className="text-center text-gray-400">
-                        <div className="text-5xl mb-3">📷</div>
-                        <p className="text-sm font-medium">Product Image</p>
+                {viewMode === "grid" ? (
+                  // Existing Grid View Layout
+                  <>
+                    {/* Image Container */}
+                    <div className="aspect-[4/3] relative bg-gradient-to-br from-gray-50 to-gray-100 overflow-hidden">
+                      {product.image ? (
+                        <img
+                          src={product.image}
+                          alt={product.name}
+                          className="w-full h-full object-contain group-hover:scale-105 transition-transform duration-700"
+                        />
+                      ) : (
+                        <div className="w-full h-full flex items-center justify-center">
+                          <div className="text-center text-gray-400">
+                            <div className="text-5xl mb-3">📷</div>
+                            <p className="text-sm font-medium">Product Image</p>
+                          </div>
+                        </div>
+                      )}
+
+                      {/* Gradient Overlay */}
+                      <div className="absolute inset-0 bg-gradient-to-t from-black/20 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+
+                      {/* Top Action Icons - REMOVED CATEGORY BADGE FROM HERE */}
+                      <div className="absolute top-4 right-4 flex justify-end items-start">
+                        {/* Action Icons */}
+                        <div className="flex gap-2 opacity-0 group-hover:opacity-100 transition-all duration-300 translate-y-2 group-hover:translate-y-0">
+                          {/* Favorite Icon */}
+                          <button
+                            onClick={(e) => toggleFavorite(product._id, e)}
+                            className="w-10 h-10 bg-white/95 backdrop-blur-sm rounded-full flex items-center justify-center shadow-lg hover:bg-white hover:scale-110 transition-all duration-200"
+                          >
+                            {favorites.includes(product._id) ? (
+                              <MdFavorite className="text-red-500" size={18} />
+                            ) : (
+                              <MdFavoriteBorder
+                                className="text-gray-600 hover:text-red-500"
+                                size={18}
+                              />
+                            )}
+                          </button>
+
+                          {/* Share Icon */}
+                          <button
+                            onClick={(e) => shareProduct(product, e)}
+                            className="w-10 h-10 bg-white/95 backdrop-blur-sm rounded-full flex items-center justify-center shadow-lg hover:bg-white hover:scale-110 transition-all duration-200"
+                          >
+                            <MdShare
+                              className="text-gray-600 hover:text-blue-600"
+                              size={18}
+                            />
+                          </button>
+                        </div>
+                      </div>
+
+                      {/* Bottom Hover Actions */}
+                      <div className="absolute bottom-4 left-4 right-4 opacity-0 group-hover:opacity-100 transition-all duration-300 translate-y-4 group-hover:translate-y-0">
+                        <div className="flex gap-2">
+                          <Link
+                            href={`/product/${product._id}`}
+                            className="flex-1 bg-white/95 backdrop-blur-sm text-gray-900 px-4 py-2.5 rounded-xl font-semibold text-sm hover:bg-white transition-all duration-200 flex items-center justify-center gap-2 shadow-lg"
+                          >
+                            <MdVisibility size={16} />
+                            Quick View
+                          </Link>
+                        </div>
                       </div>
                     </div>
-                  )}
 
-                  {/* Gradient Overlay */}
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/20 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                    {/* Content */}
+                    <div className="p-6">
+                      {/* ADDED CATEGORY BADGE HERE */}
+                      <span className="inline-flex px-3 py-1.5 bg-blue-50 text-blue-600 text-xs font-bold rounded-full mb-3 border border-blue-100">
+                        {product.category}
+                      </span>
 
-                  {/* Top Action Icons - REMOVED CATEGORY BADGE FROM HERE */}
-                  <div className="absolute top-4 right-4 flex justify-end items-start">
-                    {/* Action Icons */}
-                    <div className="flex gap-2 opacity-0 group-hover:opacity-100 transition-all duration-300 translate-y-2 group-hover:translate-y-0">
-                      {/* Favorite Icon */}
-                      <button
-                        onClick={(e) => toggleFavorite(product._id, e)}
-                        className="w-10 h-10 bg-white/95 backdrop-blur-sm rounded-full flex items-center justify-center shadow-lg hover:bg-white hover:scale-110 transition-all duration-200"
-                      >
-                        {favorites.includes(product._id) ? (
-                          <MdFavorite className="text-red-500" size={18} />
-                        ) : (
-                          <MdFavoriteBorder
-                            className="text-gray-600 hover:text-red-500"
-                            size={18}
-                          />
-                        )}
-                      </button>
+                      <div className="mb-3">
+                        <div className="flex items-center gap-2 mb-2">
+                          <div className="w-2 h-2 bg-blue-500 rounded-full"></div>
+                          <p className="text-xs text-gray-500 font-bold uppercase tracking-wider">
+                            {product.subCategory}
+                          </p>
+                        </div>
+                        <h3 className="text-xl font-bold text-gray-900 group-hover:text-blue-600 transition-colors line-clamp-2 leading-tight mb-1">
+                          {product.name}
+                        </h3>
+                      </div>
 
-                      {/* Share Icon */}
-                      <button
-                        onClick={(e) => shareProduct(product, e)}
-                        className="w-10 h-10 bg-white/95 backdrop-blur-sm rounded-full flex items-center justify-center shadow-lg hover:bg-white hover:scale-110 transition-all duration-200"
-                      >
-                        <MdShare
-                          className="text-gray-600 hover:text-blue-600"
-                          size={18}
-                        />
-                      </button>
-                    </div>
-                  </div>
-
-                  {/* Bottom Hover Actions */}
-                  <div className="absolute bottom-4 left-4 right-4 opacity-0 group-hover:opacity-100 transition-all duration-300 translate-y-4 group-hover:translate-y-0">
-                    <div className="flex gap-2">
-                      <Link
-                        href={`/product/${product._id}`}
-                        className="flex-1 bg-white/95 backdrop-blur-sm text-gray-900 px-4 py-2.5 rounded-xl font-semibold text-sm hover:bg-white transition-all duration-200 flex items-center justify-center gap-2 shadow-lg"
-                      >
-                        <MdVisibility size={16} />
-                        Quick View
-                      </Link>
-                    </div>
-                  </div>
-                </div>
-
-                {/* Content */}
-                <div className="p-6">
-                  {/* ADDED CATEGORY BADGE HERE */}
-                  <span className="inline-flex px-3 py-1.5 bg-blue-50 text-blue-600 text-xs font-bold rounded-full mb-3 border border-blue-100">
-                    {product.category}
-                  </span>
-
-                  <div className="mb-3">
-                    <div className="flex items-center gap-2 mb-2">
-                      <div className="w-2 h-2 bg-blue-500 rounded-full"></div>
-                      <p className="text-xs text-gray-500 font-bold uppercase tracking-wider">
-                        {product.subCategory}
+                      <p className="text-gray-600 text-sm line-clamp-3 mb-4 leading-relaxed">
+                        {product.shortDesc}
                       </p>
+
+                      {/* Bottom Info */}
+                      <div className="flex items-center justify-between pt-4 border-t border-gray-100">
+                        <div className="flex items-center gap-1.5 text-xs text-gray-500">
+                          <MdLocationOn size={14} />
+                          <span className="font-medium">UAE Available</span>
+                        </div>
+
+                        <Link
+                          href={`/product/${product._id}`}
+                          className="group/btn relative inline-flex items-center gap-2 px-6 py-2.5 bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white text-sm font-bold rounded-xl transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-xl overflow-hidden"
+                        >
+                          <span className="relative z-10">View Details</span>
+                          <div className="absolute inset-0 bg-gradient-to-r from-white/0 via-white/20 to-white/0 transform -skew-x-12 -translate-x-full group-hover/btn:translate-x-full transition-transform duration-1000"></div>
+                        </Link>
+                      </div>
                     </div>
-                    <h3 className="text-xl font-bold text-gray-900 group-hover:text-blue-600 transition-colors line-clamp-2 leading-tight mb-1">
-                      {product.name}
-                    </h3>
-                  </div>
+                  </>
+                ) : (
+                  // List View Layout
+                  <div className="flex flex-col md:flex-row">
+                    {/* Image Container - Smaller for list view */}
+                    <div className="md:w-1/4 aspect-[4/3] md:aspect-square relative bg-gradient-to-br from-gray-50 to-gray-100 overflow-hidden">
+                      {product.image ? (
+                        <img
+                          src={product.image}
+                          alt={product.name}
+                          className="w-full h-full object-contain group-hover:scale-105 transition-transform duration-700"
+                        />
+                      ) : (
+                        <div className="w-full h-full flex items-center justify-center">
+                          <div className="text-center text-gray-400">
+                            <div className="text-5xl mb-3">📷</div>
+                            <p className="text-sm font-medium">Product Image</p>
+                          </div>
+                        </div>
+                      )}
 
-                  <p className="text-gray-600 text-sm line-clamp-3 mb-4 leading-relaxed">
-                    {product.shortDesc}
-                  </p>
-
-                  {/* Bottom Info */}
-                  <div className="flex items-center justify-between pt-4 border-t border-gray-100">
-                    <div className="flex items-center gap-1.5 text-xs text-gray-500">
-                      <MdLocationOn size={14} />
-                      <span className="font-medium">UAE Available</span>
+                      {/* Gradient Overlay */}
+                      <div className="absolute inset-0 bg-gradient-to-t from-black/20 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
                     </div>
 
-                    <Link
-                      href={`/product/${product._id}`}
-                      className="group/btn relative inline-flex items-center gap-2 px-6 py-2.5 bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white text-sm font-bold rounded-xl transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-xl overflow-hidden"
-                    >
-                      <span className="relative z-10">View Details</span>
-                      <div className="absolute inset-0 bg-gradient-to-r from-white/0 via-white/20 to-white/0 transform -skew-x-12 -translate-x-full group-hover/btn:translate-x-full transition-transform duration-1000"></div>
-                    </Link>
+                    {/* Content - Expanded for list view */}
+                    <div className="flex-1 p-6 flex flex-col justify-between">
+                      <div>
+                        <div className="flex items-center justify-between mb-2">
+                          <span className="inline-flex px-3 py-1.5 bg-blue-50 text-blue-600 text-xs font-bold rounded-full border border-blue-100">
+                            {product.category}
+                          </span>
+
+                          <div className="flex gap-2">
+                            <button
+                              onClick={(e) => toggleFavorite(product._id, e)}
+                              className="w-8 h-8 bg-gray-100 rounded-full flex items-center justify-center hover:bg-gray-200 transition-colors"
+                            >
+                              {favorites.includes(product._id) ? (
+                                <MdFavorite className="text-red-500" size={16} />
+                              ) : (
+                                <MdFavoriteBorder className="text-gray-600" size={16} />
+                              )}
+                            </button>
+                            <button
+                              onClick={(e) => shareProduct(product, e)}
+                              className="w-8 h-8 bg-gray-100 rounded-full flex items-center justify-center hover:bg-gray-200 transition-colors"
+                            >
+                              <MdShare className="text-gray-600" size={16} />
+                            </button>
+                          </div>
+                        </div>
+
+                        <div className="mb-3">
+                          <div className="flex items-center gap-2 mb-1">
+                            <div className="w-2 h-2 bg-blue-500 rounded-full"></div>
+                            <p className="text-xs text-gray-500 font-bold uppercase tracking-wider">
+                              {product.subCategory}
+                            </p>
+                          </div>
+                          <h3 className="text-xl font-bold text-gray-900 group-hover:text-blue-600 transition-colors leading-tight mb-2">
+                            {product.name}
+                          </h3>
+                        </div>
+
+                        <p className="text-gray-600 text-sm line-clamp-2 leading-relaxed">
+                          {product.shortDesc}
+                        </p>
+                      </div>
+
+                      {/* Bottom Info */}
+                      <div className="flex items-center justify-between pt-4 border-t border-gray-100 mt-4">
+                        <div className="flex items-center gap-1.5 text-xs text-gray-500">
+                          <MdLocationOn size={14} />
+                          <span className="font-medium">UAE Available</span>
+                        </div>
+
+                        <Link
+                          href={`/product/${product._id}`}
+                          className="inline-flex items-center gap-2 px-6 py-2.5 bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white text-sm font-bold rounded-xl transition-all duration-300 hover:shadow-lg"
+                        >
+                          View Details
+                        </Link>
+                      </div>
+                    </div>
                   </div>
-                </div>
+                )}
               </div>
             ))}
           </div>
